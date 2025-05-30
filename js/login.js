@@ -1,18 +1,51 @@
-const userNameInput = document.getElementById("username-input");
+const emailInput = document.getElementById("email-input");
 const passwordInput = document.getElementById("password-input");
 
-const tempUsername = "admin";
+const tempEmail = "admin@gmail.com";
 const tempPassword = "password";
 
 function submitLogin(){
-    // if the username and password match the temporary values, redirect to the home page.
-    if(userNameInput.value === tempUsername && passwordInput.value === tempPassword){
+    // if the email and password match the temporary values, redirect to the home page.
+    // Alternatively, if the detailsCheck method returns true, redirect to the home page.
+    // If true is returned from the detailsCheck method it means that the inputted details match those that are stored in local storage (user details that were submitted on sign-up).
+    if(emailInput.value === tempEmail && passwordInput.value === tempPassword || detailsCheck()){
         alert("Login successful!");
-        window.location.href = "../index.html";
+        // Add link to the home page upon completion.
+        window.location.href = "#";
+    }
+    // Check that verifies whether an email was actually entered.
+    // It checks for an @ symbol in the email input.
+    else if(!emailInput.value.includes("@")){
+        alert("Please enter a valid email address.");
+        emailInput.value = "";
+        passwordInput.value = "";
     }
     else{
-        alert("Invalid username or password. Please try again.");
-        userNameInput.value = "";
+        alert("Invalid email or password. Please try again.");
+        emailInput.value = "";
         passwordInput.value = "";
+    }
+}
+
+function detailsCheck(){
+    // Attempt to retrieve user data from localStorage.
+    const storedUserJSON = localStorage.getItem(emailInput.value);
+    if(!storedUserJSON){
+        return false;
+    }
+    try{
+        // parses JSON string into an object
+        const storedUserData = JSON.parse(storedUserJSON);
+        // Compare the entered password with the stored password (the value from the object) in localStorage.
+        if(storedUserData.password === passwordInput.value){
+            emailInput.value = "";
+            passwordInput.value = "";
+            return true;
+        }
+        return false;
+    }
+    catch(error){
+        console.error(error);
+        return false;
     }
 }
