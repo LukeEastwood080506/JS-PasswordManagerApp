@@ -1,0 +1,124 @@
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins";
+}
+
+.wrapper {
+  position: absolute;
+  width: 100%;
+  min-height: 100vh;
+  height: 100vh;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.main-body,
+.menu-pane {
+  background-color: #fff;
+}
+
+.menu-pane {
+  z-index: 100;
+  left: 0;
+  background: rgb(152, 132, 191);
+  width: 17%;
+  height: 100dvh;
+  box-shadow: -50px 0px 100px;
+  justify-content: center;
+}
+
+.pane-logo {
+  margin-left: 20px;
+  margin-top: 34px;
+  width: 50px;
+  position: fixed;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 50px;
+}
+
+.pane-title {
+  margin-left: 80px;
+  margin-top: 30px;
+  position: fixed;
+  font-weight: 600;
+  color: white;
+  font-size: 36px;
+  text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+}
+
+.menu-option:nth-of-type(1) {
+  margin-top: 150px;
+}
+
+.menu-option {
+  font-size: 32px;
+  font-weight: 500;
+  color: white;
+  text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  padding-top: 23px;
+  padding-bottom: 23px;
+  padding-left: 50px;
+  display: flex;
+  align-items: center;
+  background: #786a94;
+}
+
+.menu-option img {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  margin-right: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+}
+
+.menu-log-out {
+  font-size: 26px;
+  font-weight: 500;
+  color: white;
+  text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  margin-left: 50px;
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-log-out img {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  margin-right: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+}
+
+.main-body {
+  background: #3d3272;
+  background: linear-gradient(
+    0deg,
+    rgba(61, 50, 114, 1) 0%,
+    rgba(152, 128, 194, 1) 100%
+  );
+  right: 0;
+  width: 83%;
+  height: 100dvh;
+}
+
+.search-bar {
+  margin-left: 30px;
+  font-size: 20px;
+  margin-top: 30px;
+  height: 50px;
+  width: 50vw;
+  border: none;
+  border-radius: 30px;
+  padding-left: 16px;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+}

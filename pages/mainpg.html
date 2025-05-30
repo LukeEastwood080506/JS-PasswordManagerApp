@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+    </style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Really Good Password Manager</title>
@@ -8,7 +11,40 @@
     <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
   </head>
   <body>
-    <p id="lol">erm</p>
+    <div class="wrapper" id="wrapper">
+      <div class="menu-pane" id="menu-pane">
+        <img src="../assets/site-icon.png" class="pane-logo" />
+        <span class="pane-title" id="pane-title">My Vault</span>
+        <div class="menu-option" id="menu-option-myvault">
+          <img src="../assets/vault-icon.svg" />
+          <span class="menu-option-title" id="menu-option-title">My Vault</span>
+        </div>
+        <div class="menu-option" id="menu-option-myvault">
+          <img src="../assets/cog-icon.svg" />
+          <span class="menu-option-title" id="menu-option-title"
+            >Generator</span
+          >
+        </div>
+        <div class="menu-option" id="menu-option-myvault">
+          <img src="../assets/bin-icon.svg" />
+          <span class="menu-option-title" id="menu-option-title"
+            >Recycle Bin</span
+          >
+        </div>
+        <div class="menu-log-out" id="menu-log-out">
+          <img src="../assets/log-out-icon.svg" />
+          <span class="menu-option-title" id="menu-option-title">Log-Out</span>
+        </div>
+      </div>
+      <div class="main-body" id="main-body">
+        <input
+          class="search-bar"
+          id="search-bar"
+          type="text"
+          placeholder="Search..."
+        />
+      </div>
+    </div>
   </body>
   <script src="../js/mainpg.js"></script>
 </html>

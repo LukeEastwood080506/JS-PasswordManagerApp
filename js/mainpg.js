@@ -12,4 +12,4 @@ function load() {
   document.getElementById("lol").innerHTML = "Yo TS FIRE";
 }
 
-window.onload = checkLoggedIn;
+//window.onload = checkLoggedIn;
