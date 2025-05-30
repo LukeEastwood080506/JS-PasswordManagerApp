@@ -4,15 +4,19 @@ const passwordInput = document.getElementById("password-input");
 const tempUsername = "admin";
 const tempPassword = "password";
 
-function submitLogin(){
-    // if the username and password match the temporary values, redirect to the home page.
-    if(userNameInput.value === tempUsername && passwordInput.value === tempPassword){
-        alert("Login successful!");
-        window.location.href = "../index.html";
-    }
-    else{
-        alert("Invalid username or password. Please try again.");
-        userNameInput.value = "";
-        passwordInput.value = "";
-    }
+function submitLogin() {
+  // if the username and password match the temporary values, redirect to the home page.
+  if (
+    userNameInput.value === tempUsername &&
+    passwordInput.value === tempPassword
+  ) {
+    alert("Login successful!");
+    sessionStorage.setItem("isLoggedIn", "true");
+    window.location.href = "mainpg.html";
+  } else {
+    alert("Invalid username or password. Please try again.");
+    sessionStorage.setItem("isLoggedIn", "false");
+    userNameInput.value = "";
+    passwordInput.value = "";
+  }
 }
