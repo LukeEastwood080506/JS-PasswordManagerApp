@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Really Good Password Manager Login</title>
+        <link rel = "stylesheet" href = "/css/login-style.css">
+        <link rel = "icon" type = "image/x-icon" href = "/assets/site-icon.png">
+    </head>
+    <body>
+        <div class = "container">
+            <div class = "split-left">
+                <img src = "/assets/site-icon.png" alt = "pmicon" class = "logo">
+                <h1>Really Good Password Manager</h1>
+            </div>
+            <div class = "split-right">
+                <h2>Login</h2>
+                <div class = "login-container">
+                    <input type="text" id="username-input" placeholder="Username:" autocomplete = "off">
+                    <input type="text" id="password-input" placeholder="Password:" autocomplete="off">
+                    <!--Add link to a forgot password page-->
+                    <a href = "#" id = "forgot-password-link">Forgot Password?</a>
+                    <button onclick="submitLogin()">Login</button>
+                </div>
+                <!--Add link to the sign up page-->
+                <h3>Don't have an account? <a href = "#">Sign Up</a></h3>
+            </div>
+        </div>
+    </body>
+    <script src = "/js/login.js"></script>
+</html>
