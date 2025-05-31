@@ -1,9 +1,9 @@
-@import url('common.css');
 @font-face {
   font-family: "Poppins Bold";
   font-weight: 700;
   src: url("/assets/fonts/Poppins-Bold.ttf") format("truetype");
 }
+
 @font-face {
   font-family: "Poppins Regular";
   font-weight: 400;
@@ -42,7 +42,6 @@
 .split-left img {
   display: block;
   margin: 0 auto;
-  padding-top: 250px;
   width: 250px;
   height: 250px;
   object-fit: cover;
@@ -77,15 +76,6 @@
   margin: 0 0 20px 0;
 }
 
-.login-container {
-  width: 750px;
-  padding: 45px;
-  background-color: #ececec;
-  border-radius: 45px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  text-align: center;
-}
-
 input {
   font-family: "Poppins Regular";
   padding: 25px;
@@ -98,15 +88,7 @@ input {
   outline: none;
 }
 
-#forgot-password-link {
-  display: block;
-  text-align: left;
-  padding-left: 70px;
-  color: black;
-  font-family: "Poppins Regular";
-}
-
-.login-container button {
+button {
   font-family: "Poppins Bold";
   background-color: #a58fcb;
   color: white;
@@ -119,23 +101,7 @@ input {
   display: inline-block;
 }
 
-.login-container button:hover {
+button:hover {
   transform: scale(1.02);
   transition: 0.3s ease-in-out;
-}
-
-.split-right h3,
-.split-right a {
-  color: white;
-  font-family: "Poppins Regular";
-  font-size: 16px;
-}
-
-.split-right a {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.split-right a:hover {
-  color: #ececec;
 }
