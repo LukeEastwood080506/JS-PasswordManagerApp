@@ -1,7 +1,7 @@
-const userNameInput = document.getElementById("username-input");
+const emailInput = document.getElementById("email-input");
 const passwordInput = document.getElementById("password-input");
 
-const tempUsername = "admin";
+const tempEmail = "admin@gmail.com";
 const tempPassword = "password";
 
 function submitLogin() {
