@@ -2,6 +2,22 @@ const emailInput = document.getElementById("email-input");
 const confirmEmailInput = document.getElementById("confirm-email-input");
 const passwordInput = document.getElementById("password-input");
 
+emailInput.addEventListener("keyup", function(event){
+    if(event.key === "Enter"){
+        confirmSignUp();
+    }
+});
+confirmEmailInput.addEventListener("keyup", function(event){
+    if(event.key === "Enter"){
+        confirmSignUp();
+    }
+});
+passwordInput.addEventListener("keyup", function(event){
+    if(event.key === "Enter"){
+        confirmSignUp();
+    }
+});
+
 function confirmSignUp(){
     // check if the email input contains an @ sign - to verify its a valid email address.
     if(!emailInput.value.includes("@")){

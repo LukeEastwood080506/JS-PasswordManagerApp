@@ -1,10 +1,9 @@
-@import url('common.css');
-
 @font-face {
   font-family: "Poppins Bold";
   font-weight: 700;
   src: url("/assets/fonts/Poppins-Bold.ttf") format("truetype");
 }
+
 @font-face {
   font-family: "Poppins Regular";
   font-weight: 400;
@@ -77,32 +76,6 @@
   margin: 0 0 20px 0;
 }
 
-.sign-up-container {
-  width: 750px;
-  padding: 45px;
-  background-color: #ececec;
-  border-radius: 45px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.sign-up-container button{
-    font-family: "Poppins Bold";
-    background-color: #a58fcb;
-    color: white;
-    border: black 2px solid;
-    padding: 15px 30px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 18px;
-    margin-top: 10px;
-    display: block;
-}
-
 input {
   font-family: "Poppins Regular";
   padding: 25px;
@@ -115,10 +88,20 @@ input {
   outline: none;
 }
 
-.sign-up-container a{
-    font-family: "Poppins Regular";
-    color: #6254a8;
-    text-decoration: none;
-    font-size: 16px;
-    padding-top: 25px;
+button {
+  font-family: "Poppins Bold";
+  background-color: #a58fcb;
+  color: white;
+  border: black 2px solid;
+  padding: 15px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 18px;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+button:hover {
+  transform: scale(1.02);
+  transition: 0.3s ease-in-out;
 }

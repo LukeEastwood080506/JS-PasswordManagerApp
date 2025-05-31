@@ -4,6 +4,18 @@ const passwordInput = document.getElementById("password-input");
 const tempEmail = "admin@gmail.com";
 const tempPassword = "password";
 
+// Event listener methods for enter key submission.
+emailInput.addEventListener("keyup", function(event){
+    if(event.key === "Enter"){
+        submitLogin();
+    }
+});
+passwordInput.addEventListener("keyup", function(event){
+    if(event.key === "Enter"){
+        submitLogin();
+    }
+});
+
 function submitLogin(){
     // if the email and password match the temporary values, redirect to the home page.
     // Alternatively, if the detailsCheck method returns true, redirect to the home page.
