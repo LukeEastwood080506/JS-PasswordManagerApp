@@ -78,7 +78,8 @@
 }
 
 .sign-up-container {
-  width: 750px;
+  width: 90%;
+  max-width: 750px;
   padding: 45px;
   background-color: #ececec;
   border-radius: 45px;
@@ -115,10 +116,28 @@ input {
   outline: none;
 }
 
-.sign-up-container a{
-    font-family: "Poppins Regular";
-    color: #6254a8;
-    text-decoration: none;
-    font-size: 16px;
-    padding-top: 25px;
+.sign-up-container a {
+  font-family: "Poppins Regular";
+  color: #6254a8;
+  text-decoration: none;
+  font-size: 16px;
+  padding-top: 25px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .sign-up-container {
+    padding: 30px 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sign-up-container {
+    padding: 25px 15px;
+  }
+  
+  .sign-up-container a {
+    padding-top: 15px;
+    font-size: 14px;
+  }
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Really Good Password Manager Settings</title>
+    <link rel="stylesheet" type="text/css" href="../css/settings-style.css" />
+    <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
+  </head>
+  <body>
+    <nav>
+      <a href="mainpg.html" class="navbar-items">
+        <img src="../assets/back-btn.png" alt="Back" />
+      </a>
+    </nav>
+    <div class="container">
+      <h1>⚙️ Settings</h1>
+      <div class="setting-box">
+        <div class="setting-title">
+          <h2>Account Settings</h2>
+        </div>
+        <div class="setting-content">
+          <p>Change your account settings here.</p>
+          <h3 id="email-display">Email: lorem ipsum</h3>
+          <button
+            id="change-master-password-btn"
+            onclick="changeMasterPassword()"
+          >
+            Change Master Password
+          </button>
+          <button id="log-out-btn" onclick="logOut()">Log Out</button>
+          <button id="delete-account-btn" onclick="deleteAccount()">
+            Delete Account
+          </button>
+        </div>
+      </div>
+      <div class="setting-box">
+        <div class="setting-title">
+          <h2>App Preferences</h2>
+        </div>
+        <div class="setting-content">
+          <p>Change your app appearance settings here.</p>
+          <div class="switch-container">
+            <span class="switch-label">Dark Mode</span>
+            <label class="switch">
+              <input type="checkbox" id="dark-mode-toggle" />
+              <span class="slider-round"></span>
+            </label>
+            <span class="switch-label">High Contrast Mode</span>
+            <label class="switch">
+              <input type="checkbox" id="contrast-mode-toggle" />
+              <span class="slider-round"></span>
+            </label>
+          </div>
+          <button id="change-font-size-btn" onclick="changeFontSize()">
+            Change font size
+          </button>
+        </div>
+      </div>
+      <div class="footer">
+        <p>© 2025 | Created by Luke Eastwood and Carl Baines</p>
+      </div>
+    </div>
+  </body>
+  <script src="../js/settings.js"></script>
+</html>

@@ -1,14 +1,4 @@
 @import url('common.css');
-@font-face {
-  font-family: "Poppins Bold";
-  font-weight: 700;
-  src: url("/assets/fonts/Poppins-Bold.ttf") format("truetype");
-}
-@font-face {
-  font-family: "Poppins Regular";
-  font-weight: 400;
-  src: url("/assets/fonts/Poppins-Regular.ttf") format("truetype");
-}
 
 .container {
   width: 100%;
@@ -42,10 +32,10 @@
 .split-left img {
   display: block;
   margin: 0 auto;
-  padding-top: 250px;
+  padding-top: 50px;
   width: 250px;
   height: 250px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .split-left img:hover {
@@ -78,7 +68,8 @@
 }
 
 .login-container {
-  width: 750px;
+  width: 90%;
+  max-width: 750px;
   padding: 45px;
   background-color: #ececec;
   border-radius: 45px;
@@ -131,6 +122,10 @@ input {
   font-size: 16px;
 }
 
+.split-right h3{
+  padding-top: 20px;
+}
+
 .split-right a {
   text-decoration: underline;
   cursor: pointer;
@@ -138,4 +133,24 @@ input {
 
 .split-right a:hover {
   color: #ececec;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  #forgot-password-link {
+    padding-left: 5%;
+  }
+  
+  .split-left img {
+    padding-top: 20px;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px; /* Add space below the image on mobile */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .login-container {
+    padding: 25px 15px;
+  }
 }
