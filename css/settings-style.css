@@ -1,5 +1,19 @@
 @import url('common.css');
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 nav{
     position: fixed;
     top: 0;
@@ -21,51 +35,55 @@ nav img{
 }
 
 .container{
-    height: 100vh;
+    flex: 1;
+    min-height: 100vh;
+    padding: 0 15px 130px;
     background: linear-gradient(to bottom right, #b3a4d7, #6254a8);
+    position: relative;
 }
 
 .container h1{
     font-family: "Poppins Bold";
     color: white;
     text-align: center;
-    font-size: 48px;
-    padding-top: 100px;
+    font-size: 2.5rem;
+    padding-top: 120px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .setting-box{
-    vertical-align: middle;
     font-family: "Poppins Regular";
-    margin-top: 50px;
-    margin-left: 125px;
-    padding-top: 45px;
-    padding-bottom: 45px;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px 20px;
     text-align: center;
     color: black;
     background: #e6e6e6;
     position: relative;
     border-radius: 25px;
-    display: inline-block;
+    display: block;
     width: 90%;
     max-width: 750px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    margin-bottom: 30px;
 }
 
 .setting-title{
     font-family: "Poppins Bold";
     text-decoration: underline;
-    font-size: 24px;
+    font-size: 1.5rem;
     margin-bottom: 5px;
 }
 
 .setting-content p{
-    font-size: 18px;
+    font-size: 1rem;
     margin: 10px 0;
 }
 
 #email-display{
     padding-bottom: 20px;
+    word-break: break-word;
 }
 
 .setting-content button{
@@ -73,9 +91,11 @@ nav img{
     color: black;
     border: 2px solid black;
     display: block;
-    width: 50%;
+    width: 80%;
+    max-width: 300px;
     margin: 20px auto;
-    padding: 15px 30px;
+    padding: 12px 20px;
+    font-size: 1rem;
 }
 
 .setting-content button:hover{
@@ -147,12 +167,62 @@ input:checked + .slider-round:before {
     font-family: "Poppins Bold";
     background-color: #a58fcb;
     text-align: center;
-    padding-bottom: 45px;
-    padding-top: 45px;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    padding: 25px 15px;
     width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
     z-index: 2;
+}
+
+/* Media Queries for Responsive Design */
+@media screen and (max-width: 768px) {
+    .container h1 {
+        font-size: 2rem;
+        padding-top: 70px;
+    }
+    
+    .setting-box {
+        width: 95%;
+        padding: 25px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .setting-title {
+        font-size: 1.3rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    nav img {
+        width: 50px;
+        padding-left: 10px;
+    }
+    
+    .container h1 {
+        font-size: 1.7rem;
+        padding-top: 65px;
+    }
+    
+    .setting-title {
+        font-size: 1.2rem;
+    }
+    
+    .setting-content p {
+        font-size: 0.9rem;
+    }
+    
+    .setting-content button {
+        width: 90%;
+        padding: 10px 15px;
+    }
+    
+    .footer {
+        padding: 20px 10px;
+        font-size: 0.9rem;
+    }
+    
+    .container {
+        padding-bottom: 100px;
+    }
 }
