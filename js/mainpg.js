@@ -1,7 +1,6 @@
-// Application state
 let currentPageOption = "menu-option-myvault";
 let currentPage = "myvault-page";
-const accounts = [];
+let accounts = [];
 
 const addPasswordModal = document.getElementById("add-password-modal");
 const addButton = document.getElementById("add-password-button");
@@ -78,7 +77,6 @@ function changePage(pageOption) {
   if (currentOptionElement) currentOptionElement.classList.remove("active");
   if (currentPageElement) currentPageElement.style.display = "none";
 
-  // Update state and show new page
   currentPageOption = pageOption;
   currentPage = PAGE_MAPPING[pageOption] || currentPage;
 
@@ -157,7 +155,7 @@ function addAccount() {
   editButton.addEventListener("click", () => editAccount(index));
   deleteButton.addEventListener("click", () => deleteAccount(index));
 
-  document.getElementById("myvault-page").appendChild(accountClone);
+  document.getElementById("accounts-section").appendChild(accountClone);
 
   clearModalInputs();
   hideModal();
@@ -218,6 +216,23 @@ if (modalCloseButton) {
 window.addEventListener("click", (event) => {
   if (event.target === addPasswordModal) {
     hideModal();
+  }
+});
+
+document.addEventListener("keydown", function (event) {
+  const activeElement = document.activeElement;
+
+  if (
+    activeElement.tagName === "INPUT" ||
+    activeElement.tagName === "TEXTAREA"
+  ) {
+    return;
+  } else {
+    if (event.key === "#") {
+      alert("clearing");
+      accounts = [];
+      save();
+    }
   }
 });
 

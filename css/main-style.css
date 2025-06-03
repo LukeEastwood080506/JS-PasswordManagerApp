@@ -248,6 +248,7 @@ body {
 /* page content */
 .main-content-area {
   padding: var(--spacing-lg);
+  overflow-x: hidden;
 }
 
 hr {
@@ -316,7 +317,7 @@ hr {
 
 /* modal */
 
-.add-password-modal {
+.password-modal {
   display: none;
   position: fixed;
   z-index: 2;
@@ -328,7 +329,7 @@ hr {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.add-password-modal-content {
+.password-modal-content {
   background-color: var(--color-modal-bg);
   margin: 15% auto;
   padding: var(--spacing-lg);
@@ -339,7 +340,7 @@ hr {
 }
 
 /* modal form */
-.add-pass-inputs {
+.pass-inputs {
   margin-top: var(--spacing-lg);
 }
 
@@ -347,14 +348,14 @@ hr {
   margin-bottom: var(--spacing-lg);
 }
 
-.add-pass-inputs label {
+.pass-inputs label {
   display: block;
   font-size: 24px;
   font-weight: 600;
   margin-bottom: var(--spacing-xs);
 }
 
-.add-pass-inputs input {
+.pass-inputs input {
   font-size: 18px;
   font-weight: 500;
   border: none;
@@ -366,7 +367,7 @@ hr {
   font-family: var(--font-family);
 }
 
-.add-pass-inputs input:focus {
+.pass-inputs input:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -432,12 +433,12 @@ hr {
   border-radius: 20px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   width: 80%;
   height: 10%;
 }
 
 .account p {
+  justify-content: flex-start;
   font-size: 24px;
   margin-right: 20px;
   margin: 0 20px 0 0;
@@ -450,6 +451,14 @@ hr {
   filter: drop-shadow(var(--shadow-medium));
   transition: var(--transition-slow);
   margin-right: 20px;
+}
+
+.account-options {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: flex-end;
+  cursor: pointer;
 }
 
 .edit-icon {
