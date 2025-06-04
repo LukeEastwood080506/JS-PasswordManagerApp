@@ -1,4 +1,6 @@
 const emailText = document.getElementById("email-display");
+const darkModeToggle = document.getElementById("dark-mode-toggle");
+const contrastModeToggle = document.getElementById("contrast-mode-toggle");
 
 function displayEmail() {
   const email = retrieveEmail();
@@ -131,11 +133,7 @@ function deleteAccount() {
     alert("You must be logged in to delete your account.");
     return;
   }
-  if (
-    confirm(
-      "Are you sure you want to delete your account?"
-    )
-  ) {
+  if (confirm("Are you sure you want to delete your account?")) {
     // Ask for password to confirm identity
     const password = prompt(
       "Please enter your password to confirm account deletion:"
@@ -161,4 +159,59 @@ function deleteAccount() {
   }
 }
 
+function toggleDarkMode() {
+  let body = document.body;
+  
+  // Check if contrast mode is active and disable it before toggling dark mode
+  if (body.classList.contains("contrast-mode")) {
+    body.classList.remove("contrast-mode");
+    localStorage.setItem("contrastMode", "disabled");
+    contrastModeToggle.checked = false;
+  }
+  body.classList.toggle("dark-mode");
+
+  // Save enabled/disabled state to local storage.
+  if(body.classList.contains("dark-mode")){
+    localStorage.setItem("darkMode", "enabled");
+  }
+  else{
+    localStorage.setItem("darkMode", "disabled");
+  }
+}
+
+function checkDarkModePreference(){
+  if(localStorage.getItem("darkMode") === "enabled"){
+    document.body.classList.add("dark-mode");
+    darkModeToggle.checked = true;
+  }
+}
+
+function toggleContrastMode(){
+  let body = document.body;
+  
+  // Check if dark mode is active and disable it before enabling contrast mode.
+  if (body.classList.contains("dark-mode")) {
+    body.classList.remove("dark-mode");
+    localStorage.setItem("darkMode", "disabled");
+    darkModeToggle.checked = false;
+  }
+  body.classList.toggle("contrast-mode");
+
+  if(body.classList.contains("contrast-mode")){
+    localStorage.setItem("contrastMode", "enabled");
+  }
+  else{
+    localStorage.setItem("contrastMode", "disabled");
+  }
+}
+
+function checkContrastModePreference(){
+  if(localStorage.getItem("contrastMode") === "enabled"){
+    document.body.classList.add("contrast-mode");
+    contrastModeToggle.checked = true;
+  }
+}
+
 displayEmail();
+checkDarkModePreference();
+checkContrastModePreference();

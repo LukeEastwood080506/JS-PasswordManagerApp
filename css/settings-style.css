@@ -14,6 +14,110 @@ body {
     flex-direction: column;
 }
 
+/* Dark Mode Styles */
+.dark-mode{
+    background-color: #111111;
+    color: white;
+}
+
+.dark-mode .container{
+    background: linear-gradient(to bottom right, #333333, #222222);
+}
+
+.dark-mode .setting-box{
+    background: #333333;
+    color: white;
+    border: 1px solid #444;
+}
+
+.dark-mode .setting-content button{
+    color: white;
+    border: 2px solid white;
+}
+
+.dark-mode .setting-content button:hover{
+    background-color: #444;
+    transition: 0.3s ease-in-out;
+}
+
+.dark-mode nav,
+.dark-mode .footer{
+    background-color: #483d68;
+}
+
+/* Contrast Mode Styles */
+.contrast-mode {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.contrast-mode .container {
+    background: #000000;
+}
+
+.contrast-mode .setting-box {
+    background: #000000;
+    color: #ffffff;
+    border: 3px solid #ffff00;
+    box-shadow: none;
+}
+
+.contrast-mode .setting-title {
+    color: #ffff00;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+.contrast-mode .setting-content button {
+    color: #000000;
+    background-color: #ffff00;
+    border: 3px solid #ffff00;
+    font-weight: bold;
+}
+
+.contrast-mode .setting-content button:hover,
+.contrast-mode .setting-content button:focus {
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+    outline: 2px solid #00ffff;
+    transition: 0.3s ease-in-out;
+}
+
+.contrast-mode nav,
+.contrast-mode .footer {
+    background-color: #000000;
+    color: #ffff00;
+    border-bottom-color: #ffff00;
+    border-top-color: #ffff00;
+}
+
+.contrast-mode input:checked + .slider-round {
+    background-color: #ffff00;
+}
+
+.contrast-mode input:checked + .slider-round:before {
+    background-color: #000000;
+}
+
+.contrast-mode .slider-round {
+    background-color: #444444;
+    border: 2px solid #ffff00;
+}
+
+.contrast-mode a {
+    color: #00ffff;
+    text-decoration: underline;
+}
+
+.contrast-mode #email-display {
+    background-color: #222222;
+    padding: 10px;
+    border: 2px solid #ffff00;
+    border-radius: 5px;
+    box-shadow: none;
+}
+
 nav{
     position: fixed;
     top: 0;
