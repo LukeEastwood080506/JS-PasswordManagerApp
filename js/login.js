@@ -25,7 +25,6 @@ function submitLogin(){
         
         // Store the current user's email for use in other pages
         localStorage.setItem("currentUser", emailInput.value);
-        console.log(localStorage);
         
         // Add link to the home page upon completion.
         // window.location.href = "mainpg.html";

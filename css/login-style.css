@@ -1,5 +1,30 @@
 @import url('common.css');
 
+nav{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 60px;
+  background-color: #a58fcb;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid white;
+}
+
+nav a{
+  text-decoration: none;
+  font-family: "Poppins Regular";
+  font-size: 36px;
+  padding-right: 10px;
+  float: right;
+}
+
+nav a:hover{
+  transform: scale(1.05);
+  transition: 0.3s ease-in-out;
+}
+
 .container {
   width: 100%;
 }
@@ -133,6 +158,103 @@ input {
 
 .split-right a:hover {
   color: #ececec;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    color: white;
+}
+
+.dark-mode body {
+    background-color: #111;
+}
+
+.dark-mode .split-left {
+    background-color: #483d68;
+    border-right-color: #444;
+}
+
+.dark-mode .split-right {
+    background: linear-gradient(to bottom right, #333333, #222222);
+}
+
+.dark-mode .login-container {
+    background-color: #333333;
+    border-color: #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+}
+
+.dark-mode input {
+    background-color: #444;
+    color: white;
+    border: 1px solid #555;
+}
+
+.dark-mode #forgot-password-link {
+    color: #fff;
+}
+
+.dark-mode nav {
+    background-color: #483d68;
+    border-bottom: 3px solid #444;
+}
+
+/* Contrast Mode Styles */
+.contrast-mode body {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.contrast-mode .split-left {
+    background-color: #000000;
+    border-right: 3px solid #ffff00;
+}
+
+.contrast-mode .split-right {
+    background: #000000;
+}
+
+.contrast-mode .login-container {
+    background-color: #000000;
+    color: #ffffff;
+    border: 3px solid #ffff00;
+    box-shadow: none;
+}
+
+.contrast-mode input {
+    background-color: #222;
+    color: white;
+    border: 2px solid #ffff00;
+}
+
+.contrast-mode #forgot-password-link {
+    color: #00ffff;
+    text-decoration: underline;
+}
+
+.contrast-mode button {
+    color: #000000 !important;
+    background-color: #ffff00 !important;
+    border: 3px solid #ffff00 !important;
+}
+
+.contrast-mode button:hover {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #ffffff !important;
+}
+
+.contrast-mode nav {
+    background-color: #000000;
+    border-bottom: 3px solid #ffff00;
+}
+
+.contrast-mode h1, .contrast-mode h2, .contrast-mode h3 {
+    color: #ffff00;
+}
+
+.contrast-mode a {
+    color: #00ffff;
 }
 
 /* Responsive adjustments */

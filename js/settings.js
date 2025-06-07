@@ -2,6 +2,19 @@ const emailText = document.getElementById("email-display");
 const darkModeToggle = document.getElementById("dark-mode-toggle");
 const contrastModeToggle = document.getElementById("contrast-mode-toggle");
 
+function decideRedirect(){
+  // Check if the user is logged in
+  // If they are logged in the back button should redirect them to the main page.
+  // Else, redirect the user back to the login page.
+  const currentUser = retrieveEmail();
+  if(currentUser){
+    window.location.href = "mainpg.html";
+  }
+  else{
+    window.location.href = "loginpg.html";
+  }
+}
+
 function displayEmail() {
   const email = retrieveEmail();
   if (email) {
@@ -12,9 +25,8 @@ function displayEmail() {
 }
 
 function retrieveEmail() {
-  // Get the current logged in user email and store it in session storage.
+  // Get the current logged in user email and store it in local storage.
   const userEmail = localStorage.getItem("currentUser");
-  localStorage.setItem("currentUser", userEmail);
   if (!userEmail) {
     return null;
   }
@@ -48,6 +60,7 @@ function changeEmail() {
     return;
   }
 
+  // Validation can be improved upon - only presuming a valid email address has been entered from the fact the input contains an @.
   while (!newEmail.includes("@")) {
     alert("You entered an invalid email address.");
     newEmail = prompt("Enter a valid email address.");
@@ -83,7 +96,6 @@ function changeMasterPassword() {
   // Retrieve current password from local storage to verify the currentPassword user input.
   const userJSON = localStorage.getItem(currentUser);
   const storedUserData = JSON.parse(userJSON);
-  console.log(storedUserData);
   // Flags if there is not stored user data or if the password stored in local storage is
   // not equal to the current password.
   if (!storedUserData || storedUserData.password !== currentPassword) {
@@ -160,58 +172,54 @@ function deleteAccount() {
 }
 
 function toggleDarkMode() {
-  let body = document.body;
-  
+  let rootElement = document.documentElement;
+
   // Check if contrast mode is active and disable it before toggling dark mode
-  if (body.classList.contains("contrast-mode")) {
-    body.classList.remove("contrast-mode");
+  if (rootElement.classList.contains("contrast-mode")) {
+    rootElement.classList.remove("contrast-mode");
     localStorage.setItem("contrastMode", "disabled");
     contrastModeToggle.checked = false;
   }
-  body.classList.toggle("dark-mode");
+  rootElement.classList.toggle("dark-mode");
 
   // Save enabled/disabled state to local storage.
-  if(body.classList.contains("dark-mode")){
+  if (rootElement.classList.contains("dark-mode")) {
     localStorage.setItem("darkMode", "enabled");
-  }
-  else{
+  } else {
     localStorage.setItem("darkMode", "disabled");
   }
 }
 
-function checkDarkModePreference(){
-  if(localStorage.getItem("darkMode") === "enabled"){
-    document.body.classList.add("dark-mode");
-    darkModeToggle.checked = true;
-  }
-}
+function toggleContrastMode() {
+  let rootElement = document.documentElement;
 
-function toggleContrastMode(){
-  let body = document.body;
-  
   // Check if dark mode is active and disable it before enabling contrast mode.
-  if (body.classList.contains("dark-mode")) {
-    body.classList.remove("dark-mode");
+  if (rootElement.classList.contains("dark-mode")) {
+    rootElement.classList.remove("dark-mode");
     localStorage.setItem("darkMode", "disabled");
     darkModeToggle.checked = false;
   }
-  body.classList.toggle("contrast-mode");
+  rootElement.classList.toggle("contrast-mode");
 
-  if(body.classList.contains("contrast-mode")){
+  if (rootElement.classList.contains("contrast-mode")) {
     localStorage.setItem("contrastMode", "enabled");
-  }
-  else{
+  } else {
     localStorage.setItem("contrastMode", "disabled");
   }
 }
 
-function checkContrastModePreference(){
-  if(localStorage.getItem("contrastMode") === "enabled"){
-    document.body.classList.add("contrast-mode");
-    contrastModeToggle.checked = true;
+function changeFontSize() {
+  const fontSize = prompt("Enter a font size:");
+  if (fontSize === null || isNaN(fontSize)) {
+    alert("Enter a valid font size!");
+    return;
   }
+  
+  // Store the font size preference in localStorage.
+  localStorage.setItem("fontSize", fontSize);
+
+  // Apply the font size to the root element of the document.
+  document.documentElement.style.fontSize = fontSize + "px";
 }
 
 displayEmail();
-checkDarkModePreference();
-checkContrastModePreference();
