@@ -46,7 +46,8 @@ nav a:hover{
 }
 
 .split-left h1 {
-  font-family: "Poppins Bold";
+  font-family: "Poppins";
+  font-weight: bold;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -84,7 +85,8 @@ nav a:hover{
 }
 
 .split-right h2 {
-  font-family: "Poppins Bold";
+  font-family: "Poppins";
+  font-weight: bold;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -103,7 +105,7 @@ nav a:hover{
 }
 
 input {
-  font-family: "Poppins Regular";
+  font-family: "Poppins";
   padding: 25px;
   font-size: 18px;
   border-radius: 45px;
@@ -119,11 +121,12 @@ input {
   text-align: left;
   padding-left: 70px;
   color: black;
-  font-family: "Poppins Regular";
+  font-family: "Poppins";
 }
 
 .login-container button {
-  font-family: "Poppins Bold";
+  font-family: "Poppins";
+  font-weight: bold;
   background-color: #a58fcb;
   color: white;
   border: black 2px solid;
@@ -143,7 +146,7 @@ input {
 .split-right h3,
 .split-right a {
   color: white;
-  font-family: "Poppins Regular";
+  font-family: "Poppins";
   font-size: 16px;
 }
 

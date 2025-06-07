@@ -7,6 +7,7 @@ function applyThemeSettings(){
     if(localStorage.getItem("contrastMode") === "enabled"){
         document.documentElement.classList.add("contrast-mode");
     }
+    // Applies selected font size to the elements on the page if a font size value was entered.
     const savedFontSize = localStorage.getItem("fontSize");
     if(savedFontSize){
         document.documentElement.style.fontSize = savedFontSize + "px";

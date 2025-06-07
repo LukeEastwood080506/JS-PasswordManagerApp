@@ -222,4 +222,22 @@ function changeFontSize() {
   document.documentElement.style.fontSize = fontSize + "px";
 }
 
+function restoreToggleStates(){
+  // Retrieve theme settings from localStorage.
+  // Boolean variables - returns true if the 'enabled' strings are stored in localStorage
+  // under the keys 'darkMode' and 'contrastMode'.
+  const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
+  const contrastModeEnabled = localStorage.getItem('contrastMode') === 'enabled';
+
+  // Set toggle states based on the current theme settings.
+  const darkModeToggle = document.getElementById('dark-mode-toggle');
+  const contrastModeToggle = document.getElementById('contrast-mode-toggle');
+
+  // Set the dark mode and contrast mode toggles
+  darkModeToggle.checked = darkModeEnabled;
+  contrastModeToggle.checked = contrastModeEnabled;
+
+}
+
+restoreToggleStates();
 displayEmail();
