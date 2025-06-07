@@ -4,10 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Really Good Password Manager Login</title>
+    <script src="../js/themeSettings.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/login-style.css" />
     <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
   </head>
   <body>
+    <nav>
+      <a href="settingspg.html" class="navbar-items">⚙️</a>
+    </nav>
     <div class="container">
       <div class="split-left">
         <img src="../assets/site-icon.png" alt="pmicon" class="logo" />
@@ -23,12 +27,14 @@
             autocomplete="off"
           />
           <input
-            type="text"
+            type="password"
             id="password-input"
             placeholder="Password:"
             autocomplete="off"
           />
-          <a href="forgot+resetpasswordpg.html" id="forgot-password-link">Forgot Password?</a>
+          <a href="forgot+resetpasswordpg.html" id="forgot-password-link"
+            >Forgot Password?</a
+          >
           <button onclick="submitLogin()">Login</button>
         </div>
         <h3>Don't have an account? <a href="signuppg.html">Sign Up</a></h3>

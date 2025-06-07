@@ -1,0 +1,332 @@
+@import url('common.css');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dark Mode Styles */
+.dark-mode{
+    background-color: #111111;
+    color: white;
+}
+
+.dark-mode .container{
+    background: linear-gradient(to bottom right, #333333, #222222);
+}
+
+.dark-mode .setting-box{
+    background: #333333;
+    color: white;
+    border: 1px solid #444;
+}
+
+.dark-mode .setting-content button{
+    color: white;
+    border: 2px solid white;
+}
+
+.dark-mode .setting-content button:hover{
+    background-color: #444;
+    transition: 0.3s ease-in-out;
+}
+
+.dark-mode nav,
+.dark-mode .footer{
+    background-color: #483d68;
+}
+
+/* Contrast Mode Styles */
+.contrast-mode {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.contrast-mode .container {
+    background: #000000;
+}
+
+.contrast-mode .setting-box {
+    background: #000000;
+    color: #ffffff;
+    border: 3px solid #ffff00;
+    box-shadow: none;
+}
+
+.contrast-mode .setting-title {
+    color: #ffff00;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+.contrast-mode .setting-content button {
+    color: #000000;
+    background-color: #ffff00;
+    border: 3px solid #ffff00;
+    font-weight: bold;
+}
+
+.contrast-mode .setting-content button:hover,
+.contrast-mode .setting-content button:focus {
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+    outline: 2px solid #00ffff;
+    transition: 0.3s ease-in-out;
+}
+
+.contrast-mode nav,
+.contrast-mode .footer {
+    background-color: #000000;
+    color: #ffff00;
+    border-bottom-color: #ffff00;
+    border-top-color: #ffff00;
+}
+
+.contrast-mode input:checked + .slider-round {
+    background-color: #ffff00;
+}
+
+.contrast-mode input:checked + .slider-round:before {
+    background-color: #000000;
+}
+
+.contrast-mode .slider-round {
+    background-color: #444444;
+    border: 2px solid #ffff00;
+}
+
+.contrast-mode a {
+    color: #00ffff;
+    text-decoration: underline;
+}
+
+.contrast-mode #email-display {
+    background-color: #222222;
+    padding: 10px;
+    border: 2px solid #ffff00;
+    border-radius: 5px;
+    box-shadow: none;
+}
+
+nav{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    height: 60px;
+    background-color: #a58fcb;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 3px solid white;
+}
+
+nav img{
+    width: 65px;
+    height: auto;
+    padding-top: 5px;
+    padding-left: 20px;
+    object-fit: contain;
+}
+
+.container{
+    flex: 1;
+    min-height: 100vh;
+    padding: 0 15px 130px;
+    background: linear-gradient(to bottom right, #b3a4d7, #6254a8);
+    position: relative;
+}
+
+.container h1{
+    font-family: "Poppins Bold";
+    color: white;
+    text-align: center;
+    font-size: 2.5rem;
+    padding-top: 120px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.setting-box{
+    font-family: "Poppins Regular";
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px 20px;
+    text-align: center;
+    color: black;
+    background: #e6e6e6;
+    position: relative;
+    border-radius: 25px;
+    display: block;
+    width: 90%;
+    max-width: 750px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    margin-bottom: 30px;
+}
+
+.setting-title{
+    font-family: "Poppins Bold";
+    text-decoration: underline;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.setting-content p{
+    font-size: 1rem;
+    margin: 10px 0;
+}
+
+#email-display{
+    padding-bottom: 20px;
+    word-break: break-word;
+}
+
+.setting-content button{
+    background-color: transparent;
+    color: black;
+    border: 2px solid black;
+    display: block;
+    width: 80%;
+    max-width: 300px;
+    margin: 20px auto;
+    padding: 12px 20px;
+    font-size: 1rem;
+}
+
+.setting-content button:hover{
+    background-color: white;
+    transition: 0.3s ease-in-out;
+}
+
+.switch-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.switch{
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-bottom: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-round {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider-round:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider-round {
+    background-color: #6254a8;
+}
+
+input:checked + .slider-round:before {
+    transform: translateX(26px);
+}
+
+.switch-label {
+    margin-right: 0;
+}
+
+.footer{
+    border-top: 3px solid white;
+    color: white;
+    font-family: "Poppins Bold";
+    background-color: #a58fcb;
+    text-align: center;
+    padding: 25px 15px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+}
+
+/* Media Queries for Responsive Design */
+@media screen and (max-width: 768px) {
+    .container h1 {
+        font-size: 2rem;
+        padding-top: 70px;
+    }
+    
+    .setting-box {
+        width: 95%;
+        padding: 25px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .setting-title {
+        font-size: 1.3rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    nav img {
+        width: 50px;
+        padding-left: 10px;
+    }
+    
+    .container h1 {
+        font-size: 1.7rem;
+        padding-top: 65px;
+    }
+    
+    .setting-title {
+        font-size: 1.2rem;
+    }
+    
+    .setting-content p {
+        font-size: 0.9rem;
+    }
+    
+    .setting-content button {
+        width: 90%;
+        padding: 10px 15px;
+    }
+    
+    .footer {
+        padding: 20px 10px;
+        font-size: 0.9rem;
+    }
+    
+    .container {
+        padding-bottom: 100px;
+    }
+}
