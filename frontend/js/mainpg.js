@@ -24,13 +24,13 @@ const PAGE_MAPPING = {
   "menu-option-recyclebin": "recyclebin-page",
 };
 
-function checkLoggedIn() {
-  if (sessionStorage.getItem("isLoggedIn") === "true") {
-    initializeApp();
-  } else {
-    window.location.href = "loginpg.html";
-  }
-}
+// function checkLoggedIn() {
+//   if (sessionStorage.getItem("isLoggedIn") === "true") {
+//     initializeApp();
+//   } else {
+//     window.location.href = "loginpg.html";
+//   }
+// }
 
 function initializeApp() {
   try {
@@ -236,4 +236,4 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
-window.addEventListener("load", checkLoggedIn);
+// window.addEventListener("load", checkLoggedIn);
