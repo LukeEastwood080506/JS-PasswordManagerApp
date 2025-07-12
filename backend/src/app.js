@@ -15,7 +15,7 @@ app.use(express.json());
 // Test route
 app.get("/", (request, response) => {
   response.json({
-    message: "Password Manager Backend Running",
+    message: "Password Manager Backend Operational!",
   });
 });
 
@@ -26,5 +26,5 @@ const passwordRoute = require("./routes/password");
 app.use("/password", passwordRoute);
 
 app.listen(port, () => {
-  console.log("Password Manager Backend Running!");
+  console.log("Password Manager Backend Operational!");
 });
