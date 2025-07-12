@@ -1,5 +1,4 @@
 const sqlite3 = require("sqlite3").verbose();
-const { table } = require("console");
 const path = require("path");
 let sql;
 
@@ -9,7 +8,7 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     return console.error(err.message);
   }
-  return console.log("Database Setup Successful");
+  return console.log("Backend Database Operational!");
 });
 
 // Create table
@@ -41,7 +40,12 @@ db.all(sql, [], (err, rows) => {
 
 // Drop table
 // sql = `DROP TABLE users`;
-// db.run(sql);
+// db.run(sql, (err) =>{
+//   if(err){
+//     return console.error(err.message);
+//   }
+//   return console.log("Table dropped successfully!");
+// });
 
 // Exports the db object
 module.exports = db;
