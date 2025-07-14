@@ -22,8 +22,8 @@ app.get("/", (request, response) => {
 // Import routes
 const userRoute = require("./routes/users");
 app.use("/users", userRoute);
-const passwordRoute = require("./routes/password");
-app.use("/password", passwordRoute);
+const passwordRoute = require("./routes/passwords");
+app.use("/passwords", passwordRoute);
 
 app.listen(port, () => {
   console.log("Password Manager Backend Operational!");

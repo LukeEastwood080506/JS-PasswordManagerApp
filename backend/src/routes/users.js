@@ -18,7 +18,7 @@ function routeCheckHandler(routeName){
         });
       }
       response.status(401).json({
-        message: `The users/${routeName} route and the password manager backend database are running`
+        message: `The users/${routeName} route and the password manager backend database are operational!`
       });
     });
   }
@@ -27,6 +27,31 @@ function routeCheckHandler(routeName){
 // GET, POST, PUT, DELETE requests etc.
 router.get("/login", routeCheckHandler("login"));
 router.get("/signup", routeCheckHandler("signup"));
+
+router.get("/all", (request, response) =>{
+  console.log("GET request to", request.url);
+  sql = `SELECT * FROM users`;
+  db.get(sql, [], (err, row) =>{
+    if(err){
+      console.log(err);
+      return response.status(400).json({
+        success: false,
+        message: "Database Error"
+      });
+    }
+    if(!row){
+      // No records in database
+      return response.status(401).json({
+        success: false,
+        message: "No user records stored in database"
+      });
+    }
+    return response.status(200).json({
+      success: true,
+      message: row
+    });
+  });
+});
 
 // POST request for login
 router.post("/login", (request, response) => {
@@ -45,7 +70,6 @@ router.post("/login", (request, response) => {
   sql = `SELECT * FROM users WHERE email = ?`;
   db.get(sql, [email], (err, row) =>{
     if(err){
-      console.log(err);
       return response.status(400).json({
         success: false,
         message: "Database Error"
