@@ -14,8 +14,47 @@ class Account {
   }
 }
 
-function save() {
-  localStorage.setItem("accounts", JSON.stringify(accounts));
+function save(service, email, password) {
+  fetch("http://localhost:6969/passwords/new", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ service, email, password }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Password created and added to vault successfully!");
+      } else {
+        alert(data.message || "Password Creation Unsuccessful!");
+      }
+    })
+    .catch((error) => {
+      alert(error.message);
+    });
+}
+
+function deleteAccount(service, email, password) {
+  fetch("http://localhost:6969/passwords/delete", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ service, email, password }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Password deleted from vault successfully!");
+        refreshDiv(service, email);
+      } else {
+        alert(data.message || "Password Deletion Unsuccessful!");
+      }
+    })
+    .catch((error) => {
+      alert(error.message);
+    });
 }
 
 const PAGE_MAPPING = {
@@ -51,6 +90,16 @@ function initializeApp() {
   }
 
   loadPage(currentPage, currentPageOption);
+  fillAccounts();
+}
+
+function refreshDiv(service, email) {
+  for (let i = 0; i < accounts.length; i++) {
+    if (accounts[i].service === service && accounts[i].email === email) {
+      accounts.splice(i, 1);
+      break;
+    }
+  }
   fillAccounts();
 }
 
@@ -152,8 +201,10 @@ function addAccount() {
   const editButton = accountClone.querySelector(".edit-icon");
   const deleteButton = accountClone.querySelector(".delete-icon");
 
-  editButton.addEventListener("click", () => editAccount(index));
-  deleteButton.addEventListener("click", () => deleteAccount(index));
+  editButton.addEventListener("click", () => editAccount());
+  deleteButton.addEventListener("click", () => {
+    deleteAccount(service, email, password)
+  });
 
   document.getElementById("accounts-section").appendChild(accountClone);
 
@@ -161,11 +212,11 @@ function addAccount() {
   hideModal();
 
   console.log("New account added:", newAccount);
-  save();
+  save(service, email, password);
 }
 
 function fillAccounts() {
-  const accountsContainer = document.getElementById("myvault-page");
+  const accountsContainer = document.getElementById("accounts-section");
 
   const existingAccounts = accountsContainer.querySelectorAll(
     ".account:not(#account)"
@@ -193,7 +244,9 @@ function fillAccounts() {
     if (editButton)
       editButton.addEventListener("click", () => editAccount(index));
     if (deleteButton)
-      deleteButton.addEventListener("click", () => deleteAccount(index));
+      deleteButton.addEventListener("click", () => {
+        deleteAccount(account.service, account.email, account.password);
+      });
 
     accountsContainer.appendChild(accountClone);
   });
