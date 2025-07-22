@@ -26,7 +26,7 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //     return console.error(err.message);
 //   }
 //   return console.log("Passwords table created successfully!");
-// })
+// });
 
 // Add data to table
 // sql = `INSERT INTO users(email, password) VALUES (?,?)`;
