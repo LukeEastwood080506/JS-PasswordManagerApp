@@ -20,7 +20,7 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //     return console.log("Users table created successfully!");
 // });
 
-// sql = `CREATE table passwords(id INTEGER PRIMARY KEY,service TEXT NOT NULL,email TEXT NOT NULL UNIQUE,password TEXT NOT NULL)`;
+// sql = `CREATE table passwords(id INTEGER PRIMARY KEY,service TEXT NOT NULL,email TEXT NOT NULL,password TEXT NOT NULL, UNIQUE(email, service))`;
 // db.run(sql, err =>{
 //   if(err){
 //     return console.error(err.message);

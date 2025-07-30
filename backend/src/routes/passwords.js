@@ -31,7 +31,7 @@ router.get("/all", (request, response) =>{
     if(err){
       return response.status(400).json({
         success: false,
-        message: "Database Error"
+        message: "Database Error: " + err.message
       });
     }
     response.json({
@@ -58,15 +58,15 @@ router.post("/show", (request, response) =>{
     });
   }
   sql = `SELECT password FROM passwords WHERE service = ? AND email = ?`;
-  db.get(sql, [service, email], (err, rows) =>{
+  db.get(sql, [service, email], (err, row) =>{
     if(err){
       console.error(err.message);
       return response.status(400).send({
         success: false,
-        message: "Database Error"
+        message: "Database Error: " + err.message
       });
     }
-    if(!rows){
+    if(!row){
       // No password record found to display.
       return response.status(401).send({
         success: false,
@@ -76,7 +76,7 @@ router.post("/show", (request, response) =>{
     // Password record found.
     return response.status(200).send({
       success: true,
-      message: password
+      message: row.password
     });
   }); 
 })
@@ -99,7 +99,7 @@ router.post("/new", (request, response) => {
       console.error(err.message);
       return response.status(400).send({
         success: false,
-        message: "Database Error",
+        message: "Database Error: " + err.message,
       });
     }
     return response.status(200).send({
@@ -133,7 +133,7 @@ router.post("/edit", (request, response) => {
     if(err){
       return response.status(400).json({
         success: false,
-        message: "Database Error"
+        message: "Database Error: " + err.message
       });
     }
     if(!row){
@@ -158,7 +158,7 @@ router.post("/edit", (request, response) => {
       if(err){
         return response.status(400).json({
           success: false,
-          message: "Database Error"
+          message: "Database Error: " + err.message
         });
       }
       // Password record edited successfully.
@@ -190,7 +190,7 @@ router.post("/delete", (request, response) => {
     if (err) {
       return response.status(400).json({
         success: false,
-        message: "Database Error",
+        message: "Database Error: " + err.message,
       });
     }
     if (!row) {
@@ -201,7 +201,7 @@ router.post("/delete", (request, response) => {
     }
     // Retrieve the hashed password
     const hashedPassword = row.password;
-    const isMatch = bcrypt.compareSync(password, hashedPassword);
+    const isMatch = password === hashedPassword;
     if (!isMatch) {
       return response.status(401).json({
         success: false,
@@ -214,7 +214,7 @@ router.post("/delete", (request, response) => {
       if (err) {
         return response.status(400).send({
           success: false,
-          message: "Database Error!",
+          message: "Database Error!: " + err.message,
         });
       }
       return response.status(200).send({
