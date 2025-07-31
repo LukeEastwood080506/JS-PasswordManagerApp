@@ -318,6 +318,10 @@ hr{
     outline-offset: 2px;
 }
 
+#edit-password-modal-content{
+    margin: 3% auto;
+}
+
 .modal-add-button{
     margin-top: 20px;
     border: none;
