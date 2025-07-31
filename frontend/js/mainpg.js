@@ -24,8 +24,6 @@ const modalAddPasswordBtn = document.getElementById("modal-add-button");
 const addModalCloseButton = document.getElementById("add-close-button");
 const editModalCloseButton = document.getElementById("edit-close-button");
 
-const passwordVisibilityIcon = document.querySelector(".view-password-icon");
-
 const PAGE_MAPPING = {
   "myvault-link": "myvault-page",
   "generator-link": "generator-page",
@@ -63,7 +61,9 @@ function fillAccounts() {
   const template = document.querySelector(".account.template");
 
   // Clear existing accounts
-  const existingAccounts = accountsContainer.querySelectorAll(".account:not(.template)");
+  const existingAccounts = accountsContainer.querySelectorAll(
+    ".account:not(.template)"
+  );
   existingAccounts.forEach((acc) => acc.remove());
 
   accounts.forEach((account) => {
@@ -79,113 +79,143 @@ function fillAccounts() {
     // Fill data
     clone.querySelector(".account-service").textContent = account.service;
     clone.querySelector(".account-email").textContent = account.email;
+
+    const viewIcon = clone.querySelector(".view-password-icon");
     const passwordElement = clone.querySelector(".account-display-password");
 
-    clone.querySelector(".view-password-icon").addEventListener("click", () => {
-      showPassword(account.service, account.email, account.password);
+    viewIcon.addEventListener("click", async () => {
+      await togglePassword(viewIcon, passwordElement, account);
     });
 
     clone.querySelector(".edit-password-icon").addEventListener("click", () => {
       showEditModal(account);
     });
 
-    clone.querySelector(".delete-password-icon").addEventListener("click", () => {
-      deleteAccount(account.service, account.email, account.password);
-    });
+    clone
+      .querySelector(".delete-password-icon")
+      .addEventListener("click", () => {
+        deleteAccount(account.service, account.email, account.password);
+      });
 
     accountsContainer.appendChild(clone);
   });
 }
 
+function handleAccountSubmit(isEditMode) {
+  // console.log("isEditMode: ", isEditMode);
+  if (!isEditMode) {
+    const service = document.getElementById("add-service-input").value.trim();
+    const email = document.getElementById("add-email-input").value.trim();
+    const password = document.getElementById("add-password-input").value.trim();
 
-function handleAccountSubmit() {
-  const service = document.getElementById("add-service-input").value.trim();
-  const email = document.getElementById("add-email-input").value.trim();
-  const password = document.getElementById("add-password-input").value.trim();
+    if (!service || !email || !password) {
+      alert("Please fill in all fields");
+      return;
+    }
 
-  if (!service || !email || !password) {
-    alert("Please fill in all fields");
-    return;
-  }
-
-  if (isEditMode && originalAccount) {
-    // Send to edit route
-    fetch("http://localhost:6969/passwords/edit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        originalService: originalAccount.service,
-        originalEmail: originalAccount.email,
-        originalPassword: originalAccount.password,
-        newService: service,
-        newEmail: email,
-        newPassword: password,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          alert("Password updated successfully!");
-          // Update local array
-          const idx = accounts.findIndex(
-            (a) =>
-              a &&
-              a.service === originalAccount.service &&
-              a.email === originalAccount.email
-          );
-          if (idx !== -1) {
-            accounts[idx] = new Account(service, email, password);
-          }
-          fillAccounts();
-        } else {
-          alert(data.message || "Password record could not be edited");
-        }
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
-  } else {
     const newAccount = new Account(service, email, password);
     accounts.push(newAccount);
     fillAccounts();
     save(service, email, password);
+
+  } else {
+    const service = document.getElementById("edit-service-input").value.trim();
+    const email = document.getElementById("edit-email-input").value.trim();
+    const password = document.getElementById("edit-password-input").value.trim();
+    const currentPassword = document.getElementById("edit-current-password-input").value.trim();
+
+    if (!service || !email || !password || !currentPassword) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (originalAccount) {
+      fetch("http://localhost:6969/passwords/edit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          originalService: originalAccount.service,
+          originalEmail: originalAccount.email,
+          originalPassword: currentPassword,
+          newService: service,
+          newEmail: email,
+          newPassword: password,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert("Credentials for website/app updated successfully!");
+            // Update local array
+            const idx = accounts.findIndex(
+              (a) =>
+                a &&
+                a.service === originalAccount.service &&
+                a.email === originalAccount.email
+            );
+            if (idx !== -1) {
+              accounts[idx] = new Account(service, email, password);
+            }
+            fillAccounts();
+          } else {
+            alert(data.message || "Credentials could not be edited");
+          }
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
+    }
   }
   isEditMode = false;
   originalAccount = null;
   hideAddModal();
-  clearAddModalInputs();
+  hideEditModal();
+  clearModalInputs();
 }
 
-function showPassword(service, email, password) {
-  fetch("http://localhost:6969/passwords/show", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ service, email, password }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        alert("Password has been displayed!");
-        const passwordElement = document.querySelector(".account-display-password");
-        if (passwordElement) {
-          passwordElement.textContent = data.message;
-          passwordElement.style.display = "block";
-        }
-      } else {
-        alert(data.message || "Password cannot be displayed");
-      }
-    })
-    .catch((error) => {
-      alert(error.message);
+async function togglePassword(iconElement, passwordElement, account) {
+  // Sets a data attribute.
+  const isVisible = passwordElement.dataset.visible === "true";
+
+  if (isVisible) {
+    // Hide password on password record tile.
+    passwordElement.style.display = "none";
+    passwordElement.textContent = "password";
+    passwordElement.dataset.visible = "false";
+    iconElement.src = "../assets/eye-crossed-icon.svg";
+    alert("Password has been hidden!");
+    return;
+  }
+
+  // Show password on password record tile.
+  try {
+    const response = await fetch("http://localhost:6969/passwords/show", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service: account.service,
+        email: account.email,
+        password: account.password,
+      }),
     });
-}
+    const data = await response.json();
 
-function alternateEyeIcons(){
-  passwordVisibilityIcon.src = "eye-icon.svg";
+    if (data.success) {
+      // Changes the textContent of the password element to the password and displays the password element.
+      // Changes the icon to the regular eye icon.
+      alert("Password has been displayed");
+      passwordElement.textContent = data.message;
+      passwordElement.style.display = "block";
+      passwordElement.dataset.visible = "true";
+      iconElement.src = "../assets/eye-icon.svg";
+    } else {
+      alert(data.message || "Password cannot be displayed");
+    }
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
 function save(service, email, password) {
@@ -199,7 +229,7 @@ function save(service, email, password) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Password created and added to vault successfully!");
+        alert("Password record created and added to vault successfully!");
       } else {
         alert(data.message || "Password Creation Unsuccessful!");
       }
@@ -220,7 +250,7 @@ function deleteAccount(service, email, password) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Password deleted from vault successfully!");
+        alert("Password record deleted from vault successfully!");
         refreshDiv(service, email);
       } else {
         alert(data.message || "Password Deletion Unsuccessful!");
@@ -284,7 +314,7 @@ function refreshDiv(service, email) {
 
 /* Add Modal Methods */
 function showAddModal() {
-  clearAddModalInputs();
+  clearModalInputs();
   document.getElementById("modal-title").textContent = "Add New Password";
   modalAddPasswordBtn.innerHTML = `<span class="plus">+</span><span>Add</span>`;
   addPasswordModal.style.display = "block";
@@ -294,15 +324,21 @@ function hideAddModal() {
   addPasswordModal.style.display = "none";
 }
 
-function clearAddModalInputs() {
+function clearModalInputs() {
+  // Clears add modal inputs.
   document.getElementById("add-service-input").value = "";
   document.getElementById("add-email-input").value = "";
   document.getElementById("add-password-input").value = "";
+  // Clears edit modal inputs.
+  document.getElementById("edit-service-input").value = "";
+  document.getElementById("edit-email-input").value = "";
+  document.getElementById("edit-password-input").value = "";
+  document.getElementById("edit-current-password-input").value = "";
 }
 
 /* Edit Modal Methods */
-function showEditModal(account){
-  if(!account){
+function showEditModal(account) {
+  if (!account) {
     return;
   }
   originalAccount = account;
@@ -326,8 +362,8 @@ if (addModalCloseButton) {
   addModalCloseButton.addEventListener("click", hideAddModal);
 }
 
-if(passwordVisibilityIcon){
-  passwordVisibilityIcon.addEventListener("click", alternateEyeIcons)
+if (editModalCloseButton) {
+  editModalCloseButton.addEventListener("click", hideEditModal);
 }
 
 window.addEventListener("click", (event) => {
@@ -336,10 +372,17 @@ window.addEventListener("click", (event) => {
   }
 });
 
-document.querySelector(".pass-inputs").addEventListener("submit", (e) =>{
+document.querySelector(".add-pass-inputs").addEventListener("submit", (e) => {
   e.preventDefault();
-  handleAccountSubmit();
-})
+  isEditMode = false;
+  handleAccountSubmit(isEditMode);
+});
+
+document.querySelector(".edit-pass-inputs").addEventListener("submit", (e) => {
+  e.preventDefault();
+  isEditMode = true;
+  handleAccountSubmit(isEditMode);
+});
 
 document.addEventListener("keydown", function (event) {
   const activeElement = document.activeElement;

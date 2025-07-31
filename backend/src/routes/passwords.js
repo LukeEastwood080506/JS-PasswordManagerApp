@@ -143,6 +143,8 @@ router.post("/edit", (request, response) => {
       });
     }
     // Confirm its the right record by comparing the hash of the originalPassword with the hashed password stored in the database.
+    console.log("Original Password: ", originalPassword);
+    console.log("Password in database: ", row.password);
     const isRecord = bcrypt.compareSync(originalPassword, row.password);
     if(!isRecord){
       return response.status(401).json({
@@ -168,7 +170,6 @@ router.post("/edit", (request, response) => {
       });
     });
   });
-
 });
 
 router.post("/delete", (request, response) => {

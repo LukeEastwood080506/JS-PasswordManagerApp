@@ -90,7 +90,7 @@
             <div class = "password-modal-content" id = "add-password-modal-content">
                 <button class = "close" id = "add-close-button">&times;</button>
                 <h2 id = "modal-title">Add New Password</h2>
-                <form class = "pass-inputs" > <!--Add onsubmit methods here-->
+                <form class = "add-pass-inputs" >
                     <div class = "form-input">
                         <label for = "add-service-input">Service:</label>
                         <input type = "text" class = "add-service-input" id = "add-service-input" placeholder="Enter service..." required>
@@ -115,7 +115,7 @@
             <div class = "password-modal-content" id = "edit-password-modal-content">
                 <button class = "close" id = "edit-close-button">&times;</button>
                 <h2 id = "edit-modal-title">Edit Password</h2>
-                <form class = "pass-inputs"> <!--Add onsubmit methods here-->
+                <form class = "edit-pass-inputs">
                     <div class = "form-input">
                         <label for = "edit-service-input">Service:</label>
                         <input type = "text" class = "edit-service-input" id = "edit-service-input" placeholder="Edit service..." required>
@@ -127,6 +127,10 @@
                     <div class = "form-input">
                         <label for = "edit-password-input">Password:</label>
                         <input type = "password" class = "edit-password-input" id = "edit-password-input" placeholder="Edit password..." required>
+                    </div>
+                    <div class = "form-input">
+                        <label for = "edit-current-password-input">Current Password:</label>
+                        <input type = "password" id = "edit-current-password-input" placeholder = "Enter current password to confirm edit:">
                     </div>
                     <button type = "submit" class = "modal-edit-button" id = "modal-edit-button">
                         <span class = "update">✐</span>
@@ -142,7 +146,7 @@
             <p class = "account-email" id = "account-email">Email</p>
             <div class = "account-options" id = "account-options">
                 <p class = "account-display-password" id = "account-password" style = "display: none;">password</p>
-                <img src = "../assets/eye-crossed-icon.svg" class = "view-password-icon" id = "view-password-icon">
+                <img src = "../assets/eye-crossed-icon.svg" class = "view-password-icon">
                 <img src = "../assets/edit-icon.svg" class = "edit-password-icon" id = "edit-password-icon">
                 <img src = "../assets/bin-icon.svg" class = "delete-password-icon" id = "delete-password-icon">
             </div>
