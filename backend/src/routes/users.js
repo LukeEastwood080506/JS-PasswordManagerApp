@@ -8,7 +8,7 @@ let sql;
 // Reusable route check handler method.
 function routeCheckHandler(routeName){
   return (request, response) =>{
-    console.log("GET request to", request.url);
+    console.log(`GET request to /users${request.url}`);
     db.get("SELECT 1", [], (err) =>{
       if(err){
         console.error("Database is not working (", err.message, ")");
@@ -29,7 +29,7 @@ router.get("/login", routeCheckHandler("login"));
 router.get("/signup", routeCheckHandler("signup"));
 
 router.get("/all", (request, response) =>{
-  console.log("GET request to", request.url);
+  console.log(`GET request to /users${request.url}`);
   sql = `SELECT * FROM users`;
   db.get(sql, [], (err, row) =>{
     if(err){
@@ -55,7 +55,7 @@ router.get("/all", (request, response) =>{
 
 // POST request for login
 router.post("/login", (request, response) => {
-  console.log("POST request to", request.url);
+  console.log(`POST request to /users${request.url}`);
   const { email, password } = request.body;
   // Check if an email and password exist in the request body.
   if (!email || !password) {
@@ -101,7 +101,7 @@ router.post("/login", (request, response) => {
 
 // POST request for sign-up
 router.post("/signup", (request, response) => {
-  console.log("POST request for", request.url);
+  console.log(`POST request to /users${request.url}`);
   const { email, password } = request.body;
   // Check if an email and password exist in the request body.
   if (!email || !password) {

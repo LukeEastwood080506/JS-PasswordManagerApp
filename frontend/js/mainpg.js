@@ -1,6 +1,7 @@
 let currentPageOption = "myvault-link";
 let currentPage = "myvault-page";
 let accounts = [];
+let deletedAccounts = [];
 
 let isEditMode = false;
 let originalAccount = null;
@@ -11,6 +12,14 @@ class Account {
     this.service = service;
     this.email = email;
     this.password = password;
+  }
+}
+
+// deletedAccount class for recycle bin
+class deletedAccount {
+  constructor(deletedService, deletedEmail) {
+    this.deletedService = deletedService;
+    this.deletedEmail = deletedEmail;
   }
 }
 
@@ -31,7 +40,8 @@ const PAGE_MAPPING = {
 };
 
 function initialiseApp() {
-  console.log("Accounts: ", accounts);
+  // console.log("Accounts: ", accounts);
+  // Fetch stored passwords.
   fetch("http://localhost:6969/passwords/all")
     .then((response) => response.json())
     .then((data) => {
@@ -52,6 +62,32 @@ function initialiseApp() {
     .catch((err) => {
       alert("Error fetching passwords: ", err);
       console.error("Error fetching passwords:", err);
+    });
+  // Fetch deleted passwords for recycle bin.
+  fetch("http://localhost:6969/deletedPasswords/all")
+    .then((response) => response.json())
+    .then((data) => {
+      // console.log("Deleted passwords data:", data);
+      if (data.success) {
+        data.data.forEach((deletedAcc) => {
+          if (deletedAcc && deletedAcc.deletedService && deletedAcc.deletedEmail) {
+            const existing = deletedAccounts.find(
+              (da) =>
+                da.service === deletedAcc.deletedService &&
+                da.email === deletedAcc.deletedEmail
+            );
+            deletedAccounts.push(deletedAcc);
+          }
+        });
+        // Call function to fill deleted accounts on the recycle bin page.
+        fillDeletedAccounts();
+      } else {
+        console.error("Failed to load deleted passwords from backend");
+      }
+    })
+    .catch((err) => {
+      alert("Error fetching deleted passwords: ", err);
+      console.error("Error fetching deleted passwords:", err);
     });
   loadPage(currentPage, currentPageOption);
 }
@@ -101,6 +137,56 @@ function fillAccounts() {
   });
 }
 
+function fillDeletedAccounts() {
+  // console.log("Running fillDeletedAccounts, current deletedAccounts:", deletedAccounts);
+  const deletedAccountsContainer = document.getElementById(
+    "deleted-passwords-records-section"
+  );
+  const template = document.querySelector(".recyclebin.template");
+  // Clear existing accounts
+  const existingAccounts = deletedAccountsContainer.querySelectorAll(
+    ".recyclebin:not(.template)"
+  );
+  existingAccounts.forEach((acc) => acc.remove());
+
+  deletedAccounts.forEach((dacc) => {
+    if (!dacc?.deletedService || !dacc?.deletedEmail) {
+      console.warn("Invalid account skipped:", dacc);
+      return;
+    }
+
+    const clone = template.cloneNode(true);
+    clone.classList.remove("template");
+    clone.style.display = "flex";
+
+    // Fill data
+    clone.querySelector(".recycled-service").textContent = dacc.deletedService;
+    clone.querySelector(".recycled-email").textContent = dacc.deletedEmail;
+
+    const restoreIcon = clone.querySelector(".restore-password-icon");
+    const permaDeleteIcon = clone.querySelector(".permenant-delete-icon");
+
+    restoreIcon.addEventListener("click", () => {
+      alert("Restore icon clicked");
+    });
+
+    permaDeleteIcon.addEventListener("click", () => {
+      alert("permaDelete icon clicked");
+    });
+
+    deletedAccountsContainer.appendChild(clone);
+  });
+}
+
+function recycleBin(deletedService, deletedEmail) {
+  // console.log("Recycle bin function ran!");
+  return fetch("http://localhost:6969/deletedPasswords/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ deletedService, deletedEmail }),
+  }).then((response) => response.json());
+}
+
 function handleAccountSubmit(isEditMode) {
   // console.log("isEditMode: ", isEditMode);
   if (!isEditMode) {
@@ -117,12 +203,15 @@ function handleAccountSubmit(isEditMode) {
     accounts.push(newAccount);
     fillAccounts();
     save(service, email, password);
-
   } else {
     const service = document.getElementById("edit-service-input").value.trim();
     const email = document.getElementById("edit-email-input").value.trim();
-    const password = document.getElementById("edit-password-input").value.trim();
-    const currentPassword = document.getElementById("edit-current-password-input").value.trim();
+    const password = document
+      .getElementById("edit-password-input")
+      .value.trim();
+    const currentPassword = document
+      .getElementById("edit-current-password-input")
+      .value.trim();
 
     if (!service || !email || !password || !currentPassword) {
       alert("Please fill in all fields");
@@ -252,6 +341,21 @@ function deleteAccount(service, email, password) {
       if (data.success) {
         alert("Password record deleted from vault successfully!");
         refreshDiv(service, email);
+        deletedAccounts.push({
+          service,
+          email,
+        });
+        recycleBin(service, email)
+          .then((data) => {
+            if (data.success) {
+              fillDeletedAccounts();
+            } else {
+              alert(data.message || "Recycle bin addition unsuccessful!");
+            }
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
       } else {
         alert(data.message || "Password Deletion Unsuccessful!");
       }
@@ -294,6 +398,10 @@ function changePage(pageOption) {
   // The current page becomes the page that is found in the page mapping object at the index of the page option.
   currentPage = PAGE_MAPPING[pageOption] || currentPage;
   loadPage(currentPage, currentPageOption);
+
+  if(pageOption === "recycle-bin-link"){
+    fillDeletedAccounts();
+  }
 }
 
 function logOut() {
