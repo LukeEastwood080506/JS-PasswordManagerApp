@@ -319,7 +319,12 @@ hr{
 }
 
 #edit-password-modal-content{
-    margin: 3% auto;
+    margin: 7% auto;
+}
+
+#modal-title,
+#edit-modal-title{
+    padding-bottom: 25px;
 }
 
 .modal-add-button{
@@ -359,7 +364,8 @@ hr{
     text-decoration: none;
 }
 
-.account{
+.account,
+.recyclebin{
     margin-top: 20px;
     padding: 20px 15px;
     background: white;
@@ -370,14 +376,17 @@ hr{
     height: 10%;
 }
 
-.account p{
+.account p,
+.recyclebin p{
+    color: black;
     justify-content: flex-start;
     font-size: 24px;
+    padding-bottom: 10px;
     margin-right: 20px;
-    margin: 0 20px 0 0;
 }
 
-.account img{
+.account img,
+.recyclebin img{
     width: 50px;
     height: 50px;
     object-fit: contain;
@@ -386,7 +395,8 @@ hr{
     margin-right: 20px;
 }
 
-.account-options{
+.account-options,
+.recycle-bin-options{
     display: flex;
     align-items: center;
     flex: 1;

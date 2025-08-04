@@ -7,9 +7,9 @@ const { route } = require("./users");
 let sql;
 
 // Reusable route check handler method.
-function routeCheckHandler(routeName) {
+function routeCheckHandler() {
   return (request, response) => {
-    console.log("GET request to", request.url);
+    console.log(`GET request to /passwords${request.url}`);
     db.get("SELECT 1", [], (err) => {
       if (err) {
         console.error("Database is not working (", err.message, ")");
@@ -25,64 +25,65 @@ function routeCheckHandler(routeName) {
   };
 }
 
-router.get("/all", (request, response) =>{
-  console.log("GET request to", request.url);
-  db.all("SELECT service, email, password FROM passwords", [], (err, rows) =>{
-    if(err){
+router.get("/all", (request, response) => {
+  console.log(`GET request to /passwords${request.url}`);
+  db.all("SELECT service, email, password FROM passwords", [], (err, rows) => {
+    if (err) {
       return response.status(400).json({
         success: false,
-        message: "Database Error: " + err.message
+        message: "Database Error: " + err.message,
       });
     }
-    response.json({
+    return response.status(200).send({
       success: true,
-      data: rows
+      data: rows,
     });
   });
-})
+});
 
 // GET, POST, PUT, DELETE requests etc.
-router.get("/", routeCheckHandler("passwords"));
-router.get("/show", routeCheckHandler("passwords/show"));
-router.get("/new", routeCheckHandler("passwords/new"));
-router.get("/edit", routeCheckHandler("passwords/edit"));
-router.get("/delete", routeCheckHandler("passwords/delete"));
+router.get("/", routeCheckHandler());
+router.get("/show", routeCheckHandler());
+router.get("/new", routeCheckHandler());
+router.get("/edit", routeCheckHandler());
+router.get("/delete", routeCheckHandler());
 
-router.post("/show", (request, response) =>{
-  console.log("POST request to", request.url);
-  const {service, email, password} = request.body;
-  if(!service || !email || !password){
+router.post("/show", (request, response) => {
+  console.log(`POST request to /passwords${request.url}`);
+  const { service, email, password } = request.body;
+  if (!service || !email || !password) {
     return response.status(400).send({
       success: false,
-      message: "A service, email and password is required to make the password visible"
+      message:
+        "A service, email and password is required to make the password visible",
     });
   }
   sql = `SELECT password FROM passwords WHERE service = ? AND email = ?`;
-  db.get(sql, [service, email], (err, row) =>{
-    if(err){
+  db.get(sql, [service, email], (err, row) => {
+    if (err) {
       console.error(err.message);
       return response.status(400).send({
         success: false,
-        message: "Database Error: " + err.message
+        message: "Database Error: " + err.message,
       });
     }
-    if(!row){
+    if (!row) {
       // No password record found to display.
       return response.status(401).send({
         success: false,
-        message: "Password record not found for display"
+        message: "Password record not found for display",
       });
     }
     // Password record found.
     return response.status(200).send({
       success: true,
-      message: row.password
+      message: row.password,
     });
-  }); 
-})
+  });
+});
 
 router.post("/new", (request, response) => {
-  console.log("POST request to", request.url);
+  console.log(`POST request to /passwords${request.url}`);
   // console.log(request.body);
   const { service, email, password } = request.body;
   if (!service || !email || !password) {
@@ -110,7 +111,7 @@ router.post("/new", (request, response) => {
 });
 
 router.post("/edit", (request, response) => {
-  console.log("POST request to", request.url);
+  console.log(`POST request to /passwords${request.url}`);
   const {
     originalService,
     originalEmail,
@@ -119,61 +120,71 @@ router.post("/edit", (request, response) => {
     newEmail,
     newPassword,
   } = request.body;
-  if(!originalService || !originalEmail || !originalPassword ||
-    !newService || !newEmail || !newPassword){
-      return response.status(400).json({
-        success: false,
-        message: "All fields are required for editing"
-      });
+  if (
+    !originalService ||
+    !originalEmail ||
+    !originalPassword ||
+    !newService ||
+    !newEmail ||
+    !newPassword
+  ) {
+    return response.status(400).json({
+      success: false,
+      message: "All fields are required for editing",
+    });
   }
   // Use the original service and the original email to fetch the correct password record for editing.
   // Removes the need to query via ID.
   sql = `SELECT * FROM passwords WHERE service = ? AND email = ?`;
-  db.get(sql, [originalService, originalEmail], (err, row) =>{
-    if(err){
+  db.get(sql, [originalService, originalEmail], (err, row) => {
+    if (err) {
       return response.status(400).json({
         success: false,
-        message: "Database Error: " + err.message
+        message: "Database Error: " + err.message,
       });
     }
-    if(!row){
+    if (!row) {
       return response.status(401).json({
         success: false,
-        message: "Original password record not found"
+        message: "Original password record not found",
       });
     }
     // Confirm its the right record by comparing the hash of the originalPassword with the hashed password stored in the database.
     console.log("Original Password: ", originalPassword);
     console.log("Password in database: ", row.password);
     const isRecord = bcrypt.compareSync(originalPassword, row.password);
-    if(!isRecord){
+    if (!isRecord) {
       return response.status(401).json({
         success: false,
-        message: "Original password did not match"
+        message: "Original password did not match",
       });
     }
     // Store new hashed password in variable
     const salt = bcrypt.genSaltSync(13);
     const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
     sql = `UPDATE passwords SET service = ?, email = ?, password = ? WHERE service = ? AND email = ?`;
-    db.run(sql, [newService, newEmail, hashedNewPassword, originalService, originalEmail], function(err){
-      if(err){
-        return response.status(400).json({
-          success: false,
-          message: "Database Error: " + err.message
+    db.run(
+      sql,
+      [newService, newEmail, hashedNewPassword, originalService, originalEmail],
+      function (err) {
+        if (err) {
+          return response.status(400).json({
+            success: false,
+            message: "Database Error: " + err.message,
+          });
+        }
+        // Password record edited successfully.
+        response.status(200).json({
+          success: true,
+          message: "Password record edited successfully",
         });
       }
-      // Password record edited successfully.
-      response.status(200).json({
-        success: true,
-        message: "Password record edited successfully"
-      });
-    });
+    );
   });
 });
 
 router.post("/delete", (request, response) => {
-  console.log("POST request to", request.url);
+  console.log(`DELETE request to /passwords${request.url}`);
   const { service, email, password } = request.body;
   // console.log(service, email, password);
   // Check if the service, email, password exist for deletion.
@@ -202,11 +213,13 @@ router.post("/delete", (request, response) => {
     }
     // Retrieve the hashed password
     const hashedPassword = row.password;
-    const isMatch = password === hashedPassword;
+    // console.log(password);
+    // console.log(hashedPassword);
+    const isMatch = bcrypt.compareSync(password, hashedPassword);
     if (!isMatch) {
       return response.status(401).json({
         success: false,
-        message: "Error! Password could not be deleted",
+        message: "Error! Password record has not been matched for deletion",
       });
     }
     // Delete record under the hashed password since it matches with the plain text password stored in the body.

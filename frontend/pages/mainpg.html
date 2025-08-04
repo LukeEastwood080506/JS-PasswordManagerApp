@@ -80,6 +80,7 @@
                         <h2>Recycle Bin</h2>
                         <hr>
                         <p>Deleted passwords appear here.</p>
+                        <div class = "deleted-passwords-records-section" id = "deleted-passwords-records-section"></div>
                     </section>
                 </div>
             </main>
@@ -142,13 +143,24 @@
 
         <!--HTML for password record tile-->
         <div class = "account template" style = "display: none">
-            <p class = "account-service" id = "account-service">Service</p>
-            <p class = "account-email" id = "account-email">Email</p>
+            <p class = "account-service">Service</p>
+            <p class = "account-email">Email</p>
             <div class = "account-options" id = "account-options">
                 <p class = "account-display-password" id = "account-password" style = "display: none;">password</p>
                 <img src = "../assets/eye-crossed-icon.svg" class = "view-password-icon">
                 <img src = "../assets/edit-icon.svg" class = "edit-password-icon" id = "edit-password-icon">
                 <img src = "../assets/bin-icon.svg" class = "delete-password-icon" id = "delete-password-icon">
+            </div>
+        </div>
+
+        <!--HTML for recycle bin record tile-->
+        <div class = "recyclebin template" style = "display: none">
+            <p class = "recycled-service">Service</p>
+            <p class = "recycled-email">Email</p>
+            <!--<p class = "recycled-password" id = "recycled-password">Password</p>-->
+            <div class = "recycle-bin-options" id = "recycle-bin-options">
+                <img src = "../assets/restore-icon.png" class = "restore-password-icon">
+                <img src = "../assets/permenant-delete-icon.svg" class = "permenant-delete-icon">
             </div>
         </div>
         <script src = "../js/mainpg.js"></script>
