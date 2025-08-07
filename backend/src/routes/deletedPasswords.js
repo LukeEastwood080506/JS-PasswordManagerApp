@@ -28,6 +28,7 @@ function routeCheckHandler() {
 // GET, POST, PUT requests etc.
 router.get("/", routeCheckHandler());
 router.get("/add", routeCheckHandler());
+router.get("/delete", routeCheckHandler());
 
 router.get("/all", (request, response) => {
   console.log(`GET request to /deletedPasswords${request.url}`);
@@ -73,6 +74,47 @@ router.post("/add", (request, response) =>{
       success: true,
       message: "Deleted Password record added to recycle bin successfully!"
     });
+  });
+});
+
+router.post("/delete", (request, response) => {
+  console.log(`POST request to /deletedPasswords${request.url}`);
+  const { deletedService, deletedEmail } = request.body;
+  if(!deletedService || !deletedEmail){
+    return response.status(400).send({
+      success: false,
+      message: "A service and an email is required for permenant deletion"
+    });
+  }
+  sql = `SELECT * FROM deletedPasswords WHERE deletedService = ? AND deletedEmail = ?`;
+  // Find recycle bin record for deletion
+  db.get(sql, [deletedService, deletedEmail], function(err, row){
+    if(err){
+      return response.status(400).send({
+        success: false,
+        message: "Database Error: " + err.message
+      });
+    }
+    if(!row){
+      return response.status(401).send({
+        success: false,
+        message: "No recycle bin record was found for deletion"
+      });
+    }
+    // Delete the record.
+    sql = `DELETE FROM deletedPasswords WHERE deletedService = ? AND deletedEmail = ?`;
+    db.run(sql, [deletedService, deletedEmail], function(err){
+      if(err){
+        return response.status(500).send({
+          success: false,
+          message: "Failed to delete recycle bin record: " + err.message
+        });
+      }
+      return response.status(200).send({
+        success: true,
+        message: "Password record permanently deleted from recycle bin!"
+      });
+    })
   });
 });
 
