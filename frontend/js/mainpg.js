@@ -171,7 +171,8 @@ function fillDeletedAccounts() {
     });
 
     permaDeleteIcon.addEventListener("click", () => {
-      alert("permaDelete icon clicked");
+      // Function that permenantly deletes the record in the recycle bin.
+      permaDelete(dacc.deletedService, dacc.deletedEmail);
     });
 
     deletedAccountsContainer.appendChild(clone);
@@ -340,7 +341,7 @@ function deleteAccount(service, email, password) {
     .then((data) => {
       if (data.success) {
         alert("Password record deleted from vault successfully!");
-        refreshDiv(service, email);
+        refreshVaultDiv(service, email);
         deletedAccounts.push({
           service,
           email,
@@ -363,6 +364,33 @@ function deleteAccount(service, email, password) {
     .catch((error) => {
       alert(error.message);
     });
+}
+
+function permaDelete(deletedService, deletedEmail){
+  // console.log("Deleted Service: ", deletedService);
+  // console.log("Deleted Email: ", deletedEmail);
+  fetch("http://localhost:6969/deletedPasswords/delete", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ deletedService, deletedEmail }),
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    if(data.success){
+      // alert the user that the records been permenantly deleted.
+      // refresh the recycle bin div somehow by filling the deletedAccounts again to remove
+      // the recently deleted recycle bin record onscreen.
+      alert("The password record has been permenantly deleted from the recycle bin!");
+      refreshRecycleBinDiv(deletedService, deletedEmail);
+    } else {
+      alert(data.message || "Recycle Bin Password Deletion Unsuccessful!");
+    }
+  })
+  .catch((error) => {
+    alert(error.message);
+  })
 }
 
 function loadPage(page, pageOption) {
@@ -410,7 +438,7 @@ function logOut() {
   window.location.href = "loginpg.html";
 }
 
-function refreshDiv(service, email) {
+function refreshVaultDiv(service, email) {
   for (let i = 0; i < accounts.length; i++) {
     if (accounts[i].service === service && accounts[i].email === email) {
       accounts.splice(i, 1);
@@ -418,6 +446,16 @@ function refreshDiv(service, email) {
     }
   }
   fillAccounts();
+}
+
+function refreshRecycleBinDiv(deletedService, deletedEmail){
+  for(let i = 0; i < deletedAccounts.length; i++){
+    if(deletedAccounts[i].deletedService === deletedService && deletedAccounts[i].deletedEmail === deletedEmail){
+      deletedAccounts.splice(i, 1);
+      break;
+    }
+  }
+  fillDeletedAccounts();
 }
 
 /* Add Modal Methods */
