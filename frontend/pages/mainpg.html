@@ -1,168 +1,301 @@
 <!DOCTYPE html>
-<html lang = "en">
-    <head>
-        <meta charset = "UTF-8">
-        <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
-        <title>Really Good Password Manager</title>
-        <link rel = "stylesheet" type = "text/css" href = "../css/main-style.css">
-        <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
-    </head>
-    <body>
-        <!--Wrapper that covers entire page-->
-        <div class = "wrapper" id = "wrapper">
-            <!--Nav menu-->
-            <nav class = "nav-pane" id = "nav-pane">
-                <header class = "nav-header">
-                    <img src = "../assets/site-icon.png" class = "pm-logo" alt = "password-manager-logo">
-                    <h1 class = "pane-title" id = "pane-title">RGPM</h1>
-                </header>
-                <ul class = "nav-links">
-                    <!--Vault link-->
-                    <li class = "vault-link" id = "myvault-link" onclick = "changePage(this.id)">
-                        <img src = "../assets/vault-icon.svg" alt = "vault-icon">
-                        <span class = "nav-link-title">My Vault</span>
-                    </li>
-                    <!--Generator Link-->
-                    <li class = "generator-link" id = "generator-link" onclick = "changePage(this.id)">
-                        <img src = "../assets/cog-icon.svg" alt = "generator-icon">
-                        <span class = "nav-link-title">Generator</span>
-                    </li>
-                    <!--Recycle Bin Link-->
-                    <li class = "recycle-bin-link" id = "recycle-bin-link" onclick = "changePage(this.id)">
-                        <img src = "../assets/bin-icon.svg" alt = "recycle-bin-icon">
-                        <span class = "nav-link-title">Recycle Bin</span>
-                    </li>
-                </ul>
-                <!--Log Out Link-->
-                <div class = "menu-log-out" id = "menu-log-out" onclick = "logOut()">
-                    <img src = "../assets/log-out-icon.svg" alt = "log-out-icon">
-                    <span class = "nav-link-title">Log-Out</span>
-                </div>
-            </nav>
-            <!--Main Content Area-->
-            <main class = "main-body" id = "main-body">
-                <!--Notifications/Account bar-->
-                <header class = "top-bar" id = "top-bar">
-                    <div class = "top-bar-actions">
-                        <button class = "notification-bell" id = "notification-bell" alt = "notification-bell-icon">
-                            <img src = "../assets/bell-icon.svg" alt = "notifications">
-                        </button>
-                        <button class = "account-icon" id = "account-icon" alt = "account-icon">
-                            <img src = "../assets/user-icon.svg" alt = "profile-icon">
-                        </button>
-                        <button class = "settings-icon" id = "settings-icon" alt = "settings-icon">
-                            <a href = "settingspg.html" target = "_blank">
-                                <img src = "../assets/cog-icon.svg" alt = "settings-icon">
-                            </a>
-                        </button>
-                    </div>
-                </header>
-                <!--Landing page content-->
-                <div class = "main-content-area" id = "main-content-area">
-                    <!--My Vault Page-->
-                    <section class = "myvault-page" id = "myvault-page" style = "display: none">
-                        <h2>Passwords</h2>
-                        <hr>
-                        <button class = "add-password-button" id = "add-password-button">
-                            <span class = "plus">+</span>
-                            <span>Add</span>
-                        </button>
-                        <div class = "password-records-section" id = "password-records-section"></div>
-                    </section>
-                    <!--Generator Page-->
-                    <section class = "generator-page" id = "generator-page" style = "display: none">
-                        <h2>Password Generator</h2>
-                        <hr>
-                        <p>Generate secure passwords here.</p>
-                    </section>
-                    <!--Recycle Bin Page-->
-                    <section class = "recycle-bin-page" id = "recycle-bin-page" style = "display: none">
-                        <h2>Recycle Bin</h2>
-                        <hr>
-                        <p>Deleted passwords appear here.</p>
-                        <div class = "deleted-passwords-records-section" id = "deleted-passwords-records-section"></div>
-                    </section>
-                </div>
-            </main>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale = 1.0" />
+    <title>Really Good Password Manager</title>
+    <link rel="stylesheet" type="text/css" href="../css/main-style.css" />
+    <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
+  </head>
+  <body>
+    <!--Wrapper that covers entire page-->
+    <div class="wrapper" id="wrapper">
+      <!--Nav menu-->
+      <nav class="nav-pane" id="nav-pane">
+        <header class="nav-header">
+          <img
+            src="../assets/site-icon.png"
+            class="pm-logo"
+            alt="password-manager-logo"
+          />
+          <h1 class="pane-title" id="pane-title">RGPM</h1>
+        </header>
+        <ul class="nav-links">
+          <!--Vault link-->
+          <li
+            class="vault-link"
+            id="myvault-link"
+            onclick="changePage(this.id)"
+          >
+            <img src="../assets/vault-icon.svg" alt="vault-icon" />
+            <span class="nav-link-title">My Vault</span>
+          </li>
+          <!--Generator Link-->
+          <li
+            class="generator-link"
+            id="generator-link"
+            onclick="changePage(this.id)"
+          >
+            <img src="../assets/cog-icon.svg" alt="generator-icon" />
+            <span class="nav-link-title">Generator</span>
+          </li>
+          <!--Recycle Bin Link-->
+          <li
+            class="recycle-bin-link"
+            id="recycle-bin-link"
+            onclick="changePage(this.id)"
+          >
+            <img src="../assets/bin-icon.svg" alt="recycle-bin-icon" />
+            <span class="nav-link-title">Recycle Bin</span>
+          </li>
+        </ul>
+        <!--Log Out Link-->
+        <div class="menu-log-out" id="menu-log-out" onclick="logOut()">
+          <img src="../assets/log-out-icon.svg" alt="log-out-icon" />
+          <span class="nav-link-title">Log-Out</span>
         </div>
-        <!--Modals-->
-        <!--Add Password Modal-->
-        <div class = "password-modal-container" id = "add-password-container" style = "display: none">
-            <div class = "password-modal-content" id = "add-password-modal-content">
-                <button class = "close" id = "add-close-button">&times;</button>
-                <h2 id = "modal-title">Add New Password</h2>
-                <form class = "add-pass-inputs" >
-                    <div class = "form-input">
-                        <label for = "add-service-input">Service:</label>
-                        <input type = "text" class = "add-service-input" id = "add-service-input" placeholder="Enter service..." required>
-                    </div>
-                    <div class = "form-input">
-                        <label for = "add-email-input">Email:</label>
-                        <input type = "email" class = "add-email-input" id = "add-email-input" placeholder="Enter email..." required>
-                    </div>
-                    <div class = "form-input">
-                        <label for = "add-password-input">Password:</label>
-                        <input type = "password" class = "add-password-input" id = "add-password-input" placeholder="Enter password..." required>
-                    </div>
-                    <button type = "submit" class = "modal-add-button" id = "modal-add-button">
-                        <span class = "plus">+</span>
-                        <span>Add</span>
-                    </button>
-                </form> 
-            </div>
+      </nav>
+      <!--Main Content Area-->
+      <main class="main-body" id="main-body">
+        <!--Notifications/Account bar-->
+        <header class="top-bar" id="top-bar">
+          <div class="top-bar-actions">
+            <button
+              class="notification-bell"
+              id="notification-bell"
+              alt="notification-bell-icon"
+            >
+              <img src="../assets/bell-icon.svg" alt="notifications" />
+            </button>
+            <button class="account-icon" id="account-icon" alt="account-icon">
+              <img src="../assets/user-icon.svg" alt="profile-icon" />
+            </button>
+            <button
+              class="settings-icon"
+              id="settings-icon"
+              alt="settings-icon"
+            >
+              <a href="settingspg.html" target="_blank">
+                <img src="../assets/cog-icon.svg" alt="settings-icon" />
+              </a>
+            </button>
+          </div>
+        </header>
+        <!--Landing page content-->
+        <div class="main-content-area" id="main-content-area">
+          <!--My Vault Page-->
+          <section class="myvault-page" id="myvault-page" style="display: none">
+            <h2>Passwords</h2>
+            <hr />
+            <button class="add-password-button" id="add-password-button">
+              <span class="plus">+</span>
+              <span>Add</span>
+            </button>
+            <div
+              class="password-records-section"
+              id="password-records-section"
+            ></div>
+          </section>
+          <!--Generator Page-->
+          <section
+            class="generator-page"
+            id="generator-page"
+            style="display: none"
+          >
+            <h2>Password Generator</h2>
+            <hr />
+            <p>Generate secure passwords here.</p>
+          </section>
+          <!--Recycle Bin Page-->
+          <section
+            class="recycle-bin-page"
+            id="recycle-bin-page"
+            style="display: none"
+          >
+            <h2>Recycle Bin</h2>
+            <hr />
+            <p>Deleted passwords appear here.</p>
+            <div
+              class="deleted-passwords-records-section"
+              id="deleted-passwords-records-section"
+            ></div>
+          </section>
         </div>
-        <!--Edit Password Modal-->
-        <div class = "password-modal-container" id = "edit-password-container" style = "display: none">
-            <div class = "password-modal-content" id = "edit-password-modal-content">
-                <button class = "close" id = "edit-close-button">&times;</button>
-                <h2 id = "edit-modal-title">Edit Password</h2>
-                <form class = "edit-pass-inputs">
-                    <div class = "form-input">
-                        <label for = "edit-service-input">Service:</label>
-                        <input type = "text" class = "edit-service-input" id = "edit-service-input" placeholder="Edit service..." required>
-                    </div>
-                    <div class = "form-input">
-                        <label for = "edit-email-input">Email:</label>
-                        <input type = "email" class = "edit-email-input" id = "edit-email-input" placeholder="Edit email..." required>
-                    </div>
-                    <div class = "form-input">
-                        <label for = "edit-password-input">Password:</label>
-                        <input type = "password" class = "edit-password-input" id = "edit-password-input" placeholder="Edit password..." required>
-                    </div>
-                    <div class = "form-input">
-                        <label for = "edit-current-password-input">Current Password:</label>
-                        <input type = "password" id = "edit-current-password-input" placeholder = "Enter current password to confirm edit:">
-                    </div>
-                    <button type = "submit" class = "modal-edit-button" id = "modal-edit-button">
-                        <span class = "update">✐</span>
-                        <span>Update Password</span>
-                    </button>
-                </form>
-            </div>
-        </div>
+      </main>
+    </div>
+    <!--Modals-->
+    <!--Add Password Modal-->
+    <div
+      class="password-modal-container"
+      id="add-password-container"
+      style="display: none"
+    >
+      <div class="password-modal-content" id="add-password-modal-content">
+        <button class="close" id="add-close-button">&times;</button>
+        <h2 id="modal-title">Add New Password</h2>
+        <form class="add-pass-inputs">
+          <div class="form-input">
+            <label for="add-service-input">Service:</label>
+            <input
+              type="text"
+              class="add-service-input"
+              id="add-service-input"
+              placeholder="Enter service..."
+              required
+            />
+          </div>
+          <div class="form-input">
+            <label for="add-email-input">Email:</label>
+            <input
+              type="email"
+              class="add-email-input"
+              id="add-email-input"
+              placeholder="Enter email..."
+              required
+            />
+          </div>
+          <div class="form-input">
+            <label for="add-password-input">Password:</label>
+            <input
+              type="password"
+              class="add-password-input"
+              id="add-password-input"
+              placeholder="Enter password..."
+              required
+            />
+          </div>
+          <button type="submit" class="modal-add-button" id="modal-add-button">
+            <span class="plus">+</span>
+            <span>Add</span>
+          </button>
+        </form>
+      </div>
+    </div>
+    <!--Edit Password Modal-->
+    <div
+      class="password-modal-container"
+      id="edit-password-container"
+      style="display: none"
+    >
+      <div class="password-modal-content" id="edit-password-modal-content">
+        <button class="close" id="edit-close-button">&times;</button>
+        <h2 id="edit-modal-title">Edit Password</h2>
+        <form class="edit-pass-inputs">
+          <div class="form-input">
+            <label for="edit-service-input">Service:</label>
+            <input
+              type="text"
+              class="edit-service-input"
+              id="edit-service-input"
+              placeholder="Edit service..."
+              required
+            />
+          </div>
+          <div class="form-input">
+            <label for="edit-email-input">Email:</label>
+            <input
+              type="email"
+              class="edit-email-input"
+              id="edit-email-input"
+              placeholder="Edit email..."
+              required
+            />
+          </div>
+          <div class="form-input">
+            <label for="edit-password-input">Password:</label>
+            <input
+              type="password"
+              class="edit-password-input"
+              id="edit-password-input"
+              placeholder="Edit password..."
+              required
+            />
+          </div>
+          <div class="form-input">
+            <label for="edit-current-password-input">Current Password:</label>
+            <input
+              type="password"
+              id="edit-current-password-input"
+              placeholder="Enter current password to confirm edit:"
+            />
+          </div>
+          <button
+            type="submit"
+            class="modal-edit-button"
+            id="modal-edit-button"
+          >
+            <span class="update">✐</span>
+            <span>Update Password</span>
+          </button>
+        </form>
+      </div>
+    </div>
 
-        <!--HTML for password record tile-->
-        <div class = "account template" style = "display: none">
-            <p class = "account-service">Service</p>
-            <p class = "account-email">Email</p>
-            <div class = "account-options" id = "account-options">
-                <p class = "account-display-password" id = "account-password" style = "display: none;">password</p>
-                <img src = "../assets/eye-crossed-icon.svg" class = "view-password-icon">
-                <img src = "../assets/edit-icon.svg" class = "edit-password-icon" id = "edit-password-icon">
-                <img src = "../assets/bin-icon.svg" class = "delete-password-icon" id = "delete-password-icon">
-            </div>
-        </div>
+    <!--Notifications Modal-->
+    <div class = "notifications-modal-container" id = "notifications-modal-container" style = "display: none">
+      <div class = "notifications-modal-content">
+        <button class="close" id = "notifications-close-button">&times;</button>
+        <h2>Notifications</h2>
+        <div class = "notifications-section" id = "notifications-section"></div>
+      </div>
+    </div>
 
-        <!--HTML for recycle bin record tile-->
-        <div class = "recyclebin template" style = "display: none">
-            <p class = "recycled-service">Service</p>
-            <p class = "recycled-email">Email</p>
-            <!--<p class = "recycled-password" id = "recycled-password">Password</p>-->
-            <div class = "recycle-bin-options" id = "recycle-bin-options">
-                <img src = "../assets/restore-icon.png" class = "restore-password-icon">
-                <img src = "../assets/permenant-delete-icon.svg" class = "permenant-delete-icon">
-            </div>
-        </div>
-        <script src = "../js/mainpg.js"></script>
-    </body>
+    <!--HTML for notifications tile-->
+    <div class="notification template" style="display: none">
+      <p class="notification-title">Notification</p>
+      <p class="notification-content">Notification Content</p>
+      <div class="notification-options" id="notification-options">
+        <img
+          src="../assets/cross-icon.png"
+          class="delete-notification-icon"
+        />
+        <hr>
+      </div>
+    </div>
+
+    <!--HTML for password record tile-->
+    <div class="account template" style="display: none">
+      <p class="account-service">Service</p>
+      <p class="account-email">Email</p>
+      <div class="account-options" id="account-options">
+        <p
+          class="account-display-password"
+          id="account-password"
+          style="display: none"
+        >
+          password
+        </p>
+        <img src="../assets/eye-crossed-icon.svg" class="view-password-icon" />
+        <img
+          src="../assets/edit-icon.svg"
+          class="edit-password-icon"
+          id="edit-password-icon"
+        />
+        <img
+          src="../assets/bin-icon.svg"
+          class="delete-password-icon"
+          id="delete-password-icon"
+        />
+      </div>
+    </div>
+
+    <!--HTML for recycle bin record tile-->
+    <div class="recyclebin template" style="display: none">
+      <p class="recycled-service">Service</p>
+      <p class="recycled-email">Email</p>
+      <p class="recycled-password" style="display: none">Password</p>
+      <div class="recycle-bin-options" id="recycle-bin-options">
+        <img
+          src="../assets/eye-crossed-icon.svg"
+          class="view-deleted-password-icon"
+        />
+        <img src="../assets/restore-icon.png" class="restore-password-icon" />
+        <img
+          src="../assets/permenant-delete-icon.svg"
+          class="permenant-delete-icon"
+        />
+      </div>
+    </div>
+    <script src="../js/mainpg.js"></script>
+  </body>
 </html>
