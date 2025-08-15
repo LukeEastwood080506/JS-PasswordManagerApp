@@ -27,6 +27,8 @@ const passwordRoute = require("./routes/passwords");
 app.use("/passwords", passwordRoute);
 const deletedPasswordRoute = require("./routes/deletedPasswords");
 app.use("/deletedPasswords", deletedPasswordRoute);
+const notificationsRoute = require("./routes/notifications");
+app.use("/notifications", notificationsRoute);
 
 app.listen(port, () => {
   console.log("Password Manager Backend Operational!");

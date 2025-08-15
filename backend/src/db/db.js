@@ -11,7 +11,7 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
   return console.log("Backend Database Operational!");
 });
 
-// Create users and passwords table.
+// Create users, passwords, deletedPasswords and notifications tables.
 // sql = `CREATE table users(id INTEGER PRIMARY KEY,email TEXT NOT NULL UNIQUE,password TEXT NOT NULL)`;
 // db.run(sql, err =>{
 //     if(err){
@@ -28,12 +28,20 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //   return console.log("Passwords table created successfully!");
 // });
 
-// sql = `CREATE table deletedPasswords(id INTEGER PRIMARY KEY, deletedService TEXT NOT NULL, deletedEmail TEXT NOT NULL, UNIQUE(deletedEmail, deletedService))`;
+// sql = `CREATE table deletedPasswords(id INTEGER PRIMARY KEY, deletedService TEXT NOT NULL, deletedEmail TEXT NOT NULL, deletedPassword TEXT NOT NULL, UNIQUE(deletedEmail, deletedService))`;
 // db.run(sql, err =>{
 //   if(err){
 //     return console.error(err.message);
 //   }
 //   return console.log("deletedPasswords table created successfully!");
+// });
+
+// sql = `CREATE table notifications(id INTEGER PRIMARY KEY, title TEXT NOT NULL, content TEXT NOT NULL)`;
+// db.run(sql, err => {
+//   if(err){
+//     return console.error(err.message);
+//   }
+//   return console.log("notifications table created successfully!");
 // });
 
 // Add data to table
@@ -45,7 +53,15 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //    return console.log("Data added to the database table successfully!");
 // });
 
-// Query Database
+// sql = `INSERT INTO notifications(title, content) VALUES (?,?)`;
+// db.run(sql, ["Test notification", "testing"], function(err){
+//   if(err){
+//     return console.error(err.message);
+//   }
+//   return console.log("Data added to notifications table successfully!");
+// });
+
+// Query Database tables
 // sql = `SELECT * FROM users`;
 // db.all(sql, [], (err, rows) => {
 //   if (err) {
@@ -70,21 +86,43 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //   return console.log(rows);
 // })
 
-db.all("SELECT * FROM users", [], (err, userRows) =>{
-  if(err){
+// sql = `SELECT * FROM notifications`;
+// db.all(sql, [], (err, rows) => {
+//   if(err){
+//     return console.error(err.message);
+//   }
+//   return console.log(rows);
+// })
+
+db.all("SELECT * FROM users", [], (err, userRows) => {
+  if (err) {
     return console.error(err.message);
   }
-  db.all("SELECT * FROM passwords", [], (err, passwordRows) =>{
-    if(err){
+  db.all("SELECT * FROM passwords", [], (err, passwordRows) => {
+    if (err) {
       return console.error(err.message);
     }
-    db.all("SELECT * FROM deletedPasswords", [], (err, deletedPasswordRows) =>{
-      if(err){
+    db.all("SELECT * FROM deletedPasswords", [], (err, deletedPasswordRows) => {
+      if (err) {
         return console.error(err.message);
       }
-      return console.log("Users:", userRows, "\nPasswords:", passwordRows, "\ndeletedPasswords:", deletedPasswordRows);
-    })
-  })
+      db.all("SELECT * FROM notifications", [], (err, notificationRows) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        return console.log(
+          "Users:",
+          userRows,
+          "\nPasswords:",
+          passwordRows,
+          "\ndeletedPasswords:",
+          deletedPasswordRows,
+          "\nNotifications:",
+          notificationRows
+        );
+      });
+    });
+  });
 });
 
 // Drop table
@@ -111,6 +149,14 @@ db.all("SELECT * FROM users", [], (err, userRows) =>{
 //   }
 //   return console.log("deletedPasswords table dropped succesfully!");
 // });
+
+// sql = `DROP TABLE notifications`;
+// db.run(sql, (err) => {
+//   if(err){
+//     return console.error(err.message);
+//   }
+//   return console.log("Notifications table dropped successfully!");
+// }); 
 
 // Exports the db object
 module.exports = db;
