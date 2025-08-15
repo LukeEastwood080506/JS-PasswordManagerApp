@@ -200,6 +200,10 @@ hr{
     border-top: 2px solid white;
 }
 
+.notification hr{
+    border-top: 2px solid black;
+}
+
 .myvault-page,
 .generator-page,
 .recycle-bin-page{
@@ -362,6 +366,96 @@ hr{
 .close:focus{
     color: black;
     text-decoration: none;
+}
+
+/* Notifications Modal */
+.notification-modal-container{
+    display: none;
+    position: fixed;
+    z-index: 3;
+    left: 0;
+    top: 0;
+    min-width: 100%;
+    min-height: 100%;
+    background-color: rgba(0,0,0,0.2);
+}
+
+.notifications-modal-content{
+    background-color: white;
+    margin: 0;
+    padding: 15px 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: absolute;
+    top: 80px;
+    right: 40px;
+    box-shadow: 0px 5px 25px rgba(0,0,0,0.5);
+}
+
+.notifications-modal-content h2{
+    font-size: 20px;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+}
+
+.notifications-section{
+    display: flex;
+    flex-direction: column;
+}
+
+.notification{
+    background: #f9f9f9;
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.notification-title{
+    font-weight: 600;
+    font-size: 16px;
+    padding-right: 30px;
+}
+
+.notification-content{
+    font-size: 14px;
+    color: #333;
+    padding-bottom: 20px;
+}
+
+.notification-options{
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    margin-top: 0;
+}
+
+#notifications-close-button{
+    position: absolute;
+    top: 0;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+}
+
+#notifications-close-button:hover{
+    color: black;
+}
+
+.notification img{
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+    object-fit: contain;
+    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
+    cursor: pointer;
 }
 
 .account,
