@@ -3,7 +3,7 @@ const router = express.Router();
 // Import database
 const db = require("../db/db");
 const { route } = require("./users");
-let sql;
+
 
 // Reusable route check handler method.
 function routeCheckHandler() {
@@ -54,8 +54,8 @@ router.post("/new", (request, response) => {
       message: "A notification title is required as well as content",
     });
   }
-  sql = `INSERT INTO notifications(title, content) VALUES (?,?)`;
-  db.run(sql, [title, content], function (err) {
+  const insertSql = `INSERT INTO notifications(title, content) VALUES (?,?)`;
+  db.run(insertSql, [title, content], function (err) {
     if (err) {
       return response.status(401).send({
         success: false,
@@ -80,8 +80,8 @@ router.post("/delete", (request, response) => {
     });
   }
   // Find notification record for deletion.
-  sql = `SELECT * FROM notifications WHERE title = ? AND content = ?`;
-  db.get(sql, [title, content], function (err, row) {
+  const selectSql = `SELECT * FROM notifications WHERE title = ? AND content = ? LIMIT 1`;
+  db.get(selectSql, [title, content], function (err, row) {
     if (err) {
       return response.status(400).send({
         success: false,
@@ -94,8 +94,8 @@ router.post("/delete", (request, response) => {
         message: "No notification record was found for deletion",
       });
     }
-    sql = `DELETE FROM notifications WHERE title = ? AND content = ?`;
-    db.run(sql, [title, content], function (err) {
+    const deleteSql = `DELETE FROM notifications WHERE title = ? AND content = ?`;
+    db.run(deleteSql, [title, content], function (err) {
       if (err) {
         return response.status(400).send({
           success: false,

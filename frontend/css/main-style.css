@@ -1,15 +1,15 @@
 @import url('common.css');
 
-html{
+html {
     min-height: 100%;
 }
 
-body{
+body {
     margin: 0;
     font-family: "Poppins";
 }
 
-.wrapper{
+.wrapper {
     position: absolute;
     width: 100%;
     min-height: 100vh;
@@ -17,14 +17,15 @@ body{
     top: 0;
     display: flex;
     justify-content: space-between;
+    overflow: hidden;
 }
 
 .main-body,
-.nav-pane{
+.nav-pane {
     background-color: white;
 }
 
-.nav-pane{
+.nav-pane {
     z-index: 1;
     left: 0;
     background: rgb(152, 132, 191);
@@ -34,85 +35,82 @@ body{
     justify-content: center;
 }
 
-.nav-header{
+.nav-header {
     position: relative;
     margin-top: 30px;
 }
 
-.pm-logo{
+.icon-shadow{
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+}
+
+.pm-logo {
     margin-left: 20px;
     margin-top: 34px;
     width: 50px;
     position: fixed;
-    box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
-    border-radius: 50px;    
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 50px;
 }
 
-.pane-title{
+.pane-title {
     margin-left: 80px;
     margin-top: 30px;
     position: fixed;
     font-weight: 600;
     color: white;
     font-size: 36px;
-    text-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+    text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
 }
 
-.nav-links{
+.nav-links {
     list-style: none;
     padding: 0;
-    margin: 0;
-}
-
-.nav-links{
-    margin-top: 150px;
+    margin: 150px 0 0 0;
 }
 
 .vault-link,
 .generator-link,
-.recycle-bin-link{
-    font-size: 24px;
+.recycle-bin-link {
+    font-size: 18px;
     font-weight: 550;
     color: white;
-    text-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+    text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
     padding: 23px 20px;
     display: flex;
     align-items: center;
     background: rgb(152, 132, 191);
     cursor: pointer;
-    transition: ease 0.2s;
-    white-space: nowrap;
-    overflow: hidden;
+    transition: filter 0.3s ease;
 }
 
 .vault-link.active,
 .generator-link.active,
-.recycle-bin-link.active{
+.recycle-bin-link.active {
     background: #786a94;
 }
 
 .vault-link:hover,
 .generator-link:hover,
-.recycle-bin-link:hover{
+.recycle-bin-link:hover {
     background: #b6a7d4;
 }
 
 .vault-link img,
 .generator-link img,
-.recycle-bin-link img{
+.recycle-bin-link img {
     width: 50px;
     height: 50px;
     flex: 0 0 50px;
     margin-right: 20px;
     object-fit: contain;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
 }
 
-.menu-log-out{
+.menu-log-out {
     font-size: 24px;
     font-weight: 500;
     color: white;
-    text-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+    text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
     padding: 30px 20px;
     position: absolute;
     bottom: 0;
@@ -121,40 +119,37 @@ body{
     width: 17%;
     box-sizing: border-box;
     cursor: pointer;
-    transition: ease 0.2s;
-    white-space: nowrap;
-    overflow: hidden;
+    transition: filter 0.3s ease;
 }
 
-.menu-log-out img{
+.menu-log-out img {
     width: 50px;
     height: 50px;
     flex: 0 0 50px;
     margin-right: 20px;
     object-fit: contain;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
-    transition: ease 1s;
+    transition: filter 0.3s ease;
 }
 
-.menu-log-out:hover{
+.menu-log-out:hover {
     background: #b6a7d4;
 }
 
-.main-body{
+.main-body {
     background: linear-gradient(0deg, rgba(61, 50, 114, 1) 0%, rgba(152, 128, 194, 1) 100%);
     right: 0;
     width: 83%;
     height: 100dvh;
 }
 
-.top-bar{
+.top-bar {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 30px;
 }
 
-.top-bar-actions{
+.top-bar-actions {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -166,17 +161,16 @@ body{
 .top-bar img,
 .notification-bell img,
 .account-icon img,
-.settings-icon img{
+.settings-icon img {
     width: 50px;
     height: 50px;
     object-fit: contain;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
-    transition: ease 1s;
+    transition: filter 0.3s ease;
 }
 
 .notification-bell,
 .account-icon,
-.settings-icon{
+.settings-icon {
     background: none;
     border: none;
     cursor: pointer;
@@ -186,57 +180,147 @@ body{
 .top-bar img:hover,
 .notification-bell:hover img,
 .account-icon:hover img,
-.settings-icon:hover img{
+.settings-icon:hover img {
     cursor: pointer;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
 }
 
-.main-content-area{
+.main-content-area {
     padding: 20px;
     overflow-x: hidden;
 }
 
-hr{
+hr {
     border-top: 2px solid white;
 }
 
-.notification hr{
+.notification hr {
     border-top: 2px solid black;
 }
 
 .myvault-page,
 .generator-page,
-.recycle-bin-page{
+.recycle-bin-page {
     padding: 20px;
 }
 
-.generator-page p,
-.recycle-bin-page p{
-    padding-top: 15px;
-}
-
 .myvault-page h2,
-.generator-page h2,
-.recycle-bin-page h2{
+#generator-page-title,
+.recycle-bin-page h2 {
     color: white;
-    text-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+    text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
     font-size: 32px;
     margin-bottom: 20px;
 }
 
 .generator-page p,
-.recycle-bin-page p{
+.recycle-bin-page p {
     color: white;
+    padding-top: 15px;
     font-size: 18px;
-    text-shadow: 0px 3px 5px rgba(0,0,0,0.3);
 }
 
-.plus{
+#generated-password-container,
+#password-config,
+#password-customiser {
+    display: flex;
+    flex-direction: column;
+    background-color: #F4F1ED;
+}
+
+#generated-password-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.3);
+}
+
+#generated-password {
+    font-family: "Poppins Regular";
+    color: black;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 45px;
+    font-size: 26px;
+}
+
+#generated-password-container hr {
+    border-top: 7px solid red;
+}
+
+#strength-checker {
+    background-color: white;
+    padding-left: 45px;
+    padding-top: 15px;
+    padding-bottom: 40px;
+    font-family: "Poppins Regular";
+}
+
+#strength-checker img {
+    float: left;
+    width: 25px;
+    height: 25px;
+    margin-top: 2.5px;
+}
+
+#password-customiser {
+    font-family: "Poppins Regular";
+    padding-top: 15px;
+    background-color: white;
+}
+
+#password-customiser p {
+    color: #3B3B3B;
+}
+
+#password-customiser hr {
+    margin-top: 10px;
+    border-top: 2px solid #EFEFEF;
+    margin-right: 45px;
+}
+
+#password-customiser label {
+    padding-top: 20px;
+    font-weight: 600;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-item input[type="checkbox"] {
+    margin: 0;
+    width: 1em;
+    height: 1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 10px;
+}
+
+#password-customiser button{
+    background-color: white;
+    color: black;
+    width: 250px;
+    font-size: 14px;
+    margin-top: 25px;
+}
+
+.plus {
     font-weight: bold;
     font-size: 30px;
 }
 
-.add-password-button{
+.add-password-button {
     margin-top: 40px;
     border: none;
     border-radius: 18px;
@@ -246,29 +330,24 @@ hr{
     text-align: center;
     font-size: 26px;
     font-family: "Poppins Regular";
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
-    transition: ease filter 0.3s;
+    transition: filter 0.3s ease;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.add-password-button:hover{
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.5));
-}
-
-.add-password-button:active{
+.add-password-button:active {
     background-color: #d1d1d1;
 }
 
-.add-password-button:focus{
+.add-password-button:focus {
     outline: 2px solid rgb(152, 132, 191);
     outline-offset: 2px;
 }
 
 /* Modals */
-.password-modal-container{
+.password-modal-container {
     display: none;
     position: fixed;
     z-index: 2;
@@ -277,10 +356,10 @@ hr{
     min-width: 100%;
     min-height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
-.password-modal-content{
+.password-modal-content {
     background-color: #e5e6e1;
     margin: 10% auto;
     padding: 20px;
@@ -290,15 +369,15 @@ hr{
     position: relative;
 }
 
-.pass-inputs{
+.pass-inputs {
     margin-top: 20px;
 }
 
-.form-input{
+.form-input {
     margin-bottom: 20px;
 }
 
-.pass-inputs label{
+.pass-inputs label {
     display: block;
     font-family: "Poppins Regular";
     font-size: 20px;
@@ -306,32 +385,32 @@ hr{
     margin-bottom: 5px;
 }
 
-.pass-inputs input{
+.pass-inputs input {
     font-size: 18px;
     font-weight: 500;
     border: none;
     border-radius: 20px;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
     height: 50px;
     padding-left: 10px;
     width: 80%;
 }
 
-.pass-inputs input:focus{
+.pass-inputs input:focus {
     outline: 2px solid rgb(152, 132, 191);
     outline-offset: 2px;
 }
 
-#edit-password-modal-content{
+#edit-password-modal-content {
     margin: 7% auto;
 }
 
 #modal-title,
-#edit-modal-title{
+#edit-modal-title {
     padding-bottom: 25px;
 }
 
-.modal-add-button{
+.modal-add-button {
     margin-top: 20px;
     border: none;
     border-radius: 18px;
@@ -341,15 +420,15 @@ hr{
     text-align: center;
     font-size: 24px;
     font-weight: 550;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
-    transition: ease 0.3s;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+    transition: filter 0.3s ease;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.close{
+.close {
     color: #aaa;
     position: absolute;
     top: 15px;
@@ -363,13 +442,13 @@ hr{
 }
 
 .close:hover,
-.close:focus{
+.close:focus {
     color: black;
     text-decoration: none;
 }
 
 /* Notifications Modal */
-.notification-modal-container{
+.notification-modal-container {
     display: none;
     position: fixed;
     z-index: 3;
@@ -377,10 +456,10 @@ hr{
     top: 0;
     min-width: 100%;
     min-height: 100%;
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
-.notifications-modal-content{
+.notifications-modal-content {
     background-color: white;
     margin: 0;
     padding: 15px 20px;
@@ -391,21 +470,21 @@ hr{
     position: absolute;
     top: 80px;
     right: 40px;
-    box-shadow: 0px 5px 25px rgba(0,0,0,0.5);
+    box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.5);
 }
 
-.notifications-modal-content h2{
+.notifications-modal-content h2 {
     font-size: 20px;
     margin: 0 0 10px 0;
     font-weight: 600;
 }
 
-.notifications-section{
+.notifications-section {
     display: flex;
     flex-direction: column;
 }
 
-.notification{
+.notification {
     background: #f9f9f9;
     padding: 10px 12px;
     border-radius: 8px;
@@ -414,26 +493,26 @@ hr{
     position: relative;
 }
 
-.notification-title{
+.notification-title {
     font-weight: 600;
     font-size: 16px;
     padding-right: 30px;
 }
 
-.notification-content{
+.notification-content {
     font-size: 14px;
     color: #333;
     padding-bottom: 20px;
 }
 
-.notification-options{
+.notification-options {
     position: absolute;
     top: 20px;
     right: 10px;
     margin-top: 0;
 }
 
-#notifications-close-button{
+#notifications-close-button {
     position: absolute;
     top: 0;
     right: 12px;
@@ -445,21 +524,21 @@ hr{
     cursor: pointer;
 }
 
-#notifications-close-button:hover{
+#notifications-close-button:hover {
     color: black;
 }
 
-.notification img{
+.notification img {
     width: 25px;
     height: 25px;
     margin-right: 10px;
     object-fit: contain;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
     cursor: pointer;
 }
 
 .account,
-.recyclebin{
+.recyclebin {
     margin-top: 20px;
     padding: 20px 15px;
     background: white;
@@ -471,7 +550,7 @@ hr{
 }
 
 .account p,
-.recyclebin p{
+.recyclebin p {
     color: black;
     justify-content: flex-start;
     font-size: 24px;
@@ -480,17 +559,17 @@ hr{
 }
 
 .account img,
-.recyclebin img{
+.recyclebin img {
     width: 50px;
     height: 50px;
     object-fit: contain;
-    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
-    transition: ease 1s;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+    transition: filter 0.3s ease;
     margin-right: 20px;
 }
 
 .account-options,
-.recycle-bin-options{
+.recycle-bin-options {
     display: flex;
     align-items: center;
     flex: 1;
@@ -498,6 +577,6 @@ hr{
     cursor: pointer;
 }
 
-.edit-password-icon{
+.edit-password-icon {
     rotate: 215deg;
 }

@@ -3,7 +3,7 @@ const router = express.Router();
 // Import database
 const db = require("../db/db");
 const bcrypt = require('bcrypt');
-let sql;
+
 
 // Reusable route check handler method.
 function routeCheckHandler(routeName){
@@ -30,8 +30,8 @@ router.get("/signup", routeCheckHandler("signup"));
 
 router.get("/all", (request, response) =>{
   console.log(`GET request to /users${request.url}`);
-  sql = `SELECT * FROM users`;
-  db.get(sql, [], (err, row) =>{
+  const selectSql = `SELECT * FROM users`;
+  db.get(selectSql, [], (err, row) =>{
     if(err){
       console.log(err);
       return response.status(400).json({
@@ -67,8 +67,8 @@ router.post("/login", (request, response) => {
   // Check if the email and password exist in the database.
   // The user-inputted password needs to be hashed for comparison
   // with hashed passwords, which need to be retrieved from the database.
-  sql = `SELECT * FROM users WHERE email = ?`;
-  db.get(sql, [email], (err, row) =>{
+  const selectSql = `SELECT * FROM users WHERE email = ?`;
+  db.get(selectSql, [email], (err, row) =>{
     if(err){
       return response.status(400).json({
         success: false,
@@ -111,8 +111,8 @@ router.post("/signup", (request, response) => {
     });
   }
   // Check if the user already exists within the database.
-  sql = `SELECT * FROM users WHERE email = ?`;
-  db.get(sql, [email], (err, row) => {
+  const selectSql = `SELECT * FROM users WHERE email = ?`;
+  db.get(selectSql, [email], (err, row) => {
     if (err) {
       return response.status(400).json({
         success: false,
@@ -130,10 +130,10 @@ router.post("/signup", (request, response) => {
     // The password is hashed using bcrypt before being stored in the database.
     // An INSERT statement is ran which passes the SQL query, the email and password
     // and a function to handle errors, all as parameters.
-    sql = `INSERT INTO users (email, password) VALUES (?,?)`;
+    const insertSql = `INSERT INTO users (email, password) VALUES (?,?)`;
     const salt = bcrypt.genSaltSync(13);
     const hashedPassword = bcrypt.hashSync(password, salt);
-    db.run(sql, [email, hashedPassword], function (err) {
+    db.run(insertSql, [email, hashedPassword], function (err) {
       if (err) {
         return response.status(400).json({
           message: "Database Error",
