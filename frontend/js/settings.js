@@ -37,7 +37,7 @@ function changeEmail() {
   // Check if user is logged in.
   const currentUser = retrieveEmail();
   if (!currentUser) {
-    alert("You must be logged in to change your email.");
+    // alert("You must be logged in to change your email.");
     return;
   }
   // Ask for the user's current email and verify it.
@@ -51,7 +51,7 @@ function changeEmail() {
   // Flags if there is not stored user data or if the email stored in local storage is
   // not equal to the current email.
   if (!storedUserData || storedUserData.email !== currentEmail) {
-    alert("You did not enter your current email.");
+    // alert("You did not enter your current email.");
     return;
   }
 
@@ -62,7 +62,7 @@ function changeEmail() {
 
   // Validation can be improved upon - only presuming a valid email address has been entered from the fact the input contains an @.
   while (!newEmail.includes("@")) {
-    alert("You entered an invalid email address.");
+    // alert("You entered an invalid email address.");
     newEmail = prompt("Enter a valid email address.");
     if (newEmail === null) {
       return;
@@ -75,7 +75,7 @@ function changeEmail() {
   // Delete the user data from local storage and remove the current session.
   localStorage.removeItem(currentUser);
   localStorage.removeItem("currentUser");
-  alert(
+  // alert(
     "Email address has been updated. Please log back in again with your new email address."
   );
   window.location.href = "loginpg.html";
@@ -85,7 +85,7 @@ function changeMasterPassword() {
   // Check if the user is logged in
   const currentUser = retrieveEmail();
   if (!currentUser) {
-    alert("You must be logged in to change your password.");
+    // alert("You must be logged in to change your password.");
     return;
   }
   // Ask for the user's current password and verify it.
@@ -99,7 +99,7 @@ function changeMasterPassword() {
   // Flags if there is not stored user data or if the password stored in local storage is
   // not equal to the current password.
   if (!storedUserData || storedUserData.password !== currentPassword) {
-    alert("You did not enter your current password.");
+    // alert("You did not enter your current password.");
     return;
   }
   // The user can now enter their new password.
@@ -112,7 +112,7 @@ function changeMasterPassword() {
     newMasterPassword.length < 12 ||
     newMasterPassword === currentPassword
   ) {
-    alert("Enter a unique master password that has at least 12 characters.");
+    // alert("Enter a unique master password that has at least 12 characters.");
     newMasterPassword = prompt("Enter a valid new master password:");
     // Still need to check for nulls in case a user cancels.
     if (newMasterPassword === null) {
@@ -123,7 +123,7 @@ function changeMasterPassword() {
   // Redirect the user back to the sign in page to sign in with the new master password.
   storedUserData.password = newMasterPassword;
   localStorage.setItem(currentUser, JSON.stringify(storedUserData));
-  alert(
+  // alert(
     "Master password has been updated. Please log back in again with your new password."
   );
   localStorage.removeItem("currentUser");
@@ -133,7 +133,7 @@ function changeMasterPassword() {
 function logOut() {
   // Remove the current user from localStorage.
   localStorage.removeItem("currentUser");
-  alert("You have been logged out successfully.");
+  // alert("You have been logged out successfully.");
   // Redirect the user to the login page.
   window.location.href = "loginpg.html";
 }
@@ -142,7 +142,7 @@ function deleteAccount() {
   // Check if user is logged in
   const currentUser = retrieveEmail();
   if (!currentUser) {
-    alert("You must be logged in to delete your account.");
+    // alert("You must be logged in to delete your account.");
     return;
   }
   if (confirm("Are you sure you want to delete your account?")) {
@@ -157,7 +157,7 @@ function deleteAccount() {
     const userJSON = localStorage.getItem(currentUser);
     const userData = JSON.parse(userJSON);
     if (!userData || userData.password !== password) {
-      alert("Incorrect password. Account deletion cancelled.");
+      // alert("Incorrect password. Account deletion cancelled.");
       return;
     }
     // Delete the actual user data from localStorage
@@ -166,7 +166,7 @@ function deleteAccount() {
     // Also remove the current session
     localStorage.removeItem("currentUser");
 
-    alert("Your account has been successfully deleted.");
+    // alert("Your account has been successfully deleted.");
     window.location.href = "loginpg.html";
   }
 }
@@ -211,7 +211,7 @@ function toggleContrastMode() {
 function changeFontSize() {
   const fontSize = prompt("Enter a font size:");
   if (fontSize === null || isNaN(fontSize)) {
-    alert("Enter a valid font size!");
+    // alert("Enter a valid font size!");
     return;
   }
   

@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require("../db/db");
 const bcrypt = require("bcrypt");
 const { route } = require("./users");
-let sql;
+
 
 // Reusable route check handler method.
 function routeCheckHandler() {
@@ -58,8 +58,8 @@ router.post("/show", (request, response) => {
         "A service, email and password is required to make the password visible",
     });
   }
-  sql = `SELECT password FROM passwords WHERE service = ? AND email = ?`;
-  db.get(sql, [service, email], (err, row) => {
+  const selectSql = `SELECT password FROM passwords WHERE service = ? AND email = ?`;
+  db.get(selectSql, [service, email], (err, row) => {
     if (err) {
       console.error(err.message);
       return response.status(400).send({
@@ -92,10 +92,10 @@ router.post("/new", (request, response) => {
       message: "A service, email and password is required to store a password",
     });
   }
-  sql = `INSERT INTO passwords(service,email,password) VALUES (?,?,?)`;
+  const insertSql = `INSERT INTO passwords(service,email,password) VALUES (?,?,?)`;
   const salt = bcrypt.genSaltSync(13);
   const hashedPassword = bcrypt.hashSync(password, salt);
-  db.all(sql, [service, email, hashedPassword], (err) => {
+  db.all(insertSql, [service, email, hashedPassword], (err) => {
     if (err) {
       console.error(err.message);
       return response.status(400).send({
@@ -135,8 +135,8 @@ router.post("/edit", (request, response) => {
   }
   // Use the original service and the original email to fetch the correct password record for editing.
   // Removes the need to query via ID.
-  sql = `SELECT * FROM passwords WHERE service = ? AND email = ?`;
-  db.get(sql, [originalService, originalEmail], (err, row) => {
+  const selectSql = `SELECT * FROM passwords WHERE service = ? AND email = ?`;
+  db.get(selectSql, [originalService, originalEmail], (err, row) => {
     if (err) {
       return response.status(400).json({
         success: false,
@@ -162,9 +162,9 @@ router.post("/edit", (request, response) => {
     // Store new hashed password in variable
     const salt = bcrypt.genSaltSync(13);
     const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
-    sql = `UPDATE passwords SET service = ?, email = ?, password = ? WHERE service = ? AND email = ?`;
+    const updateSql = `UPDATE passwords SET service = ?, email = ?, password = ? WHERE service = ? AND email = ?`;
     db.run(
-      sql,
+      updateSql,
       [newService, newEmail, hashedNewPassword, originalService, originalEmail],
       function (err) {
         if (err) {
@@ -197,8 +197,8 @@ router.post("/delete", (request, response) => {
   // Retrieve the hashed password from the database
   // Compare that hashed password with the plain text password.
   // Then if a match is found we can then delete the record.
-  sql = `SELECT * FROM passwords WHERE email = ?`;
-  db.get(sql, [email], (err, row) => {
+  const selectSql = `SELECT * FROM passwords WHERE email = ?`;
+  db.get(selectSql, [email], (err, row) => {
     if (err) {
       return response.status(400).json({
         success: false,
@@ -215,7 +215,7 @@ router.post("/delete", (request, response) => {
     const hashedPassword = row.password;
     // console.log(password);
     // console.log(hashedPassword);
-    const isMatch = bcrypt.compareSync(password, hashedPassword);
+    const isMatch = password === hashedPassword;
     if (!isMatch) {
       return response.status(401).json({
         success: false,
@@ -223,8 +223,8 @@ router.post("/delete", (request, response) => {
       });
     }
     // Delete record under the hashed password since it matches with the plain text password stored in the body.
-    sql = `DELETE FROM passwords WHERE password = ?`;
-    db.run(sql, [hashedPassword], (err) => {
+    const deleteSql = `DELETE FROM passwords WHERE password = ?`;
+    db.run(deleteSql, [hashedPassword], (err) => {
       if (err) {
         return response.status(400).send({
           success: false,
