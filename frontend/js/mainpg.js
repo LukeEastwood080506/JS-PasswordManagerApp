@@ -37,15 +37,19 @@ class Notification {
 const vaultLink = document.getElementById("myvault-link");
 const addPasswordModal = document.getElementById("add-password-container");
 const editPasswordModal = document.getElementById("edit-password-container");
-const notificationsModal = document.getElementById("notifications-modal-container");
+const notificationsModal = document.getElementById(
+  "notifications-modal-container"
+);
 
 const addModalOpenButton = document.getElementById("add-password-button");
 const modalAddPasswordBtn = document.getElementById("modal-add-button");
 const addModalCloseButton = document.getElementById("add-close-button");
 const editModalCloseButton = document.getElementById("edit-close-button");
-const notificationsCloseButton = document.getElementById("notifications-close-button");
+const notificationsCloseButton = document.getElementById(
+  "notifications-close-button"
+);
 
-const notificationsIcon = document.getElementById("notification-bell");
+const notificationsIcon = document.querySelector("#notification-bell img");
 
 const PAGE_MAPPING = {
   "myvault-link": "myvault-page",
@@ -72,7 +76,7 @@ function initialiseApp() {
       }
     })
     .catch((err) => {
-      alert("Error fetching passwords: ", err);
+      // alert("Error fetching passwords: ", err);
       console.error("Error fetching passwords:", err);
     });
   // Fetch deleted passwords for recycle bin.
@@ -102,7 +106,7 @@ function initialiseApp() {
       }
     })
     .catch((err) => {
-      alert("Error fetching deleted passwords: ", err);
+      // alert("Error fetching deleted passwords: ", err);
       console.error("Error fetching deleted passwords:", err);
     });
   // Fetch notifications for notifications modal.
@@ -110,24 +114,25 @@ function initialiseApp() {
   fetch("http://localhost:6969/notifications/all")
     .then((response) => response.json())
     .then((data) => {
-      if(data.success){
+      if (data.success) {
         data.data.forEach((noti) => {
-          if(noti && noti.title && noti.content){
+          if (noti && noti.title && noti.content) {
             const existing = notifications.find(
               (n) => n.title === noti.title && n.content === noti.content
             );
+            notificationsIcon.src = "../assets/bell-red-circle.png";
             notifications.push(noti);
           }
         });
         fillNotifications();
       } else {
         console.error("Failed to load notifications from backend");
-      }    
+      }
     })
     .catch((err) => {
-      alert("Error fetching notifications: ", err);
+      // alert("Error fetching notifications: ", err);
       console.error("Error fetching notifications: ", err);
-    })
+    });
   loadPage(currentPage, currentPageOption);
 }
 
@@ -218,7 +223,7 @@ function fillDeletedAccounts() {
     });
 
     restoreIcon.addEventListener("click", () => {
-      alert("Restore icon clicked");
+      restorePassword(dacc.deletedService, dacc.deletedEmail, dacc.deletedPassword);
     });
 
     permaDeleteIcon.addEventListener("click", () => {
@@ -231,7 +236,9 @@ function fillDeletedAccounts() {
 }
 
 function fillNotifications() {
-  const notificationsContainer = document.getElementById("notifications-section");
+  const notificationsContainer = document.getElementById(
+    "notifications-section"
+  );
   const template = document.querySelector(".notification.template");
 
   // Clear existing notifications
@@ -241,7 +248,7 @@ function fillNotifications() {
   existingNotifications.forEach((noti) => noti.remove());
 
   notifications.forEach((notification) => {
-    if(!notification?.title || !notification?.content){
+    if (!notification?.title || !notification?.content) {
       console.warn("Invalid notification skipped:", notification);
       return;
     }
@@ -252,12 +259,12 @@ function fillNotifications() {
 
     // Fill notifications
     clone.querySelector(".notification-title").textContent = notification.title;
-    clone.querySelector(".notification-content").textContent = notification.content;
+    clone.querySelector(".notification-content").textContent =
+      notification.content;
 
     const deleteIcon = clone.querySelector(".delete-notification-icon");
     // Add event listener for delete icon.
     deleteIcon.addEventListener("click", () => {
-      alert("Delete notification icon clicked");
       deleteNotification(notification.title, notification.content);
     });
 
@@ -280,7 +287,7 @@ function handleAccountSubmit(isEditMode) {
     const password = document.getElementById("add-password-input").value.trim();
 
     if (!service || !email || !password) {
-      alert("Please fill in all fields");
+      // alert("Please fill in all fields");
       return;
     }
 
@@ -299,7 +306,7 @@ function handleAccountSubmit(isEditMode) {
       .value.trim();
 
     if (!service || !email || !password || !currentPassword) {
-      alert("Please fill in all fields");
+      // alert("Please fill in all fields");
       return;
     }
 
@@ -321,7 +328,7 @@ function handleAccountSubmit(isEditMode) {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            alert("Credentials for website/app updated successfully!");
+            // alert("Credentials for website/app updated successfully!");
             // Update local array
             const idx = accounts.findIndex(
               (a) =>
@@ -334,11 +341,11 @@ function handleAccountSubmit(isEditMode) {
             }
             fillAccounts();
           } else {
-            alert(data.message || "Credentials could not be edited");
+            // alert(data.message || "Credentials could not be edited");
           }
         })
         .catch((err) => {
-          alert(err.message);
+          // alert(err.message);
         });
     }
   }
@@ -370,10 +377,10 @@ async function togglePassword(
     if (password) {
       updatePasswordUI(true, iconElement, passwordElement, password);
     } else {
-      alert("Password cannot be displayed");
+      // alert("Password cannot be displayed");
     }
   } catch (err) {
-    alert(err.message);
+    // alert(err.message);
   }
 }
 
@@ -412,8 +419,11 @@ function updatePasswordUI(show, iconElement, passwordElement, text) {
     : "../assets/eye-crossed-icon.svg";
 }
 
-function toggleNotificationsModal(){
-  if(notificationsModal.style.display === "none" || notificationsModal.style.display === ""){
+function toggleNotificationsModal() {
+  if (
+    notificationsModal.style.display === "none" ||
+    notificationsModal.style.display === ""
+  ) {
     fillNotifications();
     notificationsModal.style.display = "block";
   } else {
@@ -432,56 +442,93 @@ function save(service, email, password) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Password record created and added to vault successfully!");
+        // alert("Password record created and added to vault successfully!");
         // POST request needed to /notifications/new
-        const title = "Add Notification"
+        const title = "Vault - Add Notification";
         const content = "Password record added to vault!";
         addNotification(title, content);
+        refreshNotificationsDiv(title, content);
       } else {
-        alert(data.message || "Password Creation Unsuccessful!");
+        // alert(data.message || "Password Creation Unsuccessful!");
       }
     })
     .catch((error) => {
-      alert(error.message);
+      // alert(error.message);
     });
 }
 
-function deleteAccount(service, email, password) {
+function deleteAccount(deletedService, deletedEmail, deletedPassword) {
   fetch("http://localhost:6969/passwords/delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ service, email, password }),
+    body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Password record deleted from vault successfully!");
+        // alert("Password record deleted from vault successfully!");
         refreshVaultDiv(service, email);
+        const title = "Vault - Delete Notification";
+        const content = "Password deleted from vault and moved to recycle bin!";
+        addNotification(title, content);
+        refreshNotificationsDiv(title, content);
         deletedAccounts.push({
-          service,
-          email,
-          password,
+          deletedService,
+          deletedEmail,
+          deletedPassword,
         });
-        recycleBin(service, email, password)
+        recycleBin(deletedService, deletedEmail, deletedPassword)
           .then((data) => {
             if (data.success) {
               fillDeletedAccounts();
             } else {
-              alert(data.message || "Recycle bin addition unsuccessful!");
+              // alert(data.message || "Recycle bin addition unsuccessful!");
             }
           })
           .catch((error) => {
-            alert(error.message);
+            // alert(error.message);
           });
       } else {
-        alert(data.message || "Password Deletion Unsuccessful!");
+        // alert(data.message || "Password Deletion Unsuccessful!");
       }
     })
     .catch((error) => {
-      alert(error.message);
+      // alert(error.message);
     });
+}
+
+function restorePassword(deletedService, deletedEmail, deletedPassword){
+  fetch("http://localhost:6969/deletedPasswords/restore", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if(data.success){
+        // alert("Password successfully restored to the vault!");
+        const title = "Recycle Bin - Restore Notification";
+        const message = "Recycled record has been restored to vault!";
+        addNotification(title, message);
+        accounts.push({
+          deletedService,
+          deletedEmail,
+          deletedPassword
+        });
+        // Need some way to refresh the vault div.
+        refreshRecycleBinDiv();
+        refreshVaultDiv();
+      } else {
+        // alert(data.message || "Recycle bin record restoration unsuccessful!");
+      }
+    })
+    .catch((error) => {
+      // alert(error.message);
+    })
 }
 
 function permaDelete(deletedService, deletedEmail, deletedPassword) {
@@ -501,17 +548,21 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
         alert(
           "The password record has been permenantly deleted from the recycle bin!"
         );
+        const title = "Recycle Bin - Delete Notification";
+        const content = "Password permenantly deleted from recycle bin!";
+        addNotification(title, content);
+        refreshNotificationsDiv(title, content);
         refreshRecycleBinDiv(deletedService, deletedEmail);
       } else {
-        alert(data.message || "Recycle Bin Password Deletion Unsuccessful!");
+        // alert(data.message || "Recycle Bin Password Deletion Unsuccessful!");
       }
     })
     .catch((error) => {
-      alert(error.message);
+      // alert(error.message);
     });
 }
 
-function addNotification(title, content){
+function addNotification(title, content) {
   fetch("http://localhost:6969/notifications/new", {
     method: "POST",
     headers: {
@@ -521,20 +572,22 @@ function addNotification(title, content){
   })
     .then((response) => response.json())
     .then((data) => {
-      if(data.success){
+      if (data.success) {
         console.log("New message added to notifications");
       } else {
-        console.log(data.message || "New message could not be added to notifications");
+        console.log(
+          data.message || "New message could not be added to notifications"
+        );
       }
     })
     .catch((error) => {
       console.error(error.message);
     });
-  // Need some way to refresh the notifications div.
+  // Need a way of refreshing the notifications modal.
   fillNotifications();
 }
 
-function deleteNotification(title, content){
+function deleteNotification(title, content) {
   fetch("http://localhost:6969/notifications/delete", {
     method: "POST",
     headers: {
@@ -544,16 +597,15 @@ function deleteNotification(title, content){
   })
     .then((response) => response.json())
     .then((data) => {
-      if(data.success){
-        alert("This notification has been deleted!");
-        // Some function to refresh the div.
+      if (data.success) {
+        // alert("This notification has been deleted!");
         refreshNotificationsDiv(title, content);
       } else {
-        alert(data.message || "Notification deletion unsuccessful!");
+        // alert(data.message || "Notification deletion unsuccessful!");
       }
     })
     .catch((error) => {
-      alert(error.message);
+      // alert(error.message);
     });
 }
 
@@ -625,8 +677,8 @@ function refreshRecycleBinDiv(deletedService, deletedEmail) {
   fillDeletedAccounts();
 }
 
-function refreshNotificationsDiv(deletedTitle, deletedContent){
-  for(let i = 0; i < notifications.length; i++){
+function refreshNotificationsDiv(deletedTitle, deletedContent) {
+  for (let i = 0; i < notifications.length; i++) {
     if (
       notifications[i].title === deletedTitle &&
       notifications[i].content === deletedContent
@@ -698,7 +750,7 @@ if (notificationsIcon) {
   });
 }
 
-if(notificationsCloseButton){
+if (notificationsCloseButton) {
   notificationsCloseButton.addEventListener("click", () => {
     notificationsModal.style.display = "none";
   });
@@ -708,7 +760,7 @@ window.addEventListener("click", (event) => {
   if (event.target === addPasswordModal) {
     hideAddModal();
   }
-  if(event.target === notificationsModal){
+  if (event.target === notificationsModal) {
     notificationsModal.style.display = "none";
   }
 });
@@ -735,7 +787,7 @@ document.addEventListener("keydown", function (event) {
     return;
   } else {
     if (event.key === "#") {
-      alert("clearing");
+      // alert("clearing");
       accounts = [];
       save();
     }
