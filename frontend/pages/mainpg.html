@@ -82,29 +82,31 @@
             <div class="password-config" id="password-config">
               <div class="strength-checker" id="strength-checker">
                 <img src="../assets/circle_checkmark.png" alt="circle_checkmark">
-                <h3 id="display-password-strength">Strength: N/A</h3>
+                <h3 id="display-password-strength">Strength:</h3>
                 <div class="password-customiser" id="password-customiser">
                   <h2>Customise your password</h2>
                   <p>Select from the options below to strengthen the security of your password.</p>
                   <hr>
                   <div class="checkbox-container">
                     <div class="checkbox-item">
-                      <input type="checkbox" id="letters">
+                      <input type="checkbox" id="letters-checkbox">
                       <label for="letters">Letters</label>
                     </div>
                     <div class="checkbox-item">
-                      <input type="checkbox" id="mixed-case">
+                      <input type="checkbox" id="mixed-case-checkbox">
                       <label for="mixed-case">Mixed Case</label>
                     </div>
                     <div class="checkbox-item">
-                      <input type="checkbox" id="numbers">
+                      <input type="checkbox" id="numbers-checkbox">
                       <label for="numbers">Numbers</label>
                     </div>
                     <div class="checkbox-item">
-                      <input type="checkbox" id="punctuation">
+                      <input type="checkbox" id="punctuation-checkbox">
                       <label for="punctuation">Punctuation</label>
                     </div>
                   </div>
+                  <button id = "add-to-vault">Add to Vault</button>
+                  <hr>
                   <button id = "restore-settings">Restore Default Settings</button>
                 </div>
               </div>

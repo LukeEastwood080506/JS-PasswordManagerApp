@@ -272,6 +272,106 @@ function fillNotifications() {
   });
 }
 
+function generatePassword(length = 12){
+  const addGeneratedPasswordButton = document.getElementById("add-to-vault");
+  const generatorRestoreSettingsBtn = document.getElementById("restore-settings");
+
+  let generatedPassword = document.getElementById("generated-password");
+
+  // Password generation happens here.
+  // Need to account for checkboxes.
+  let initialPassword = "";
+  const chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const array = new Uint32Array(length);
+  window.crypto.getRandomValues(array);
+  for(i = 0; i < length; i++){
+    initialPassword += chars[array[i] % chars.length];
+  }
+  // This is the initial password before any checkboxes are checked/unchecked.
+  generatedPassword.textContent = initialPassword;
+  initialiseCheckboxes(initialPassword);
+
+  strengthChecker(initialPassword);
+  addGeneratedPasswordButton.addEventListener("click", () => {
+    addGeneratedPassword(initialPassword);
+  });
+  generatorRestoreSettingsBtn.addEventListener("click", () => {
+    restoreGeneratorSettings(initialPassword);
+  });
+}
+
+function strengthChecker(password){
+  const passwordStrengthHeading = document.getElementById("display-password-strength"); 
+  switch(true){
+    case (password.length < 12):
+      passwordStrengthHeading.textContent = "Password Strength: Weak";
+      break;
+    case (password.length >= 12):
+      passwordStrengthHeading.textContent = "Password Strength: Strong";
+      break;
+    default:
+      passwordStrengthHeading.textContent = "Password Strength: N/A";
+  }
+}
+
+function initialiseCheckboxes(password){
+  // Change checkbox state based on the contents of the password.
+  if(/[a-zA-Z]/.test(password)){
+    // Contains letters
+    document.getElementById("letters-checkbox").checked = true;
+  }
+  if(/[a-z]/.test(password) && /[A-Z]/.test(password)){
+    // Contains mixed case letters.
+    document.getElementById("mixed-case-checkbox").checked = true;
+  }
+  if(/\d/.test(password)){
+    // Contains numbers.
+    document.getElementById("numbers-checkbox").checked = true;
+  }
+  if(/[.,!?;:'"()\[\]{}\-–—…]/.test(password)){
+    // Contains punctuation.
+    document.getElementById("punctuation-checkbox").checked = true;
+  }
+}
+
+function addGeneratedPassword(password){
+  const generatedPassword = password;
+  // console.log("Password passed to addGeneratedPassword method: ", password);
+  // Ask the user the service they want to attach the generated password to, in the vault.
+  const vaultService = prompt("Type a service from the vault for which you want the generated password to be attached to: ");
+  if(vaultService === null){
+    return;
+  }
+  fetch("http://localhost:6969/generator/new", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ generatedPassword, vaultService }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if(data.success){
+        // console.log("The generated password has successfully been added to the vault for the service: " + vaultService);
+        alert("The generated password has successfully been added to the vault for the service: " + vaultService); 
+      } else {
+        alert(data.message || "The generated password could not be added to the vault!");
+      }
+    })
+    .catch((error) => {
+      console.error(error.message);
+      console.log(error.message);
+    })
+}
+
+function restoreGeneratorSettings(initialPassword){
+  // console.log("Password passed to restoreGeneratorSettings method: ", initialPassword);
+  let generatedPassword = document.getElementById("generated-password");
+  generatedPassword.textContent = initialPassword;
+  // console.log(generatedPassword.textContent);
+  initialiseCheckboxes(initialPassword);
+}
+
 function recycleBin(deletedService, deletedEmail, deletedPassword) {
   return fetch("http://localhost:6969/deletedPasswords/add", {
     method: "POST",
@@ -645,6 +745,10 @@ function changePage(pageOption) {
 
   if (pageOption === "recycle-bin-link") {
     fillDeletedAccounts();
+  }
+
+  if(pageOption === "generator-link"){
+    generatePassword();
   }
 }
 
