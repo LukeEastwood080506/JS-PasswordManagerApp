@@ -280,7 +280,7 @@ hr {
 #password-customiser label {
     padding-top: 20px;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 15px;
     margin-right: 10px;
 }
 
@@ -307,13 +307,21 @@ hr {
     top: 10px;
 }
 
-#password-customiser button{
+#add-to-vault{
     background-color: white;
     color: black;
     width: 250px;
-    font-size: 14px;
+    font-size: 15px;
     margin-top: 25px;
 }
+
+#restore-settings{
+    margin-top: 20px;
+    background-color: white;
+    color: black;
+    width: 250px;
+    font-size: 12px;
+} 
 
 .plus {
     font-weight: bold;
