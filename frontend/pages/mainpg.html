@@ -87,21 +87,25 @@
                   <h2>Customise your password</h2>
                   <p>Select from the options below to strengthen the security of your password.</p>
                   <hr>
+                  <div class = "slide-container">
+                    <label for="slider" id = "slider-text">Password Length: 12</label>
+                    <input type = "range" min="1" max="32" value="12" class="slider" id = "lengthRangeSlider">
+                  </div>
                   <div class="checkbox-container">
                     <div class="checkbox-item">
-                      <input type="checkbox" id="letters-checkbox">
+                      <input type="checkbox" id="letters-checkbox" checked disabled>
                       <label for="letters">Letters</label>
                     </div>
                     <div class="checkbox-item">
-                      <input type="checkbox" id="mixed-case-checkbox">
+                      <input type="checkbox" id="mixed-case-checkbox" checked>
                       <label for="mixed-case">Mixed Case</label>
                     </div>
                     <div class="checkbox-item">
-                      <input type="checkbox" id="numbers-checkbox">
+                      <input type="checkbox" id="numbers-checkbox" checked>
                       <label for="numbers">Numbers</label>
                     </div>
                     <div class="checkbox-item">
-                      <input type="checkbox" id="punctuation-checkbox">
+                      <input type="checkbox" id="punctuation-checkbox" checked>
                       <label for="punctuation">Punctuation</label>
                     </div>
                   </div>
