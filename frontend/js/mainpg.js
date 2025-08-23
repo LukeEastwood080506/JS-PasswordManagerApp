@@ -272,74 +272,105 @@ function fillNotifications() {
   });
 }
 
-function generatePassword(length = 12){
-  const addGeneratedPasswordButton = document.getElementById("add-to-vault");
-  const generatorRestoreSettingsBtn = document.getElementById("restore-settings");
-
-  let generatedPassword = document.getElementById("generated-password");
-
-  // Password generation happens here.
-  // Need to account for checkboxes.
-  let initialPassword = "";
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const array = new Uint32Array(length);
-  window.crypto.getRandomValues(array);
-  for(i = 0; i < length; i++){
-    initialPassword += chars[array[i] % chars.length];
+function sliderFunction(){
+  const slider = document.getElementById("lengthRangeSlider");
+  let sliderText = document.getElementById("slider-text");
+  slider.oninput = function(){
+    sliderText.textContent = "Password Length: " + this.value;
+    generatePassword(this.value);
   }
-  // This is the initial password before any checkboxes are checked/unchecked.
-  generatedPassword.textContent = initialPassword;
-  initialiseCheckboxes(initialPassword);
-
-  strengthChecker(initialPassword);
-  addGeneratedPasswordButton.addEventListener("click", () => {
-    addGeneratedPassword(initialPassword);
-  });
-  generatorRestoreSettingsBtn.addEventListener("click", () => {
-    restoreGeneratorSettings(initialPassword);
-  });
 }
 
-function strengthChecker(password){
-  const passwordStrengthHeading = document.getElementById("display-password-strength"); 
-  switch(true){
+function generatePassword(length = 12) {
+  const generatedPassword = document.getElementById("generated-password");
+  // Character groups
+  const charGroups = {
+    letters: "abcdefghijklmnopqrstuvwxyz",
+    mixedCase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    numbers: "0123456789",
+    punctuation: "!@#$%^&*()",
+  };
+  // Build list of selected groups
+  const selectedGroups = [];
+  if (document.getElementById("letters-checkbox").checked) selectedGroups.push(charGroups.letters);
+  if (document.getElementById("mixed-case-checkbox").checked) selectedGroups.push(charGroups.mixedCase);
+  if (document.getElementById("numbers-checkbox").checked) selectedGroups.push(charGroups.numbers);
+  if (document.getElementById("punctuation-checkbox").checked) selectedGroups.push(charGroups.punctuation);
+  // Fallback if nothing is selected.
+  if(selectedGroups.length === 0) selectedGroups.push(charGroups.letters);
+  console.log("Selected char groups: " + selectedGroups);
+  // Pick one character from each group to start building the password.
+  let passwordChars = selectedGroups.map(group => group[Math.floor(Math.random() * group.length)]);
+  console.log("Chars (one from each group): " + passwordChars);
+  // Fill remaining length with random characters from combined pool.
+  const combinedPool = selectedGroups.join("");
+  console.log("Combined pool: " + combinedPool);
+  for(let i = passwordChars.length; i < length; i++){
+    passwordChars.push(combinedPool[Math.floor(Math.random() * combinedPool.length)]);
+  }
+  // Shuffle the password so the guaranteed characters aren't in fixed positions.
+  passwordChars = passwordChars.sort(() => Math.random() - 0.5);
+  console.log("Password chars: " + passwordChars);
+
+  // Display password
+  const password = passwordChars.join("");
+  generatedPassword.textContent = password;
+
+  // Run extra functions
+  strengthChecker(password);
+  return password;
+}
+
+document.getElementById("add-to-vault").addEventListener("click", () => {
+  const password = document.getElementById("generated-password").textContent
+  addGeneratedPassword(password);
+});
+document.getElementById("restore-settings").addEventListener("click", () => {
+  restoreGeneratorSettings();
+});
+
+function strengthChecker(password) {
+  const mixedCaseCheck = document.getElementById("mixed-case-checkbox").checked;
+  const numbersCheck = document.getElementById("numbers-checkbox").checked;
+  const punctuationCheck = document.getElementById("punctuation-checkbox").checked;
+  const passwordStrengthHeading = document.getElementById("display-password-strength");
+  switch (true) {
+    // Password too short
+    case (password.length < 8):
+      passwordStrengthHeading.textContent = "Password Strength: Very Weak";
+      break;
     case (password.length < 12):
       passwordStrengthHeading.textContent = "Password Strength: Weak";
       break;
-    case (password.length >= 12):
+    // Password is long but is lacking variety.
+    case (password.length >= 12 && (!mixedCaseCheck || !numbersCheck)):
+      passwordStrengthHeading.textContent = "Password Strength: Moderate";
+      break;
+    // Password is long and varied but lacking punctuation.
+    case (password.length >= 12 && mixedCaseCheck && numbersCheck && !punctuationCheck):
       passwordStrengthHeading.textContent = "Password Strength: Strong";
       break;
     default:
-      passwordStrengthHeading.textContent = "Password Strength: N/A";
+      passwordStrengthHeading.textContent = "Password Strength: Very Strong";
   }
 }
 
-function initialiseCheckboxes(password){
-  // Change checkbox state based on the contents of the password.
-  if(/[a-zA-Z]/.test(password)){
-    // Contains letters
-    document.getElementById("letters-checkbox").checked = true;
-  }
-  if(/[a-z]/.test(password) && /[A-Z]/.test(password)){
-    // Contains mixed case letters.
-    document.getElementById("mixed-case-checkbox").checked = true;
-  }
-  if(/\d/.test(password)){
-    // Contains numbers.
-    document.getElementById("numbers-checkbox").checked = true;
-  }
-  if(/[.,!?;:'"()\[\]{}\-–—…]/.test(password)){
-    // Contains punctuation.
-    document.getElementById("punctuation-checkbox").checked = true;
-  }
+function initialiseCheckboxListeners() {
+  const checkboxes = document.querySelectorAll("input[type=checkbox]");
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      // Regenerates password on toggle of any checkbox.
+      generatePassword();
+    });
+  });
 }
 
-function addGeneratedPassword(password){
+function addGeneratedPassword(password) {
   const generatedPassword = password;
   // console.log("Password passed to addGeneratedPassword method: ", password);
   // Ask the user the service they want to attach the generated password to, in the vault.
   const vaultService = prompt("Type a service from the vault for which you want the generated password to be attached to: ");
-  if(vaultService === null){
+  if (vaultService === null) {
     return;
   }
   fetch("http://localhost:6969/generator/new", {
@@ -351,9 +382,9 @@ function addGeneratedPassword(password){
   })
     .then((response) => response.json())
     .then((data) => {
-      if(data.success){
+      if (data.success) {
         // console.log("The generated password has successfully been added to the vault for the service: " + vaultService);
-        alert("The generated password has successfully been added to the vault for the service: " + vaultService); 
+        alert("The generated password has successfully been added to the vault for the service: " + vaultService);
       } else {
         alert(data.message || "The generated password could not be added to the vault!");
       }
@@ -364,12 +395,19 @@ function addGeneratedPassword(password){
     })
 }
 
-function restoreGeneratorSettings(initialPassword){
-  // console.log("Password passed to restoreGeneratorSettings method: ", initialPassword);
-  let generatedPassword = document.getElementById("generated-password");
-  generatedPassword.textContent = initialPassword;
-  // console.log(generatedPassword.textContent);
-  initialiseCheckboxes(initialPassword);
+function restoreGeneratorSettings() {
+  // Reset checkboxes to default checked state.
+  document.getElementById("letters-checkbox").checked = true;
+  document.getElementById("mixed-case-checkbox").checked = true;
+  document.getElementById("numbers-checkbox").checked = true;
+  document.getElementById("punctuation-checkbox").checked = true;
+  // Reset slider for default password length - 12.
+  const slider = document.getElementById("lengthRangeSlider");
+  slider.value = 12;
+  let sliderText = document.getElementById("slider-text");
+  sliderText.textContent = "Password Length: 12";
+  // Regenerate password.
+  generatePassword();
 }
 
 function recycleBin(deletedService, deletedEmail, deletedPassword) {
@@ -490,15 +528,15 @@ async function fetchPassword(isRecycleBin, account) {
     : "http://localhost:6969/passwords/show";
   const body = isRecycleBin
     ? {
-        deletedService: account.deletedService,
-        deletedEmail: account.deletedEmail,
-        deletedPassword: account.deletedPassword,
-      }
+      deletedService: account.deletedService,
+      deletedEmail: account.deletedEmail,
+      deletedPassword: account.deletedPassword,
+    }
     : {
-        service: account.service,
-        email: account.email,
-        password: account.password,
-      };
+      service: account.service,
+      email: account.email,
+      password: account.password,
+    };
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -599,7 +637,7 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
     });
 }
 
-function restorePassword(deletedService, deletedEmail, deletedPassword){
+function restorePassword(deletedService, deletedEmail, deletedPassword) {
   fetch("http://localhost:6969/deletedPasswords/restore", {
     method: "POST",
     headers: {
@@ -609,7 +647,7 @@ function restorePassword(deletedService, deletedEmail, deletedPassword){
   })
     .then((response) => response.json())
     .then((data) => {
-      if(data.success){
+      if (data.success) {
         // alert("Password successfully restored to the vault!");
         const title = "Recycle Bin - Restore Notification";
         const message = "Recycled record has been restored to vault!";
@@ -747,7 +785,7 @@ function changePage(pageOption) {
     fillDeletedAccounts();
   }
 
-  if(pageOption === "generator-link"){
+  if (pageOption === "generator-link") {
     generatePassword();
   }
 }
@@ -903,4 +941,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (addModalOpenButton) {
     addModalOpenButton.addEventListener("click", () => showAddModal());
   }
+  generatePassword();
+  initialiseCheckboxListeners();
+  sliderFunction();
 });

@@ -284,6 +284,12 @@ hr {
     margin-right: 10px;
 }
 
+.slide-container{
+    padding-top: 20px;
+    width: 50%;
+    margin-bottom: -25px;
+}
+
 .checkbox-container {
     display: flex;
     flex-wrap: wrap;
