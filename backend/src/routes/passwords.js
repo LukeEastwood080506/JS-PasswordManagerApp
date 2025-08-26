@@ -4,6 +4,7 @@ const router = express.Router();
 const db = require("../db/db");
 const bcrypt = require("bcrypt");
 const { route } = require("./users");
+const requireLogin = require("../middleware/auth");
 
 
 // Reusable route check handler method.
@@ -82,20 +83,22 @@ router.post("/show", (request, response) => {
   });
 });
 
-router.post("/new", (request, response) => {
+router.post("/new", requireLogin, (request, response) => {
   console.log(`POST request to /passwords${request.url}`);
   // console.log(request.body);
   const { service, email, password } = request.body;
-  if (!service || !email || !password) {
+  const userId = request.session.userId;
+  // console.log("userId: ", userId);
+  if (!userId || !service || !email || !password) {
     return response.status(400).send({
       success: false,
-      message: "A service, email and password is required to store a password",
+      message: "A userId, service, email and password is required to store a password",
     });
   }
-  const insertSql = `INSERT INTO passwords(service,email,password) VALUES (?,?,?)`;
+  const insertSql = `INSERT INTO passwords(user_id, service, email, password) VALUES (?,?,?,?)`;
   const salt = bcrypt.genSaltSync(13);
   const hashedPassword = bcrypt.hashSync(password, salt);
-  db.all(insertSql, [service, email, hashedPassword], (err) => {
+  db.all(insertSql, [userId, service, email, hashedPassword], (err) => {
     if (err) {
       console.error(err.message);
       return response.status(400).send({
@@ -183,10 +186,9 @@ router.post("/edit", (request, response) => {
   });
 });
 
-router.post("/delete", (request, response) => {
+router.post("/delete", async (request, response) => {
   console.log(`DELETE request to /passwords${request.url}`);
   const { service, email, password } = request.body;
-  // console.log(service, email, password);
   // Check if the service, email, password exist for deletion.
   if (!service || !email || !password) {
     return response.status(400).send({
@@ -194,50 +196,60 @@ router.post("/delete", (request, response) => {
       message: "A service, email and password is required for deletion",
     });
   }
-  // Retrieve the hashed password from the database
-  // Compare that hashed password with the plain text password.
-  // Then if a match is found we can then delete the record.
-  const selectSql = `SELECT * FROM passwords WHERE email = ?`;
-  db.get(selectSql, [email], (err, row) => {
-    if (err) {
-      return response.status(400).json({
-        success: false,
-        message: "Database Error: " + err.message,
+
+  try {
+    // Wrap db.get in a promise.
+    const row = await new Promise((resolve, reject) => {
+      const selectSql = `SELECT * FROM passwords WHERE email = ? AND service = ?`;
+      db.get(selectSql, [email, service], (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(row);
+        }
       });
-    }
+    });
+
     if (!row) {
       return response.status(400).json({
         success: false,
         message: "Error! Password could not be deleted",
       });
     }
+
     // Retrieve the hashed password
     const hashedPassword = row.password;
     // console.log(password);
     // console.log(hashedPassword);
-    const isMatch = password === hashedPassword;
-    if (!isMatch) {
+    if (password !== hashedPassword) {
       return response.status(401).json({
         success: false,
         message: "Error! Password record has not been matched for deletion",
       });
     }
-    // Delete record under the hashed password since it matches with the plain text password stored in the body.
-    const deleteSql = `DELETE FROM passwords WHERE password = ?`;
-    db.run(deleteSql, [hashedPassword], (err) => {
-      if (err) {
-        return response.status(400).send({
-          success: false,
-          message: "Database Error!: " + err.message,
-        });
-      }
-      return response.status(200).send({
-        success: true,
-        message: "Password successfully deleted from the vault!",
+
+    // Wrap db.run in a promise.
+    await new Promise((resolve, reject) => {
+      const deleteSql = `DELETE FROM passwords WHERE service = ? AND email = ?`;
+      db.run(deleteSql, [service, email], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
       });
     });
-  });
-});
 
+    return response.status(200).json({
+      success: true,
+      message: "Password successfully deleted from the vault!"
+    });
+  } catch (err) {
+    return response.status(400).json({
+      success: false,
+      message: "Database Error: " + err.message
+    });
+  }
+});
 // Export values and functions from the router object.
 module.exports = router;

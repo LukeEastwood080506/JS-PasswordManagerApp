@@ -4,6 +4,7 @@ const path = require("path");
 
 // Connect to database
 const dbPath = path.join(__dirname, "pm_db.db");
+// console.log("DB Path: " + dbPath);
 const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     return console.error(err.message);
@@ -12,7 +13,11 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 });
 
 // Create users, passwords, deletedPasswords and notifications tables.
-// const createSql = `CREATE table users(id INTEGER PRIMARY KEY,email TEXT NOT NULL UNIQUE,password TEXT NOT NULL)`;
+// const createSql = `CREATE table users(
+//   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   email TEXT NOT NULL UNIQUE,
+//   password TEXT NOT NULL
+// )`;
 // db.run(createSql, err =>{
 //     if(err){
 //         return console.error(err.message);
@@ -20,7 +25,15 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //     return console.log("Users table created successfully!");
 // });
 
-// const createSql = `CREATE table passwords(id INTEGER PRIMARY KEY,service TEXT NOT NULL,email TEXT NOT NULL,password TEXT NOT NULL, UNIQUE(email, service))`;
+// const createSql = `CREATE table passwords(
+//   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   user_id INTEGER NOT NULL,
+//   service TEXT NOT NULL,
+//   email TEXT NOT NULL,
+//   password TEXT NOT NULL,
+//   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
+//   UNIQUE(user_id, email, service)
+// )`;
 // db.run(createSql, err =>{
 //   if(err){
 //     return console.error(err.message);
@@ -28,7 +41,14 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //   return console.log("Passwords table created successfully!");
 // });
 
-// const createSql = `CREATE table deletedPasswords(id INTEGER PRIMARY KEY, deletedService TEXT NOT NULL, deletedEmail TEXT NOT NULL, deletedPassword TEXT NOT NULL, UNIQUE(deletedEmail, deletedService))`;
+// const createSql = `CREATE table deletedPasswords(
+//   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   user_id INTEGER NOT NULL,
+//   deletedService TEXT NOT NULL, 
+//   deletedEmail TEXT NOT NULL, 
+//   deletedPassword TEXT NOT NULL, 
+//   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+// )`;
 // db.run(createSql, err =>{
 //   if(err){
 //     return console.error(err.message);
@@ -36,7 +56,13 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
 //   return console.log("deletedPasswords table created successfully!");
 // });
 
-// const createSql = `CREATE table notifications(id INTEGER PRIMARY KEY, title TEXT NOT NULL, content TEXT NOT NULL)`;
+// const createSql = `CREATE table notifications(
+//   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   user_id INTEGER NOT NULL,
+//   title TEXT NOT NULL, 
+//   content TEXT NOT NULL,
+//   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+// )`;
 // db.run(createSql, err => {
 //   if(err){
 //     return console.error(err.message);
@@ -124,6 +150,17 @@ db.all("SELECT * FROM users", [], (err, userRows) => {
     });
   });
 });
+
+// db.all(
+//   `SELECT * FROM passwords WHERE user_id = ?`,
+//   [1],
+//   (err, rows) => {
+//     if(err){
+//       console.error(err.message);
+//       console.log(rows);
+//     }
+//   }
+// );
 
 // Drop table
 // const dropSql = `DROP TABLE users`;

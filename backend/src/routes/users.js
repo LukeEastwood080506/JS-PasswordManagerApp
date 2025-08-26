@@ -6,11 +6,11 @@ const bcrypt = require('bcrypt');
 
 
 // Reusable route check handler method.
-function routeCheckHandler(routeName){
-  return (request, response) =>{
+function routeCheckHandler(routeName) {
+  return (request, response) => {
     console.log(`GET request to /users${request.url}`);
-    db.get("SELECT 1", [], (err) =>{
-      if(err){
+    db.get("SELECT 1", [], (err) => {
+      if (err) {
         console.error("Database is not working (", err.message, ")");
         return response.status(401).json({
           message: "Database is not working",
@@ -28,18 +28,18 @@ function routeCheckHandler(routeName){
 router.get("/login", routeCheckHandler("login"));
 router.get("/signup", routeCheckHandler("signup"));
 
-router.get("/all", (request, response) =>{
+router.get("/all", (request, response) => {
   console.log(`GET request to /users${request.url}`);
   const selectSql = `SELECT * FROM users`;
-  db.get(selectSql, [], (err, row) =>{
-    if(err){
+  db.get(selectSql, [], (err, row) => {
+    if (err) {
       console.log(err);
       return response.status(400).json({
         success: false,
         message: "Database Error"
       });
     }
-    if(!row){
+    if (!row) {
       // No records in database
       return response.status(401).json({
         success: false,
@@ -68,14 +68,14 @@ router.post("/login", (request, response) => {
   // The user-inputted password needs to be hashed for comparison
   // with hashed passwords, which need to be retrieved from the database.
   const selectSql = `SELECT * FROM users WHERE email = ?`;
-  db.get(selectSql, [email], (err, row) =>{
-    if(err){
+  db.get(selectSql, [email], (err, row) => {
+    if (err) {
       return response.status(400).json({
         success: false,
         message: "Database Error"
       });
     }
-    if(!row){
+    if (!row) {
       // Email not found.
       return response.status(401).json({
         success: false,
@@ -86,12 +86,15 @@ router.post("/login", (request, response) => {
     const hashedPassword = row.password;
     // Compare the hashed password with the user-inputted password.
     const isMatch = bcrypt.compareSync(password, hashedPassword);
-    if(!isMatch){
+    if (!isMatch) {
       return response.status(401).json({
         success: false,
         message: "Invalid email or password"
       });
     }
+    // Saves userId in session.
+    request.session.userId = row.id;
+    console.log("Session after login:", request.session);
     return response.status(200).json({
       success: true,
       message: "User Log-in Successful!"
