@@ -76,7 +76,7 @@ function initialiseApp() {
       }
     })
     .catch((err) => {
-      // alert("Error fetching passwords: ", err);
+      alert("Error fetching passwords: ", err);
       console.error("Error fetching passwords:", err);
     });
   // Fetch deleted passwords for recycle bin.
@@ -106,7 +106,7 @@ function initialiseApp() {
       }
     })
     .catch((err) => {
-      // alert("Error fetching deleted passwords: ", err);
+      alert("Error fetching deleted passwords: ", err);
       console.error("Error fetching deleted passwords:", err);
     });
   // Fetch notifications for notifications modal.
@@ -130,7 +130,7 @@ function initialiseApp() {
       }
     })
     .catch((err) => {
-      // alert("Error fetching notifications: ", err);
+      alert("Error fetching notifications: ", err);
       console.error("Error fetching notifications: ", err);
     });
   loadPage(currentPage, currentPageOption);
@@ -298,19 +298,19 @@ function generatePassword(length = 12) {
   if (document.getElementById("punctuation-checkbox").checked) selectedGroups.push(charGroups.punctuation);
   // Fallback if nothing is selected.
   if(selectedGroups.length === 0) selectedGroups.push(charGroups.letters);
-  console.log("Selected char groups: " + selectedGroups);
+  // console.log("Selected char groups: " + selectedGroups);
   // Pick one character from each group to start building the password.
   let passwordChars = selectedGroups.map(group => group[Math.floor(Math.random() * group.length)]);
-  console.log("Chars (one from each group): " + passwordChars);
+  // console.log("Chars (one from each group): " + passwordChars);
   // Fill remaining length with random characters from combined pool.
   const combinedPool = selectedGroups.join("");
-  console.log("Combined pool: " + combinedPool);
+  // console.log("Combined pool: " + combinedPool);
   for(let i = passwordChars.length; i < length; i++){
     passwordChars.push(combinedPool[Math.floor(Math.random() * combinedPool.length)]);
   }
   // Shuffle the password so the guaranteed characters aren't in fixed positions.
   passwordChars = passwordChars.sort(() => Math.random() - 0.5);
-  console.log("Password chars: " + passwordChars);
+  // console.log("Password chars: " + passwordChars);
 
   // Display password
   const password = passwordChars.join("");
@@ -414,6 +414,7 @@ function recycleBin(deletedService, deletedEmail, deletedPassword) {
   return fetch("http://localhost:6969/deletedPasswords/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
   }).then((response) => response.json());
 }
@@ -425,7 +426,7 @@ function handleAccountSubmit(isEditMode) {
     const password = document.getElementById("add-password-input").value.trim();
 
     if (!service || !email || !password) {
-      // alert("Please fill in all fields");
+      alert("Please fill in all fields");
       return;
     }
 
@@ -444,7 +445,7 @@ function handleAccountSubmit(isEditMode) {
       .value.trim();
 
     if (!service || !email || !password || !currentPassword) {
-      // alert("Please fill in all fields");
+      alert("Please fill in all fields");
       return;
     }
 
@@ -454,6 +455,7 @@ function handleAccountSubmit(isEditMode) {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Sends cookies with the request.
         body: JSON.stringify({
           originalService: originalAccount.service,
           originalEmail: originalAccount.email,
@@ -466,7 +468,7 @@ function handleAccountSubmit(isEditMode) {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            // alert("Credentials for website/app updated successfully!");
+            alert("Credentials for website/app updated successfully!");
             // Update local array
             const idx = accounts.findIndex(
               (a) =>
@@ -479,11 +481,11 @@ function handleAccountSubmit(isEditMode) {
             }
             fillAccounts();
           } else {
-            // alert(data.message || "Credentials could not be edited");
+            alert(data.message || "Credentials could not be edited");
           }
         })
         .catch((err) => {
-          // alert(err.message);
+          alert(err.message);
         });
     }
   }
@@ -515,10 +517,10 @@ async function togglePassword(
     if (password) {
       updatePasswordUI(true, iconElement, passwordElement, password);
     } else {
-      // alert("Password cannot be displayed");
+      alert("Password cannot be displayed");
     }
   } catch (err) {
-    // alert(err.message);
+    alert(err.message);
   }
 }
 
@@ -542,6 +544,7 @@ async function fetchPassword(isRecycleBin, account) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify(body),
   });
   const data = await response.json();
@@ -575,23 +578,24 @@ function save(service, email, password) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify({ service, email, password }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // alert("Password record created and added to vault successfully!");
+        alert("Password record created and added to vault successfully!");
         // POST request needed to /notifications/new
         const title = "Vault - Add Notification";
         const content = "Password record added to vault!";
         addNotification(title, content);
         refreshNotificationsDiv(title, content);
       } else {
-        // alert(data.message || "Password Creation Unsuccessful!");
+        alert(data.message || "Password Creation Unsuccessful!");
       }
     })
     .catch((error) => {
-      // alert(error.message);
+      alert(error.message);
     });
 }
 
@@ -601,39 +605,44 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
+    credentials: "include", // Sends cookies with the request.
+    body: JSON.stringify({ 
+      service: deletedService,
+      email: deletedEmail,
+      password: deletedPassword  
+    }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // alert("Password record deleted from vault successfully!");
-        refreshVaultDiv(service, email);
+        alert("Password record deleted from vault successfully!");
+        refreshVaultDiv(deletedService, deletedEmail);
         const title = "Vault - Delete Notification";
         const content = "Password deleted from vault and moved to recycle bin!";
         addNotification(title, content);
         refreshNotificationsDiv(title, content);
         deletedAccounts.push({
-          deletedService,
-          deletedEmail,
-          deletedPassword,
+          service: deletedService,
+          email: deletedEmail,
+          password: deletedPassword,
         });
         recycleBin(deletedService, deletedEmail, deletedPassword)
           .then((data) => {
             if (data.success) {
               fillDeletedAccounts();
             } else {
-              // alert(data.message || "Recycle bin addition unsuccessful!");
+              alert(data.message || "Recycle bin addition unsuccessful!");
             }
           })
           .catch((error) => {
-            // alert(error.message);
+            alert(error.message);
           });
       } else {
-        // alert(data.message || "Password Deletion Unsuccessful!");
+        alert(data.message || "Password Deletion Unsuccessful!");
       }
     })
     .catch((error) => {
-      // alert(error.message);
+      alert(error.message);
     });
 }
 
@@ -643,12 +652,13 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // alert("Password successfully restored to the vault!");
+        alert("Password successfully restored to the vault!");
         const title = "Recycle Bin - Restore Notification";
         const message = "Recycled record has been restored to vault!";
         addNotification(title, message);
@@ -661,11 +671,11 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
         refreshRecycleBinDiv();
         refreshVaultDiv();
       } else {
-        // alert(data.message || "Recycle bin record restoration unsuccessful!");
+        alert(data.message || "Recycle bin record restoration unsuccessful!");
       }
     })
     .catch((error) => {
-      // alert(error.message);
+      alert(error.message);
     })
 }
 
@@ -675,6 +685,7 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
   })
     .then((response) => response.json())
@@ -692,11 +703,11 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
         refreshNotificationsDiv(title, content);
         refreshRecycleBinDiv(deletedService, deletedEmail);
       } else {
-        // alert(data.message || "Recycle Bin Password Deletion Unsuccessful!");
+        alert(data.message || "Recycle Bin Password Deletion Unsuccessful!");
       }
     })
     .catch((error) => {
-      // alert(error.message);
+      alert(error.message);
     });
 }
 
@@ -706,6 +717,7 @@ function addNotification(title, content) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify({ title, content }),
   })
     .then((response) => response.json())
@@ -731,19 +743,20 @@ function deleteNotification(title, content) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify({ title, content }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // alert("This notification has been deleted!");
+        alert("This notification has been deleted!");
         refreshNotificationsDiv(title, content);
       } else {
-        // alert(data.message || "Notification deletion unsuccessful!");
+        alert(data.message || "Notification deletion unsuccessful!");
       }
     })
     .catch((error) => {
-      // alert(error.message);
+      alert(error.message);
     });
 }
 
@@ -929,7 +942,7 @@ document.addEventListener("keydown", function (event) {
     return;
   } else {
     if (event.key === "#") {
-      // alert("clearing");
+      alert("clearing");
       accounts = [];
       save();
     }

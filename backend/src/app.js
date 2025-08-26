@@ -1,16 +1,37 @@
 // Imports express.
 const express = require("express");
+const session = require("express-session");
+const SQLiteStore = require("connect-sqlite3")(session);
 // Imports CORS which allows resources to be shared across different servers.
 const cors = require("cors");
 const app = express();
 const port = 6969;
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", // Frontend origin
+  credentials: true, // Allows for cookies/sessions.
+}));
+
 // Gives access to the static files in the page directory.
 app.use(express.static("pages"));
 
 // Applies middleware.
 app.use(express.json());
+
+// Applies session middleware.
+app.use(
+  session({
+    store: new SQLiteStore({ db: "sessions.sqlite", dir: "./sessions" }), // sqlite session store.
+    secret: "supersecretkey",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true, // prevents JS from reading cookies
+      secure: false, // set to true if using HTTPS.
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
 
 // Test route
 app.get("/", (request, response) => {

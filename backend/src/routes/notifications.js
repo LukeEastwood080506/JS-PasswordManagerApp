@@ -47,6 +47,13 @@ router.get("/delete", routeCheckHandler());
 
 router.post("/new", (request, response) => {
   console.log(`POST request to /notifications${request.url}`);
+  const userId = request.session.userId;
+  if(!userId){
+    return response.status(401).send({
+      success: false,
+      message: "Unauthorised - Notifications"
+    });
+  }
   const { title, content } = request.body;
   if (!title || !content) {
     return response.status(400).send({
@@ -54,8 +61,8 @@ router.post("/new", (request, response) => {
       message: "A notification title is required as well as content",
     });
   }
-  const insertSql = `INSERT INTO notifications(title, content) VALUES (?,?)`;
-  db.run(insertSql, [title, content], function (err) {
+  const insertSql = `INSERT INTO notifications(user_id, title, content) VALUES (?,?,?)`;
+  db.run(insertSql, [userId, title, content], function (err) {
     if (err) {
       return response.status(401).send({
         success: false,

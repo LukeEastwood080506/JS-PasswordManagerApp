@@ -11,10 +11,12 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "connect-sqlite3": "^0.9.16",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "curl": "^0.1.4",
     "express": "^5.1.0",
+    "express-session": "^1.18.2",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

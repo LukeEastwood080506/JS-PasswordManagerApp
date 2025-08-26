@@ -37,7 +37,7 @@ function submitForgotPassword(){
         newPasswordBtn.style.display = "block";
     }
     else{
-        // alert("Please enter a valid existing email address!");
+        alert("Please enter a valid existing email address!");
         emailInput.value = "";
     }
 }
@@ -84,19 +84,19 @@ function passwordCheck(){
 function submitNewPassword(){
     // Check if the new password meets the length requirements.
     if(newPasswordInput.value.length < 12){
-        // alert("Please enter a new password that is at least 12 characters long.");
+        alert("Please enter a new password that is at least 12 characters long.");
         newPasswordInput.value = "";
         confirmPasswordInput.value = "";
     }
     // Check if the new password is equal to the old password.
     else if(!passwordCheck()){
-        // alert("Enter a new password, not your old one!");
+        alert("Enter a new password, not your old one!");
         newPasswordInput.value = "";
         confirmPasswordInput.value = "";
     }
     // Check if the new password input is not equal to the confirm password input
     else if(newPasswordInput.value !== confirmPasswordInput.value){
-        // alert("The new password input and the confirm password input must be the same!");
+        alert("The new password input and the confirm password input must be the same!");
     }
     else{
         // Store the new password and redirect the user to the login page.
@@ -106,7 +106,7 @@ function submitNewPassword(){
             userData.password = newPasswordInput.value;
             localStorage.setItem(currentUserEmail, JSON.stringify(userData));
         }
-        // alert("Password reset successful!");
+        alert("Password reset successful!");
         window.location.href = "loginpg.html";
     }
 }
