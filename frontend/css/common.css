@@ -1,13 +1,5 @@
-@font-face {
-  font-family: "Poppins Bold";
-  font-weight: 700;
-  src: url("../assets/fonts/Poppins-Bold.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Poppins Regular";
-  font-weight: 400;
-  src: url("../assets/fonts/Poppins-Regular.ttf") format("truetype");
+body{
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Reset for better responsive behavior */

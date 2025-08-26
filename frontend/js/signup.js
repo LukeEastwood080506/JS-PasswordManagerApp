@@ -21,12 +21,12 @@ passwordInput.addEventListener("keyup", function (event) {
 function confirmSignUp() {
   // check if the email input contains an @ sign - to verify its a valid email address.
   if (!emailInput.value.includes("@")) {
-    // alert("Please enter a valid email address.");
+    alert("Please enter a valid email address.");
     // clear the input fields.
     emailInput.value = "";
     confirmEmailInput.value = "";
   } else if (confirmEmailInput.value != emailInput.value) {
-    // alert(
+    alert(
       "To confirm your email address, please enter the same email address you entered above."
     );
     // clear the input fields.
@@ -35,13 +35,13 @@ function confirmSignUp() {
   }
   // check for the input of a strong password.
   else if (passwordInput.value.length < 12) {
-    // alert("Please enter a password that is at least 12 characters long.");
+    alert("Please enter a password that is at least 12 characters long.");
     passwordInput.value = "";
   } else {
     // Call method which saves account details to local storage.
     saveUserCredentials(emailInput.value, passwordInput.value);
     // Successful Sign-Up
-    // alert("Sign Up Successful!");
+    alert("Sign Up Successful!");
     window.location.href = "loginpg.html";
   }
 }
@@ -60,13 +60,13 @@ function saveUserCredentials(email, password) {
     // Handles the data returned by the backend
     .then((data) => {
       if (data.success) {
-        // alert("Sign-Up Successful!");
+        alert("Sign-Up Successful!");
         window.location.href = "loginpg.html";
       } else {
-        // alert(data.message || "Sign Up Unsuccessful!");
+        alert(data.message || "Sign Up Unsuccessful!");
       }
     })
     .catch((error) => {
-      // alert(error.message);
+      alert(error.message);
     });
 }

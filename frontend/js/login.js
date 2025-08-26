@@ -15,20 +15,21 @@ function detailsCheck(email, password) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Sends cookies with the request.
     body: JSON.stringify({email, password})
   })
   .then((response) => response.json())
   .then((data) =>{
     if(data.success){
-      // alert("Login successful!");
+      alert("Login successful!");
       window.location.href = "mainpg.html";
     }
     else{
-      // alert(data.message || "Login Unsuccessful!")
+      alert(data.message || "Login Unsuccessful!")
     }
   })
   .catch((error) =>{
-    // alert(error.message);
+    alert(error.message);
   });
 }
 
