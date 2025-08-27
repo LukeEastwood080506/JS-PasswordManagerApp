@@ -48,7 +48,7 @@ function confirmSignUp() {
 
 function saveUserCredentials(email, password) {
   // Sends a POST request to the backend server to sign up the user with an email and password.
-  fetch("http://localhost:6969/users/signup", {
+  fetch("http://127.0.0.1:6969/users/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

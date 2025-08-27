@@ -27,6 +27,7 @@ function routeCheckHandler(routeName) {
 // GET, POST, PUT, DELETE requests etc.
 router.get("/login", routeCheckHandler("login"));
 router.get("/signup", routeCheckHandler("signup"));
+router.get("/emails", routeCheckHandler("emails"));
 
 router.get("/all", (request, response) => {
   console.log(`GET request to /users${request.url}`);
@@ -94,7 +95,7 @@ router.post("/login", (request, response) => {
     }
     // Saves userId in session.
     request.session.userId = row.id;
-    console.log("Session after login:", request.session);
+    // console.log("Session after login:", request.session);
     return response.status(200).json({
       success: true,
       message: "User Log-in Successful!"
@@ -149,5 +150,39 @@ router.post("/signup", (request, response) => {
     });
   });
 });
+
+router.post("/emails", (request, response) => {
+  console.log(`POST request to /users${request.url}`);
+  console.log("Session object: ", request.session);
+  const userId = request.session.userId;
+  // console.log("User id: ", userId);
+  if(!userId){
+    return response.status(401).send({
+      success: false,
+      message: "A userId is required to display an email"
+    });
+  }
+  const selectSql = `SELECT email FROM users WHERE id = ?`;
+  db.get(selectSql, [userId], function(err, row){
+    if(err){
+      return response.status(500).send({
+        success: false,
+        message: "Database Error: " + err.message
+      });
+    }
+    if(!row){
+      return response.status(401).send({
+        success: false,
+        message: "Email not found!"
+      });
+    }
+    return response.status(200).send({
+      success: true,
+      message: row.email
+    });
+  });
+});
+
+
 // Export values and functions from the router object.
 module.exports = router;
