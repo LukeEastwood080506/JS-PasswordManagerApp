@@ -43,7 +43,7 @@ nav img{
 }
 
 .container h1{
-    font-family: "Poppins Bold";
+    font-family: "Poppins";
     color: white;
     text-align: center;
     font-size: 2.5rem;
@@ -52,7 +52,7 @@ nav img{
 }
 
 .setting-box{
-    font-family: "Poppins Regular";
+    font-family: "Poppins";
     margin-top: 30px;
     margin-left: auto;
     margin-right: auto;
@@ -70,7 +70,7 @@ nav img{
 }
 
 .setting-title{
-    font-family: "Poppins Bold";
+    font-family: "Poppins";
     text-decoration: underline;
     font-size: 1.5rem;
     margin-bottom: 5px;
@@ -87,6 +87,7 @@ nav img{
 }
 
 .setting-content button{
+    font-family: "Poppins";
     background-color: transparent;
     color: black;
     border: 2px solid black;
@@ -106,7 +107,7 @@ nav img{
 .footer{
     border-top: 3px solid white;
     color: white;
-    font-family: "Poppins Bold";
+    font-family: "Poppins";
     background-color: #a58fcb;
     text-align: center;
     padding: 25px 15px;
@@ -115,6 +116,171 @@ nav img{
     bottom: 0;
     left: 0;
     z-index: 2;
+}
+
+.change-email-modal-container{
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    min-width: 100%;
+    min-height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.change-email-modal-content{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #e5e6e1;
+    padding: 20px;
+    border: none;
+    border-radius: 20px;
+    width: 30%;
+}
+
+.change-email-inputs{
+    margin-top: 20px;
+}
+
+.form-input{
+    margin-bottom: 20px;
+}
+
+.change-email-inputs label{
+    display: block;
+    font-family: "Poppins Regular";
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.change-email-inputs input{
+    font-size: 18px;
+    font-weight: 500;
+    border: none;
+    border-radius: 20px;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+    height: 50px;
+    padding-left: 10px;
+    width: 80%;
+}
+
+.change-email-inputs input:focus{
+    outline: 2px solid rgb(152, 132, 191);
+    outline-offset: 2px;
+}
+
+.change-email-button{
+    font-family: "Poppins";
+    margin-top: 20px;
+    border: none;
+    border-radius: 18px;
+    padding: 5px 20px;
+    background-color: rgb(152, 132, 191);
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+    transition: filter 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 5px;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.change-password-modal-container{
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    min-width: 100%;
+    min-height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.change-password-modal-content{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #e5e6e1;
+    padding: 20px;
+    border: none;
+    border-radius: 20px;
+    width: 30%;
+}
+
+.change-password-inputs{
+    margin-top: 20px;
+}
+
+.change-password-inputs label{
+    display: block;
+    font-family: "Poppins Regular";
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.change-password-inputs input{
+    font-size: 18px;
+    font-weight: 500;
+    border: none;
+    border-radius: 20px;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+    height: 50px;
+    padding-left: 10px;
+    width: 80%;
+}
+
+.change-password-inputs input:focus{
+    outline: 2px solid rgb(152, 132, 191);
+    outline-offset: 2px;
+}
+
+.change-password-button{
+    font-family: "Poppins";
+    margin-top: 20px;
+    border: none;
+    border-radius: 18px;
+    padding: 5px 20px;
+    background-color: rgb(152, 132, 191);
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+    transition: filter 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 /* Media Queries for Responsive Design */

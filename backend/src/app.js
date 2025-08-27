@@ -5,10 +5,11 @@ const SQLiteStore = require("connect-sqlite3")(session);
 // Imports CORS which allows resources to be shared across different servers.
 const cors = require("cors");
 const app = express();
+const host = "127.0.0.1";
 const port = 6969;
 
 app.use(cors({
-  origin: "http://localhost:3000", // Frontend origin
+  origin: "http://127.0.0.1:3000", // Frontend origin
   credentials: true, // Allows for cookies/sessions.
 }));
 
@@ -53,6 +54,6 @@ app.use("/notifications", notificationsRoute);
 const generatorRoute = require("./routes/generator");
 app.use("/generator", generatorRoute);
 
-app.listen(port, () => {
+app.listen(port, host, () => {
   console.log("Password Manager Backend Operational!");
 });

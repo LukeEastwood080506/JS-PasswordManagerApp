@@ -1,16 +1,5 @@
 @import url('common.css');
 
-@font-face {
-  font-family: "Poppins Bold";
-  font-weight: 700;
-  src: url("../assets/fonts/Poppins-Bold.ttf") format("truetype");
-}
-@font-face {
-  font-family: "Poppins Regular";
-  font-weight: 400;
-  src: url("../assets/fonts/Poppins-Regular.ttf") format("truetype");
-}
-
 .container {
   width: 100%;
 }
@@ -32,7 +21,7 @@
 }
 
 .split-left h1 {
-  font-family: "Poppins Bold";
+  font-family: "Poppins";
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -69,7 +58,7 @@
 }
 
 .split-right h2 {
-  font-family: "Poppins Bold";
+  font-family: "Poppins";
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -92,7 +81,7 @@
 }
 
 .sign-up-container button{
-    font-family: "Poppins Bold";
+    font-family: "Poppins";
     background-color: #a58fcb;
     color: white;
     border: black 2px solid;
@@ -105,7 +94,7 @@
 }
 
 input {
-  font-family: "Poppins Regular";
+  font-family: "Poppins";
   padding: 25px;
   font-size: 18px;
   border-radius: 45px;
@@ -117,7 +106,7 @@ input {
 }
 
 .sign-up-container a {
-  font-family: "Poppins Regular";
+  font-family: "Poppins";
   color: #6254a8;
   text-decoration: none;
   font-size: 16px;

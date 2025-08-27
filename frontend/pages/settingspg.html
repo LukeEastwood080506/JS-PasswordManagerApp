@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Really Good Password Manager Settings</title>
-  <script src="../js/themeSettings.js"></script>
   <link rel="stylesheet" type="text/css" href="../css/settings-style.css" />
   <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -38,6 +37,49 @@
         </button>
       </div>
     </div>
+
+    <!--Change Email Modal-->
+    <div class = "change-email-modal-container" id = "change-email-modal-container" style = "display: none">
+      <div class = "change-email-modal-content" id = "change-email-modal-content">
+        <button class = "close" id = "change-email-close-button">&times;</button>
+        <h2 id = "change-email-modal-title">Change Email</h2>
+        <form class = "change-email-inputs">
+          <div class = "form-input">
+            <label for = "original-email-input">Original Email:</label>
+            <input type = "text" class = "original-email-input" id = "original-email-input" placeholder = "Enter original email..." required>
+          </div>
+          <div class = "form-input">
+            <label for = "new-email-input">New Email:</label>
+            <input type = "text" class = "new-email-input" id = "new-email-input" placeholder = "Enter new email..." required>
+          </div>
+          <button type = "submit" class = "change-email-button" id = "change-email-button">
+            <span class = "submit">Change Email</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!--Change Master Password Modal-->
+    <div class = "change-password-modal-container" id = "change-password-modal-container" style = "display: none">
+      <div class = "change-password-modal-content" id = "change-password-modal-content">
+        <button class = "close" id = "change-password-close-button">&times;</button>
+        <h2 id = "change-password-modal-title">Change Master Password</h2>
+        <form class = "change-password-inputs">
+          <div class = "form-input">
+            <label for = "original-password-input">Original Master Password:</label>
+            <input type = "text" class = "original-password-input" id = "original-password-input" placeholder = "Enter original password..." required>
+          </div>
+          <div class = "form-input">
+            <label for = "new-password-input">New Password:</label>
+            <input type = "text" class = "new-password-input" id = "new-password-input" placeholder = "Enter new password..." required>
+          </div>
+          <button type = "submit" class = "change-password-button" id = "change-password-button">
+            <span class = "submit">Change Password</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
     <div class="footer">
       <p>© 2025 | Created by Luke Eastwood and Carl Baines</p>
     </div>

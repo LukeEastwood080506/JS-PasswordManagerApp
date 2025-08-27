@@ -58,7 +58,7 @@ const PAGE_MAPPING = {
 };
 
 function initialiseApp() {
-  fetch("http://localhost:6969/passwords/all")
+  fetch("http://127.0.0.1:6969/passwords/all")
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -80,7 +80,7 @@ function initialiseApp() {
       console.error("Error fetching passwords:", err);
     });
   // Fetch deleted passwords for recycle bin.
-  fetch("http://localhost:6969/deletedPasswords/all")
+  fetch("http://127.0.0.1:6969/deletedPasswords/all")
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -111,7 +111,7 @@ function initialiseApp() {
     });
   // Fetch notifications for notifications modal.
   // (PROBABLY DONT NEED THIS RUNNING ON APP LAUNCH COULD JUST DO IT WHEN NOTIFICATIONS BELL IS CLICKED)
-  fetch("http://localhost:6969/notifications/all")
+  fetch("http://127.0.0.1:6969/notifications/all")
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -373,7 +373,7 @@ function addGeneratedPassword(password) {
   if (vaultService === null) {
     return;
   }
-  fetch("http://localhost:6969/generator/new", {
+  fetch("http://127.0.0.1:6969/generator/new", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -411,7 +411,7 @@ function restoreGeneratorSettings() {
 }
 
 function recycleBin(deletedService, deletedEmail, deletedPassword) {
-  return fetch("http://localhost:6969/deletedPasswords/add", {
+  return fetch("http://127.0.0.1:6969/deletedPasswords/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include", // Sends cookies with the request.
@@ -450,7 +450,7 @@ function handleAccountSubmit(isEditMode) {
     }
 
     if (originalAccount) {
-      fetch("http://localhost:6969/passwords/edit", {
+      fetch("http://127.0.0.1:6969/passwords/edit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -573,7 +573,7 @@ function toggleNotificationsModal() {
 }
 
 function save(service, email, password) {
-  fetch("http://localhost:6969/passwords/new", {
+  fetch("http://127.0.0.1:6969/passwords/new", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -600,7 +600,7 @@ function save(service, email, password) {
 }
 
 function deleteAccount(deletedService, deletedEmail, deletedPassword) {
-  fetch("http://localhost:6969/passwords/delete", {
+  fetch("http://127.0.0.1:6969/passwords/delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -647,7 +647,7 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
 }
 
 function restorePassword(deletedService, deletedEmail, deletedPassword) {
-  fetch("http://localhost:6969/deletedPasswords/restore", {
+  fetch("http://127.0.0.1:6969/deletedPasswords/restore", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -680,7 +680,7 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
 }
 
 function permaDelete(deletedService, deletedEmail, deletedPassword) {
-  fetch("http://localhost:6969/deletedPasswords/delete", {
+  fetch("http://127.0.0.1:6969/deletedPasswords/delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -712,7 +712,7 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
 }
 
 function addNotification(title, content) {
-  fetch("http://localhost:6969/notifications/new", {
+  fetch("http://127.0.0.1:6969/notifications/new", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -738,7 +738,7 @@ function addNotification(title, content) {
 }
 
 function deleteNotification(title, content) {
-  fetch("http://localhost:6969/notifications/delete", {
+  fetch("http://127.0.0.1:6969/notifications/delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

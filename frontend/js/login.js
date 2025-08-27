@@ -10,8 +10,8 @@ function submitLogin() {
 }
 
 function detailsCheck(email, password) {
-  fetch('http://localhost:6969/users/login',{
-    method: 'POST',
+  fetch("http://127.0.0.1:6969/users/login",{
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
