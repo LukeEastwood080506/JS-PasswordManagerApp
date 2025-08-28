@@ -804,9 +804,25 @@ function changePage(pageOption) {
 }
 
 function logOut() {
-  // Need to add a feature that physically logs the user out as well as the redirect.
-  // so that the user can't click on the forward arrow to get back in.
-  window.location.href = "loginpg.html";
+    // Properly log out by clearing session and cookies.
+    fetch("http://127.0.0.1:6969/users/logout", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include"
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if(data.success){
+                window.location.href = "loginpg.html";
+            } else {
+                alert("Logout failed: " + (data.message || ""));
+            }
+        })
+        .catch((err) => {
+            console.error(err.message);
+        })
 }
 
 function refreshVaultDiv(service, email) {

@@ -47,6 +47,7 @@ router.get("/", routeCheckHandler());
 router.get("/show", routeCheckHandler());
 router.get("/new", routeCheckHandler());
 router.get("/edit", routeCheckHandler());
+router.get("/edit/master", routeCheckHandler());
 router.get("/delete", routeCheckHandler());
 
 router.post("/show", (request, response) => {
@@ -153,8 +154,8 @@ router.post("/edit", (request, response) => {
       });
     }
     // Confirm its the right record by comparing the hash of the originalPassword with the hashed password stored in the database.
-    console.log("Original Password: ", originalPassword);
-    console.log("Password in database: ", row.password);
+    // console.log("Original Password: ", originalPassword);
+    // console.log("Password in database: ", row.password);
     const isRecord = bcrypt.compareSync(originalPassword, row.password);
     if (!isRecord) {
       return response.status(401).json({
@@ -183,6 +184,62 @@ router.post("/edit", (request, response) => {
         });
       }
     );
+  });
+});
+
+router.post("/edit/master", (request, response) => {
+  console.log(`POST request to /passwords${request.url}`);
+  const { originalPassword, newPassword } = request.body;
+  const userId = request.session.userId;
+  // console.log("Original password: ", originalPassword);
+  // console.log("New password: ", newPassword);
+  // console.log("userId: ", userId);
+  if(!userId || !originalPassword || !newPassword){
+    return response.status(400).send({
+      success: false,
+      message: "A userId, original password and new password is required to edit the master password"
+    });
+  }
+  // Find record in users that contains the original password under the userId.
+  const selectSql = `SELECT * FROM users WHERE id = ?`;
+  db.get(selectSql, [userId], function(err, row){
+    if(err){
+      return response.status(401).send({
+        success: false,
+        message: "Database Error: " + err.message
+      });
+    }
+    if(!row){
+      return response.status(500).send({
+        success: false,
+        message: "Record not found for editing!"
+      });
+    }
+    // Compare the plain text originalPassword with the hash of the password.
+    const isMatch = bcrypt.compareSync(originalPassword, row.password);
+    if(!isMatch){
+      return response.status(501).send({
+        success: false,
+        message: "Original password doesnt match!"
+      });
+    }
+    // If original password matches, update the user record to store the new password.
+    // Hash the new password before storing it in the database.
+    const salt = bcrypt.genSaltSync(13);
+    const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
+    const updateSql = `UPDATE users SET password = ? WHERE id = ?`;
+    db.run(updateSql, [hashedNewPassword, userId], function(err){
+      if(err){
+        return response.status(401).send({
+          success: false,
+          message: "Database Error: " + err.message
+        });
+      }
+      return response.status(200).send({
+        success: true,
+        message: "Master password successfully updated!"
+      });
+    });
   });
 });
 
