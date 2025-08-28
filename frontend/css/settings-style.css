@@ -118,7 +118,11 @@ nav img{
     z-index: 2;
 }
 
-.change-email-modal-container{
+/* Grouped Modal Container Styles */
+.change-email-modal-container,
+.change-password-modal-container,
+.log-out-modal-container,
+.delete-account-modal-container {
     display: none;
     position: fixed;
     z-index: 2;
@@ -130,7 +134,11 @@ nav img{
     background-color: rgba(0,0,0,0.4);
 }
 
-.change-email-modal-content{
+/* Grouped Modal Content Styles */
+.change-email-modal-content,
+.change-password-modal-content,
+.log-out-modal-content,
+.delete-account-modal-content {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -142,15 +150,17 @@ nav img{
     width: 30%;
 }
 
-.change-email-inputs{
+/* Grouped Modal Inputs Styles */
+.change-email-inputs,
+.change-password-inputs,
+.delete-account-inputs {
     margin-top: 20px;
 }
 
-.form-input{
-    margin-bottom: 20px;
-}
-
-.change-email-inputs label{
+/* Grouped Modal Label Styles */
+.change-email-inputs label,
+.change-password-inputs label,
+.delete-account-inputs label {
     display: block;
     font-family: "Poppins Regular";
     font-size: 20px;
@@ -158,7 +168,14 @@ nav img{
     margin-bottom: 5px;
 }
 
-.change-email-inputs input{
+#log-out-modal-title{
+    font-family: "Poppins Regular";
+}
+
+/* Grouped Modal Input Styles */
+.change-email-inputs input,
+.change-password-inputs input,
+.delete-account-inputs input {
     font-size: 18px;
     font-weight: 500;
     border: none;
@@ -169,12 +186,18 @@ nav img{
     width: 80%;
 }
 
-.change-email-inputs input:focus{
+.change-email-inputs input:focus,
+.change-password-inputs input:focus,
+.delete-account-inputs input:focus {
     outline: 2px solid rgb(152, 132, 191);
     outline-offset: 2px;
 }
 
-.change-email-button{
+/* Grouped Modal Button Styles */
+.change-email-button,
+.change-password-button,
+.log-out-button,
+.delete-account-button {
     font-family: "Poppins";
     margin-top: 20px;
     border: none;
@@ -210,77 +233,6 @@ nav img{
 .close:focus {
     color: black;
     text-decoration: none;
-}
-
-.change-password-modal-container{
-    display: none;
-    position: fixed;
-    z-index: 2;
-    left: 0;
-    top: 0;
-    min-width: 100%;
-    min-height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.change-password-modal-content{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #e5e6e1;
-    padding: 20px;
-    border: none;
-    border-radius: 20px;
-    width: 30%;
-}
-
-.change-password-inputs{
-    margin-top: 20px;
-}
-
-.change-password-inputs label{
-    display: block;
-    font-family: "Poppins Regular";
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.change-password-inputs input{
-    font-size: 18px;
-    font-weight: 500;
-    border: none;
-    border-radius: 20px;
-    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
-    height: 50px;
-    padding-left: 10px;
-    width: 80%;
-}
-
-.change-password-inputs input:focus{
-    outline: 2px solid rgb(152, 132, 191);
-    outline-offset: 2px;
-}
-
-.change-password-button{
-    font-family: "Poppins";
-    margin-top: 20px;
-    border: none;
-    border-radius: 18px;
-    padding: 5px 20px;
-    background-color: rgb(152, 132, 191);
-    color: white;
-    text-align: center;
-    font-size: 24px;
-    font-weight: 700;
-    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
-    transition: filter 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 /* Media Queries for Responsive Design */

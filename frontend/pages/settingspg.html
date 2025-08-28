@@ -13,7 +13,7 @@
 <body>
   <nav>
     <a href="#" class="navbar-items">
-      <img src="../assets/back-btn.png" alt="Back" id = "back-btn"/>
+      <img src="../assets/back-btn.png" alt="Back" id="back-btn" />
     </a>
   </nav>
   <div class="container">
@@ -31,7 +31,7 @@
         <button id="change-master-password-btn">
           Change Master Password
         </button>
-        <button id="log-out-btn">Log Out</button>
+        <button id="log-out-modal-btn">Log Out</button>
         <button id="delete-account-btn">
           Delete Account
         </button>
@@ -39,43 +39,77 @@
     </div>
 
     <!--Change Email Modal-->
-    <div class = "change-email-modal-container" id = "change-email-modal-container" style = "display: none">
-      <div class = "change-email-modal-content" id = "change-email-modal-content">
-        <button class = "close" id = "change-email-close-button">&times;</button>
-        <h2 id = "change-email-modal-title">Change Email</h2>
-        <form class = "change-email-inputs">
-          <div class = "form-input">
-            <label for = "original-email-input">Original Email:</label>
-            <input type = "text" class = "original-email-input" id = "original-email-input" placeholder = "Enter original email..." required>
+    <div class="change-email-modal-container" id="change-email-modal-container" style="display: none">
+      <div class="change-email-modal-content" id="change-email-modal-content">
+        <button class="close" id="change-email-close-button">&times;</button>
+        <h2 id="change-email-modal-title">Change Email</h2>
+        <form class="change-email-inputs">
+          <div class="form-input">
+            <label for="original-email-input">Original Email:</label>
+            <input type="text" class="original-email-input" id="original-email-input"
+              placeholder="Enter original email..." required>
           </div>
-          <div class = "form-input">
-            <label for = "new-email-input">New Email:</label>
-            <input type = "text" class = "new-email-input" id = "new-email-input" placeholder = "Enter new email..." required>
+          <div class="form-input">
+            <label for="new-email-input">New Email:</label>
+            <input type="text" class="new-email-input" id="new-email-input" placeholder="Enter new email..." required>
           </div>
-          <button type = "submit" class = "change-email-button" id = "change-email-button">
-            <span class = "submit">Change Email</span>
+          <button type="submit" class="change-email-button" id="change-email-button">
+            <span class="submit">Change Email</span>
           </button>
         </form>
       </div>
     </div>
 
     <!--Change Master Password Modal-->
-    <div class = "change-password-modal-container" id = "change-password-modal-container" style = "display: none">
-      <div class = "change-password-modal-content" id = "change-password-modal-content">
-        <button class = "close" id = "change-password-close-button">&times;</button>
-        <h2 id = "change-password-modal-title">Change Master Password</h2>
-        <form class = "change-password-inputs">
-          <div class = "form-input">
-            <label for = "original-password-input">Original Master Password:</label>
-            <input type = "text" class = "original-password-input" id = "original-password-input" placeholder = "Enter original password..." required>
+    <div class="change-password-modal-container" id="change-password-modal-container" style="display: none">
+      <div class="change-password-modal-content" id="change-password-modal-content">
+        <button class="close" id="change-password-close-button">&times;</button>
+        <h2 id="change-password-modal-title">Change Master Password</h2>
+        <form class="change-password-inputs">
+          <div class="form-input">
+            <label for="original-password-input">Original Master Password:</label>
+            <input type="password" class="original-password-input" id="original-password-input"
+              placeholder="Enter original password..." required>
           </div>
-          <div class = "form-input">
-            <label for = "new-password-input">New Password:</label>
-            <input type = "text" class = "new-password-input" id = "new-password-input" placeholder = "Enter new password..." required>
+          <div class="form-input">
+            <label for="new-password-input">New Password:</label>
+            <input type="password" class="new-password-input" id="new-password-input" placeholder="Enter new password..."
+              required>
           </div>
-          <button type = "submit" class = "change-password-button" id = "change-password-button">
-            <span class = "submit">Change Password</span>
+          <button type="submit" class="change-password-button" id="change-password-button">
+            <span class="submit">Change Password</span>
           </button>
+        </form>
+      </div>
+    </div>
+
+    <!--Log Out Modal-->
+    <div class="log-out-modal-container" id="log-out-modal-container" style="display: none">
+      <div class="log-out-modal-content" id="log-out-modal-content">
+        <button class="close" id="log-out-close-button">&times;</button>
+        <h2 id="log-out-modal-title">Are you sure you want to log out?</h2>
+        <button type="submit" class="log-out-button" id="log-out-button">
+          <span class="submit">Log Out</span>
+        </button>
+        </form>
+      </div>
+    </div>
+
+    <!--Delete Account Modal-->
+    <div class="delete-account-modal-container" id="delete-account-modal-container" style="display: none">
+      <div class="delete-account-modal-content" id="delete-account-modal-content">
+        <button class="close" id="delete-account-close-button">&times;</button>
+        <h2 id="delete-account-modal-title">Delete Account</h2>
+        <form class="delete-account-inputs">
+          <div class="form-input">
+            <label for="password-input">Enter the password to your account:</label>
+            <input type="password" class="password-input" id="password-input"
+              placeholder="Enter password to delete account..." required>
+          </div>
+          <button type="submit" class="delete-account-button" id="delete-account-button">
+            <span class="submit">Delete Account</span>
+          </button>
+        </form>
         </form>
       </div>
     </div>

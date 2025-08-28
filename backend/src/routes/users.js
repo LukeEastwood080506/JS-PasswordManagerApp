@@ -28,6 +28,9 @@ function routeCheckHandler(routeName) {
 router.get("/login", routeCheckHandler("login"));
 router.get("/signup", routeCheckHandler("signup"));
 router.get("/emails", routeCheckHandler("emails"));
+router.get("/emails/change", routeCheckHandler("emails/change"));
+router.get("/delete", routeCheckHandler("delete"));
+router.get("/logout", routeCheckHandler("logout"));
 
 router.get("/all", (request, response) => {
   console.log(`GET request to /users${request.url}`);
@@ -179,6 +182,117 @@ router.post("/emails", (request, response) => {
     return response.status(200).send({
       success: true,
       message: row.email
+    });
+  });
+});
+
+router.post("/emails/change", (request, response) => {
+  console.log(`POST request to /users${request.url}`);
+  const { originalEmail, newEmail } = request.body;
+  const userId = request.session.userId;
+  // console.log("Original email: ", originalEmail);
+  // console.log("New email: ", newEmail);
+  // console.log("userId: ", userId);
+  if(!userId || !originalEmail || !newEmail){
+    return response.status(401).send({
+      success: false,
+      message: "A userId, original email and new email is required to change the account email"
+    });
+  }
+  // Locate record that has the original email (check if it is equal to the userid)
+  const selectSql = `SELECT * FROM users WHERE id = ? AND email = ?`;
+  db.get(selectSql, [userId, originalEmail], function(err, row){
+    if(err){
+      return response.status(500).send({
+        success: false,
+        message: "Database Error: " + err.message
+      });
+    }
+    // Record not found.
+    if(!row){
+      return response.status(401).send({
+        success: false,
+        message: "User record with the entered email not found!"
+      });
+    }
+    const updateSql = `UPDATE users SET email = ? WHERE id = ?`;
+    db.run(updateSql, [newEmail, userId], function(err){
+      if(err){
+        return response.status(500).send({
+          success: false,
+          message: "Database Error: " + err.message
+        });
+      }
+      return response.status(200).send({
+        success: true,
+        message: "Email updated successfully!"
+      });
+    });
+  });
+}); 
+
+router.post("/delete", (request, response) => {
+  console.log(`POST request to /users${request.url}`);
+  const { password } = request.body;
+  const userId = request.session.userId;
+  // console.log("userId: ", userId);
+  if(!password || !userId){
+    return response.status(500).send({
+      success: false,
+      message: "The password to the account and the userId is required for account deletion"
+    });
+  }
+  const selectSql = `SELECT * FROM users WHERE id = ?`;
+  db.get(selectSql, [userId], function(err, row){
+    if(err){
+      return response.status(401).send({
+        success: false,
+        message: "Database Error: " + err.message
+      });
+    }
+    if(!row){
+      return response.status(500).send({
+        success: false,
+        message: "A user record was not found for deletion with the inputted password"
+      });
+    }
+    // Compare password
+    const isMatch = bcrypt.compareSync(password, row.password);
+    if(!isMatch){
+      return response.status(401).send({
+        success: false,
+        message: "Account could not be deleted - incorrect password"
+      });
+    }
+    // Delete account
+    const deleteSql = `DELETE FROM users WHERE id = ?`;
+    db.run(deleteSql, [userId], function(err){
+      if(err){
+        return response.status(401).send({
+          success: false,
+          message: "Database Error: " + err.message
+        });
+      }
+      return response.status(200).send({
+        success: true,
+        message: "Account deleted successfully!"
+      });
+    });
+  });
+});
+
+router.post("/logout", (request, response) => {
+  request.session.destroy((err) => {
+    if(err){
+      return response.status(500).send({
+        success: false,
+        message: "Logout Failed!"
+      });
+    }
+    response.clearCookie("connect.sid"); // express-session cookie.
+    return response.status(200).send({
+      success: true,
+      message: "Log Out successful!"
     });
   });
 });
