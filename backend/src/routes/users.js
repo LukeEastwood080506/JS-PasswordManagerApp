@@ -27,6 +27,8 @@ function routeCheckHandler(routeName) {
 // GET, POST, PUT, DELETE requests etc.
 router.get("/login", routeCheckHandler("login"));
 router.get("/signup", routeCheckHandler("signup"));
+router.get("/forgotpassword", routeCheckHandler("forgotpassword"));
+router.get("/forgotpassword/new", routeCheckHandler("forgotpassword/new"));
 router.get("/emails", routeCheckHandler("emails"));
 router.get("/emails/change", routeCheckHandler("emails/change"));
 router.get("/delete", routeCheckHandler("delete"));
@@ -282,6 +284,7 @@ router.post("/delete", (request, response) => {
 });
 
 router.post("/logout", (request, response) => {
+  console.log(`POST request to /users${request.url}`);
   request.session.destroy((err) => {
     if(err){
       return response.status(500).send({
@@ -297,6 +300,78 @@ router.post("/logout", (request, response) => {
   });
 });
 
+router.post("/forgotpassword", (request, response) => {
+  console.log(`POST request to /users${request.url}`);
+  const { email } = request.body;
+  if(!email){
+    return response.status(401).send({
+      success: false,
+      message: "An email is required for forgot password!"
+    });
+  }
+  const selectSql = "SELECT * FROM users WHERE email = ?";
+  db.get(selectSql, [email], function(err, row){
+    if(err){
+      return response.status(500).send({
+        success: false,
+        message: "Database Error" + err.message
+      });
+    }
+    if(!row){
+      return response.status(401).send({
+        success: false,
+        message: "Email does not exist in database!"
+      });
+    }
+    return response.status(200).send({
+      success: true,
+      message: "Email exists in database! Proceeding to forgot password!"
+    });
+  });
+});
+
+router.post("/forgotpassword/new", (request, response) => {
+  console.log(`POST request to /users${request.url}`);
+  const { email, confirmedPassword } = request.body;
+  if(!email || !confirmedPassword){
+    return response.status(401).send({
+      success: false,
+      message: "An email and confirmed password is required to change the password"
+    });
+  }
+  // Select the user record that contains the email.
+  const selectSql = `SELECT * FROM users WHERE email = ?`;
+  db.get(selectSql, [email], function(err, row){
+    if(err){
+      return response.status(500).send({
+        success: false,
+        message: "Database Error: " + err.message
+      });
+    }
+    if(!row){
+      return response.status(401).send({
+        success: false,
+        message: "A user record under the email was not found!"
+      });
+    }
+    // Record found - update the password - store as hash in database.
+    const salt = bcrypt.genSaltSync(13);
+    const hashedPassword = bcrypt.hashSync(confirmedPassword, salt);
+    const updateSql = `UPDATE users SET password = ? WHERE email = ?`;    
+    db.run(updateSql, [hashedPassword, email], function(err){
+      if(err){
+        return response.status(500).send({
+          success: false,
+          message: "Database Error: " + err.message
+        });
+      }
+      return response.status(200).send({
+        success: true,
+        message: "Password has been successfully changed!"
+      });
+    });
+  });
+});
 
 // Export values and functions from the router object.
 module.exports = router;

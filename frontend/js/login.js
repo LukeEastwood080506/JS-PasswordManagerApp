@@ -1,9 +1,13 @@
-const tempEmail = "admin@gmail.com";
-const tempPassword = "password";
-
+// DOM elements
 const emailInput = document.getElementById("email-input");
 const passwordInput = document.getElementById("password-input");
 const loginButton = document.getElementById("login-button");
+
+const dynamicModal = document.getElementById("dynamic-login-modal-container");
+const closeDynamicModalBtn = document.getElementById("dynamic-login-modal-close-button");
+const dynamicModalTitle = document.getElementById("dynamic-login-modal-title");
+const dynamicModalMessage = document.getElementById("dynamic-login-modal-message");
+const dynamicModalOkButton = document.getElementById("ok-button");
 
 function submitLogin() {
   detailsCheck(emailInput.value, passwordInput.value);
@@ -16,21 +20,65 @@ function detailsCheck(email, password) {
       "Content-Type": "application/json",
     },
     credentials: "include", // Sends cookies with the request.
-    body: JSON.stringify({email, password})
+    body: JSON.stringify({ email, password })
   })
   .then((response) => response.json())
   .then((data) =>{
     if(data.success){
-      alert("Login successful!");
-      window.location.href = "mainpg.html";
+      console.log("Login successful!");
+      setUpDynamicModal("login-success");
+      showDynamicModal();
     }
     else{
-      alert(data.message || "Login Unsuccessful!")
+      console.log(data.message || "Login Unsuccessful!");
+      setUpDynamicModal("login-fail");
+      showDynamicModal();
     }
   })
-  .catch((error) =>{
-    alert(error.message);
+  .catch((err) =>{
+    console.error(err.message);
   });
 }
 
-loginButton.addEventListener("click", submitLogin);
+function setUpDynamicModal(result){
+  switch(result){
+    case "login-success":
+      dynamicModalTitle.textContent = "Login Successful!";
+      dynamicModalMessage.textContent = "Login Successful! Click ok to navigate to the main page!";
+      dynamicModalOkButton.onclick = () => {
+        window.location.href = "mainpg.html";
+      };
+      break;
+    case "login-fail":
+      dynamicModalTitle.textContent = "Login Unsuccessful!";
+      dynamicModalMessage.textContent = "Login Unsuccessful! Click ok to retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearInputs();
+      };
+      break;
+    default:
+      break;
+  }
+}
+
+function showDynamicModal(){
+  dynamicModal.style.display = "flex";
+}
+
+function hideDynamicModal(){
+  dynamicModal.style.display = "none";
+}
+
+function clearInputs(){
+  emailInput.value = "";
+  passwordInput.value = "";
+}
+
+if(loginButton){
+  loginButton.addEventListener("click", submitLogin);
+}
+
+if(closeDynamicModalBtn){
+  closeDynamicModalBtn.addEventListener("click", () => hideDynamicModal());
+}

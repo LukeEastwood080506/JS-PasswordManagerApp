@@ -122,7 +122,8 @@ nav img{
 .change-email-modal-container,
 .change-password-modal-container,
 .log-out-modal-container,
-.delete-account-modal-container {
+.delete-account-modal-container,
+.dynamic-settings-modal-container {
     display: none;
     position: fixed;
     z-index: 2;
@@ -138,7 +139,8 @@ nav img{
 .change-email-modal-content,
 .change-password-modal-content,
 .log-out-modal-content,
-.delete-account-modal-content {
+.delete-account-modal-content,
+.dynamic-settings-modal-content {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -197,7 +199,8 @@ nav img{
 .change-email-button,
 .change-password-button,
 .log-out-button,
-.delete-account-button {
+.delete-account-button,
+.ok-button {
     font-family: "Poppins";
     margin-top: 20px;
     border: none;
@@ -214,6 +217,20 @@ nav img{
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+#dynamic-settings-modal-title{
+    padding-bottom: 10px;
+}
+
+#dynamic-settings-modal-message{
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#ok-button{
+    margin: 0 auto;
 }
 
 .close {

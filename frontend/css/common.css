@@ -30,7 +30,6 @@ body{
 }
 
 .split-left h1 {
-  font-family: "Poppins Bold";
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -70,7 +69,6 @@ body{
 }
 
 .split-right h2 {
-  font-family: "Poppins Bold";
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -91,7 +89,7 @@ input {
 }
 
 button {
-  font-family: "Poppins Bold";
+  font-family: "Poppins";
   background-color: #a58fcb;
   color: white;
   border: black 2px solid;
