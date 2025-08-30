@@ -1,45 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Really Good Password Manager Login</title>
-    <link rel="stylesheet" type="text/css" href="../css/login-style.css" />
-    <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Really Good Password Manager Login</title>
+  <link rel="stylesheet" type="text/css" href="../css/login-style.css" />
+  <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <nav>
-      <a href="settingspg.html" class="navbar-items">⚙️</a>
-    </nav>
-    <div class="container">
-      <div class="split-left">
-        <img src="../assets/site-icon.png" alt="pmicon" class="logo" />
-        <h1>Really Good Password Manager</h1>
-      </div>
-      <div class="split-right">
-        <h2>Login</h2>
-        <div class="login-container">
-          <input
-            type="text"
-            id="email-input"
-            placeholder="Email:"
-            autocomplete="off"
-          />
-          <input
-            type="password"
-            id="password-input"
-            placeholder="Password:"
-            autocomplete="off"
-          />
-          <a href="forgot+resetpasswordpg.html" id="forgot-password-link"
-            >Forgot Password?</a
-          >
-          <button id="login-button">Login</button>
-        </div>
-        <h3>Don't have an account? <a href="signuppg.html">Sign Up</a></h3>
-      </div>
+</head>
+
+<body>
+  <nav></nav>
+  <div class="container">
+    <div class="split-left">
+      <img src="../assets/site-icon.png" alt="pmicon" class="logo" />
+      <h1>Really Good Password Manager</h1>
     </div>
-    <script src="../js/login.js"></script>
-  </body>
+    <div class="split-right">
+      <h2>Login</h2>
+      <div class="login-container">
+        <input type="text" id="email-input" placeholder="Email:" autocomplete="off" />
+        <input type="password" id="password-input" placeholder="Password:" autocomplete="off" />
+        <a href="forgot+resetpasswordpg.html" id="forgot-password-link">Forgot Password?</a>
+        <button id="login-button">Login</button>
+      </div>
+      <h3>Don't have an account? <a href="signuppg.html">Sign Up</a></h3>
+    </div>
+  </div>
+
+  <!--Dynamic Log In Modal-->
+  <div class="dynamic-login-modal-container" id="dynamic-login-modal-container" style="display: none">
+    <div class="dynamic-login-modal-content" id="dynamic-login-modal-content">
+      <button class="close" id="dynamic-login-modal-close-button">&times;</button>
+      <h2 id="dynamic-login-modal-title">Lorem Ipsum</h2>
+      <p id="dynamic-login-modal-message">Lorem Ipsum</p>
+      <button type="submit" class="ok-button" id="ok-button">
+        <span class="submit">Ok</span>
+      </button>
+    </div>
+  </div>
+  <script src="../js/login.js"></script>
+</body>
+
 </html>

@@ -1,112 +1,155 @@
+// DOM elements
 const emailInput = document.getElementById("email-input");
-const forgotPasswordBtn = document.getElementById("forgot-password-btn");
 const newPasswordInput = document.getElementById("new-password-input");
 const confirmPasswordInput = document.getElementById("confirm-password-input");
-const newPasswordBtn = document.getElementById("new-password-btn");
-const headingContent = document.getElementById("dymanic-heading");
+const forgotPasswordBtn = document.getElementById("forgot-password-btn");
+const submitNewPasswordBtn = document.getElementById("new-password-btn");
 
-let currentUserEmail = "";
+const dynamicModal = document.getElementById("dynamic-forgot-password-modal-container");
+const closeDynamicModalBtn = document.getElementById("dynamic-forgot-password-modal-close-button");
+const dynamicModalOkBtn = document.getElementById("ok-button");
+const dynamicModalTitle = document.getElementById("dynamic-forgot-password-modal-title");
+const dynamicModalMessage = document.getElementById("dynamic-forgot-password-modal-message");
 
-emailInput.addEventListener("keyup", function(event){
-    if(event.key === "Enter"){
-        submitForgotPassword();
+let verifiedEmail = null;
+
+function checkEmail() {
+    const email = emailInput.value;
+    if (!email.includes("@")) {
+        setUpDynamicModal("email-fail");
+        showDynamicModal();
     }
-});
+    fetch("http://127.0.0.1:6969/users/forgotpassword", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                // Existing email - Can now move on to the forgot password section.
+                console.log("Valid email! Proceeding to forgot password...");
+                setUpDynamicModal("email-success");
+                showDynamicModal();
+            } else {
+                console.log(data.message || "Invalid Email!");
+                setUpDynamicModal("email-fail");
+                showDynamicModal();
+            }
+        })
+}
 
-newPasswordInput.addEventListener("keyup", function(event){
-    if(event.key === "Enter"){
-        submitNewPassword();
+function checkPasswords(email){
+    console.log("Email passed to checkPasswords method: ", email);
+    const newPassword = newPasswordInput.value;
+    const confirmedPassword = confirmPasswordInput.value;
+    // Flag if both inputs have not been filled.
+    if(!newPassword || !confirmedPassword){
+        setUpDynamicModal("password-change-fail");
+        showDynamicModal();
     }
-});
+    // Flag if both inputs are not equal to each other.
+    if(newPassword !== confirmedPassword){
+        setUpDynamicModal("password-change-fail");
+        showDynamicModal();
+    }
+    fetch("http://127.0.0.1:6969/users/forgotpassword/new", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, confirmedPassword }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if(data.success){
+            console.log("Forgot Password successful!");
+            setUpDynamicModal("password-change-success");
+            showDynamicModal();
+        } else {
+            console.log(data.message || "Forgot Password unsuccessful!");
+            setUpDynamicModal("password-change-fail");
+            showDynamicModal();
+        }
+    })
+    
+}
 
-confirmPasswordInput.addEventListener("keyup", function(event){
-    if(event.key === "Enter"){
-        submitNewPassword();
-    }
-});
 
-function submitForgotPassword(){
-    if(emailCheck()){
-        // Reveal the new password and confirm password input fields, as well as the submission button.
-        // whilst hiding the initial email input field and button and changing the heading text.
-        emailInput.style.display = "none";
-        forgotPasswordBtn.style.display = "none";
-        headingContent.textContent = "Reset Password";
-        newPasswordInput.style.display = "block";
-        confirmPasswordInput.style.display = "block";
-        newPasswordBtn.style.display = "block";
-    }
-    else{
-        alert("Please enter a valid existing email address!");
-        emailInput.value = "";
+function clearInputs() {
+    emailInput.value = "";
+    // newPasswordInput.value = "";
+    // confirmPasswordInput.value = "";
+}
+
+function setUpDynamicModal(result) {
+    switch (result) {
+        case "email-success":
+            dynamicModalTitle.textContent = "Valid Email!";
+            dynamicModalMessage.textContent = "Valid Email! Click ok to proceed to forgot password!";
+            dynamicModalOkBtn.onclick = () => {
+                hideDynamicModal();
+                verifiedEmail = emailInput.value; // Stored the verified email.
+                clearInputs();
+                showForgotPasswordInputFields();
+            }
+            break;
+        case "email-fail":
+            dynamicModalTitle.textContent = "Invalid Email!";
+            dynamicModalMessage.textContent = "Invalid Email! Click ok to retry!";
+            dynamicModalOkBtn.onclick = () => {
+                hideDynamicModal();
+                clearInputs();
+            };
+            break;
+        case "password-change-success":
+            dynamicModalTitle.textContent = "Forgot Password Successful!";
+            dynamicModalMessage.textContent = "Forgot Password Successful! Click ok to proceed to login!";
+            dynamicModalOkBtn.onclick = () => {
+                window.location.href = "loginpg.html";
+            };  
+            break;
+        case "password-change-fail":
+            dynamicModalTitle.textContent = "Forgot Password Unsuccessful!";
+            dynamicModalMessage.textContent = "Forgot Password Unsuccessful! Click ok to retry!";
+            dynamicModalOkBtn.onclick = () => {
+                hideDynamicModal();
+                clearInputs();
+            };  
+            break;
+        default:
+            break;
     }
 }
 
-function emailCheck(){
-    const storedUserJSON = localStorage.getItem(emailInput.value);
-    if(!storedUserJSON){
-        return false;
-    }
-    try{
-        const storedUserData = JSON.parse(storedUserJSON);
-        if(storedUserData.email === emailInput.value){
-            currentUserEmail = emailInput.value;
-            emailInput.value = "";
-            return true;
-        }
-        return false;
-    }
-    catch(error){
-        console.error(error);
-        return false;
-    }
+function showForgotPasswordInputFields() {
+    emailInput.style.display = "none";
+    forgotPasswordBtn.style.display = "none";
+    newPasswordInput.style.display = "block";
+    confirmPasswordInput.style.display = "block";
+    submitNewPasswordBtn.style.display = "block";
 }
 
-function passwordCheck(){
-    const userJSON = localStorage.getItem(currentUserEmail);
-    if(!userJSON){
-        return false;
-    }
-    try{
-        const userData = JSON.parse(userJSON);
-        // Check for unique password.
-        if(userData.password !== newPasswordInput.value){
-            return true;
-        }
-        return false;
-    }
-    catch(error){
-        console.error(error);
-        return false;
-    }
+function showDynamicModal() {
+    dynamicModal.style.display = "flex";
 }
 
-function submitNewPassword(){
-    // Check if the new password meets the length requirements.
-    if(newPasswordInput.value.length < 12){
-        alert("Please enter a new password that is at least 12 characters long.");
-        newPasswordInput.value = "";
-        confirmPasswordInput.value = "";
-    }
-    // Check if the new password is equal to the old password.
-    else if(!passwordCheck()){
-        alert("Enter a new password, not your old one!");
-        newPasswordInput.value = "";
-        confirmPasswordInput.value = "";
-    }
-    // Check if the new password input is not equal to the confirm password input
-    else if(newPasswordInput.value !== confirmPasswordInput.value){
-        alert("The new password input and the confirm password input must be the same!");
-    }
-    else{
-        // Store the new password and redirect the user to the login page.
-        const userJSON = localStorage.getItem(currentUserEmail);
-        if(userJSON){
-            const userData = JSON.parse(userJSON);
-            userData.password = newPasswordInput.value;
-            localStorage.setItem(currentUserEmail, JSON.stringify(userData));
-        }
-        alert("Password reset successful!");
-        window.location.href = "loginpg.html";
-    }
+function hideDynamicModal() {
+    dynamicModal.style.display = "none";
+}
+
+if (closeDynamicModalBtn) {
+    closeDynamicModalBtn.addEventListener("click", () => hideDynamicModal());
+}
+
+if (forgotPasswordBtn) {
+    forgotPasswordBtn.addEventListener("click", () => checkEmail())
+}
+
+if (submitNewPasswordBtn){
+    submitNewPasswordBtn.addEventListener("click", () => {
+        checkPasswords(verifiedEmail);
+    });
 }

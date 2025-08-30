@@ -113,86 +113,80 @@ input {
   padding-top: 25px;
 }
 
-/* Dark Mode Styles */
-.dark-mode {
-    color: white;
+.dynamic-signup-modal-container {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  min-width: 100%;
+  min-height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
-.dark-mode body {
-    background-color: #111;
+.dynamic-signup-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #e5e6e1;
+  padding: 20px;
+  border: none;
+  border-radius: 20px;
+  width: 30%;
 }
 
-.dark-mode .split-left {
-    background-color: #483d68;
-    border-right-color: #444;
+.ok-button {
+  font-family: "Poppins";
+  margin-top: 20px;
+  border: none;
+  border-radius: 18px;
+  padding: 5px 20px;
+  background-color: rgb(152, 132, 191);
+  color: white;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+  transition: filter 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.dark-mode .split-right {
-    background: linear-gradient(to bottom right, #333333, #222222);
+#dynamic-signup-modal-title{
+    padding-bottom: 10px;
 }
 
-.dark-mode .sign-up-container {
-    background-color: #333333;
-    border-color: #444;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+#dynamic-signup-modal-message{
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-.dark-mode input {
-    background-color: #444;
-    color: white;
-    border: 1px solid #555;
+#ok-button{
+    margin: 0 auto;
 }
 
-.dark-mode .sign-up-container a {
-    color: #a58fcb;
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 5px;
 }
 
-/* Contrast Mode Styles */
-.contrast-mode body {
-    background-color: #000000;
-    color: #ffffff;
-}
-
-.contrast-mode .split-left {
-    background-color: #000000;
-    border-right: 3px solid #ffff00;
-}
-
-.contrast-mode .split-right {
-    background: #000000;
-}
-
-.contrast-mode .sign-up-container {
-    background-color: #000000;
-    color: #ffffff;
-    border: 3px solid #ffff00;
-    box-shadow: none;
-}
-
-.contrast-mode input {
-    background-color: #222;
-    color: white;
-    border: 2px solid #ffff00;
-}
-
-.contrast-mode button {
-    color: #000000 !important;
-    background-color: #ffff00 !important;
-    border: 3px solid #ffff00 !important;
-}
-
-.contrast-mode button:hover {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    border-color: #ffffff !important;
-}
-
-.contrast-mode h1, .contrast-mode h2, .contrast-mode h3 {
-    color: #ffff00;
-}
-
-.contrast-mode a {
-    color: #00ffff;
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
 }
 
 /* Responsive adjustments */
