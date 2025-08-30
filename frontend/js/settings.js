@@ -1,11 +1,12 @@
 // DOM elements
-const backBtn = document.getElementById("back-btn");
+// const backBtn = document.getElementById("back-btn");
 const displayEmail = document.getElementById("email-display");
 
 const changeEmailModal = document.getElementById("change-email-modal-container");
 const changeMasterPasswordModal = document.getElementById("change-password-modal-container");
 const logOutModal = document.getElementById("log-out-modal-container");
 const deleteAccountModal = document.getElementById("delete-account-modal-container");
+const dynamicModal = document.getElementById("dynamic-settings-modal-container");
 
 const openEmailModalBtn = document.getElementById("change-email-btn");
 const closeEmailModalBtn = document.getElementById("change-email-close-button");
@@ -19,6 +20,11 @@ const closelogOutModalBtn = document.getElementById("log-out-close-button");
 const logOutBtn = document.getElementById("log-out-button");
 const closeDeleteAccountModalBtn = document.getElementById("delete-account-close-button");
 const deleteAccountBtn = document.getElementById("delete-account-button");
+
+const closeDynamicModalBtn = document.getElementById("dynamic-settings-modal-close-button");
+const dynamicModalOkBtn = document.getElementById("ok-button");
+const dynamicModalTitle = document.getElementById("dynamic-settings-modal-title");
+const dynamicModalMessage = document.getElementById("dynamic-settings-modal-message");
 
 function showEmail() {
     // Retrieve email from currently signed in user.
@@ -57,13 +63,14 @@ function changeEmail(originalEmail, newEmail) {
         .then((data) => {
             if(data.success){
                 // Email changed successfully.
-                alert("Email has been successfully edited! Redirecting to login page...");
-                window.location.href = "loginpg.html";
+                setUpDynamicModal("change-email-success");
+                showModal("dynamic-modal");
                 return;
             } else {
-                alert(data.message || "Email edit unsuccessful!");
                 console.log(data.message || "Email edit unsuccessful!");
-                clearModalInputs("change-email-modal");
+                setUpDynamicModal("change-email-fail");
+                hideModal("change-email-modal");
+                showModal("dynamic-modal");
             }
         })
         .catch((err) => {
@@ -84,12 +91,14 @@ function changeMasterPassword(originalPassword, newPassword) {
         .then((data) => {
             if(data.success){
                 // Master password changed successfully.
-                alert("Master password has been successfully edited! Redirecting to login page...");
-                window.location.href = "loginpg.html";
+                setUpDynamicModal("change-master-password-success");
+                showModal("dynamic-modal");
                 return;
             } else {
-                alert(data.message || "Master password edit unsuccessful!");
                 console.log("Master password edit unsuccessful!");
+                setUpDynamicModal("change-master-password-fail");
+                hideModal("change-password-modal");
+                showModal("dynamic-modal");
             }
         })
         .catch((err) => {
@@ -98,7 +107,7 @@ function changeMasterPassword(originalPassword, newPassword) {
 }
 
 function logOut() {
-    // Properly log out by clearing sess`ion and cookies.
+    // Properly log out by clearing session and cookies.
     fetch("http://127.0.0.1:6969/users/logout", {
         method: "POST",
         headers: {
@@ -109,9 +118,13 @@ function logOut() {
         .then((response) => response.json())
         .then((data) => {
             if(data.success){
-                window.location.href = "loginpg.html";
+                setUpDynamicModal("log-out-success");
+                showModal("dynamic-modal");
+                return;
             } else {
-                alert("Logout failed: " + (data.message || ""));
+                console.log("Logout failed: " + (data.message || ""));
+                setUpDynamicModal("log-out-fail");
+                showModal("dynamic-modal");
             }
         })
         .catch((err) => {
@@ -132,11 +145,16 @@ function deleteAccount(password) {
         .then((data) => {
             if(data.success){
                 // console.log("Delete response:", data);
-                alert("Account has been successfully deleted! Redirecting to login page...");
-                window.location.href = "loginpg.html";
+                console.log("Account has been successfully deleted! Redirecting to login page...");
+                setUpDynamicModal("delete-account-success");
+                hideModal("delete-account-modal");
+                showModal("dynamic-modal");
                 return;
             } else {
                 console.log(data.message || "Account deletion unsuccessful!");
+                setUpDynamicModal("delete-account-fail");
+                hideModal("delete-account-modal");
+                showModal("dynamic-modal");
             }
         })
         .catch((err) => {
@@ -159,6 +177,7 @@ function clearModalInputs(modal) {
         case "delete-account-modal":
             // Clears delete account modal inputs.
             document.getElementById("password-input").value = "";
+            break;
         default:
             break;
     }
@@ -179,6 +198,9 @@ function showModal(modal) {
         case "delete-account-modal":
             deleteAccountModal.style.display = "block";
             break;
+        case "dynamic-modal":
+            dynamicModal.style.display = "flex";
+            break;
     }
 }
 
@@ -195,6 +217,83 @@ function hideModal(modal) {
             break;
         case "delete-account-modal":
             deleteAccountModal.style.display = "none";
+            break;
+        case "dynamic-modal":
+            dynamicModal.style.display = "none";
+            break;
+    }
+}
+
+function setUpDynamicModal(result){
+    switch(result){
+        case "change-email-success":
+            // Change the modal title and content.
+            dynamicModalTitle.textContent = "Email successfully edited!";
+            dynamicModalMessage.textContent = "Email successfully edited! Click ok to sign back in...";
+            // Onclick listener to ensure only one handler is active at one time for the dynamic modal button.
+            dynamicModalOkBtn.onclick = () => {
+                window.location.href = "loginpg.html";
+            };
+            break;
+        case "change-email-fail":
+            dynamicModalTitle.textContent = "Email edit unsuccessful!";
+            dynamicModalMessage.textContent = "Email edit unsuccessful! Please retry!";
+            dynamicModalOkBtn.onclick = () => {
+                // Hide dynamic modal
+                hideModal("dynamic-modal");
+                // Clear the change email inputs.
+                clearModalInputs("change-email-modal");
+                showModal("change-email-modal");
+            };  
+            break;
+        case "change-master-password-success":
+            dynamicModalTitle.textContent = "Master password successfully edited!";
+            dynamicModalMessage.textContent = "Master password successfully edited! Click ok to sign back in...";
+            dynamicModalOkBtn.onclick = () => {
+                window.location.href = "loginpg.html";
+            };
+            break;
+        case "change-master-password-fail":
+            dynamicModalTitle.textContent = "Master password edit unsuccessful!";
+            dynamicModalMessage.textContent = "Master password edit unsuccessful! Please retry!";
+            dynamicModalOkBtn.onclick = () => {
+                hideModal("dynamic-modal");
+                clearModalInputs("change-password-modal");
+                showModal("change-password-modal");
+            };
+            break;
+        case "log-out-success":
+            dynamicModalTitle.textContent = "Log Out Successful!";
+            dynamicModalMessage.textContent = "Log Out Successful! Click ok to return to the login page...";
+            dynamicModalOkBtn.onclick = () => {
+                window.location.href = "loginpg.html";
+            };
+            break;
+        case "log-out-fail":
+            dynamicModalTitle.textContent = "";
+            dynamicModalMessage.textContent = "Log Out Unsuccessful!";
+            dynamicModalOkBtn.onclick = () => {
+                hideModal("dynamic-modal");
+            };
+            break;
+        case "delete-account-success":
+            dynamicModalTitle.textContent = "Account successfully deleted!";
+            dynamicModalMessage.textContent = "Account successfully deleted! Click ok to return to the login page...";
+            dynamicModalOkBtn.onclick = () => {
+                window.location.href = "loginpg.html";
+            };
+            break;
+        case "delete-account-fail":
+            dynamicModalTitle.textContent = "Account deletion unsuccessful!";
+            dynamicModalMessage.textContent = "Account deletion unsuccessful! Click ok to retry!";
+            dynamicModalOkBtn.onclick = () => {
+                hideModal("dynamic-modal");
+                clearModalInputs("change-password-modal");
+                showModal("change-password-modal");
+            };
+            break;
+        default:
+            dynamicModalOkBtn.onclick = null;
             break;
     }
 }
@@ -235,11 +334,11 @@ if (changeMasterPasswordBtn) {
     });
 }
 
-if (backBtn) {
-    backBtn.addEventListener("click", () => {
-        window.location.href = "mainpg.html";
-    });
-}
+// if (backBtn) {
+//     backBtn.addEventListener("click", () => {
+//         window.location.href = "mainpg.html";
+//     });
+// }
 
 if (openlogOutModalBtn) {
     openlogOutModalBtn.addEventListener("click", () => showModal("log-out-modal"));
@@ -267,6 +366,10 @@ if (deleteAccountBtn) {
         const password = document.getElementById("password-input").value;
         deleteAccount(password);
     });
+}
+
+if (closeDynamicModalBtn){
+    closeDynamicModalBtn.addEventListener("click", () => hideModal("dynamic-modal"));
 }
 
 document.addEventListener("DOMContentLoaded", () => {

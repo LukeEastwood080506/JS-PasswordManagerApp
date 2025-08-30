@@ -1,30 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Really Good Password Manager Sign-Up</title>
-    <link rel="stylesheet" type="text/css" href="../css/signup-style.css" />
-    <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container">
-      <div class="split-left">
-        <img src="../assets/site-icon.png" alt="pmicon" class="logo" />
-        <h1>Really Good Password Manager</h1>
-      </div>
-      <div class="split-right">
-        <h2>Sign Up</h2>
-        <div class = "sign-up-container">
-            <input type = "text" id = "email-input" placeholder = "Email:" autocomplete = "off" />
-            <input type = "text" id = "confirm-email-input" placeholder = "Confirm Email:" autocomplete = "off" />
-            <input type = "password" id = "password-input" placeholder = "Password:" autocomplete = "off" />
-            <button onclick = "confirmSignUp()">Sign Up</button>
-            <a href = "loginpg.html" id = "login-link">Already have an account? Login</a>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Really Good Password Manager Sign-Up</title>
+  <link rel="stylesheet" type="text/css" href="../css/signup-style.css" />
+  <link rel="icon" type="image/x-icon" href="../assets/site-icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <div class="split-left">
+      <img src="../assets/site-icon.png" alt="pmicon" class="logo" />
+      <h1>Really Good Password Manager</h1>
+    </div>
+    <div class="split-right">
+      <h2>Sign Up</h2>
+      <div class="sign-up-container">
+        <input type="text" id="email-input" placeholder="Email:" autocomplete="off" />
+        <input type="text" id="confirm-email-input" placeholder="Confirm Email:" autocomplete="off" />
+        <input type="password" id="password-input" placeholder="Password:" autocomplete="off" />
+        <button id = "sign-up-button">Sign Up</button>
+        <a href="loginpg.html" id="login-link">Already have an account? Login</a>
       </div>
     </div>
-  </body>
-  <script src = "../js/signup.js"></script>
+  </div>
+
+  <!--Dynamic Sign Up Modal-->
+  <div class="dynamic-signup-modal-container" id="dynamic-signup-modal-container" style="display: none">
+    <div class="dynamic-signup-modal-content" id="dynamic-signup-modal-content">
+      <button class="close" id="dynamic-signup-modal-close-button">&times;</button>
+      <h2 id="dynamic-signup-modal-title">Lorem Ipsum</h2>
+      <p id="dynamic-signup-modal-message">Lorem Ipsum</p>
+      <button type="submit" class="ok-button" id="ok-button">
+        <span class="submit">Ok</span>
+      </button>
+    </div>
+  </div>
+
+</body>
+<script src="../js/signup.js"></script>
+
 </html>
