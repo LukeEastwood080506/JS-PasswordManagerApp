@@ -30,7 +30,7 @@ function checkEmail() {
         .then((data) => {
             if (data.success) {
                 // Existing email - Can now move on to the forgot password section.
-                console.log("Valid email! Proceeding to forgot password...");
+                // console.log("Valid email! Proceeding to forgot password...");
                 setUpDynamicModal("email-success");
                 showDynamicModal();
             } else {
@@ -41,17 +41,17 @@ function checkEmail() {
         })
 }
 
-function checkPasswords(email){
-    console.log("Email passed to checkPasswords method: ", email);
+function checkPasswords(email) {
+    // console.log("Email passed to checkPasswords method: ", email);
     const newPassword = newPasswordInput.value;
     const confirmedPassword = confirmPasswordInput.value;
     // Flag if both inputs have not been filled.
-    if(!newPassword || !confirmedPassword){
+    if (!newPassword || !confirmedPassword) {
         setUpDynamicModal("password-change-fail");
         showDynamicModal();
     }
     // Flag if both inputs are not equal to each other.
-    if(newPassword !== confirmedPassword){
+    if (newPassword !== confirmedPassword) {
         setUpDynamicModal("password-change-fail");
         showDynamicModal();
     }
@@ -62,26 +62,33 @@ function checkPasswords(email){
         },
         body: JSON.stringify({ email, confirmedPassword }),
     })
-    .then((response) => response.json())
-    .then((data) => {
-        if(data.success){
-            console.log("Forgot Password successful!");
-            setUpDynamicModal("password-change-success");
-            showDynamicModal();
-        } else {
-            console.log(data.message || "Forgot Password unsuccessful!");
-            setUpDynamicModal("password-change-fail");
-            showDynamicModal();
-        }
-    })
-    
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                console.log("Forgot Password successful!");
+                setUpDynamicModal("password-change-success");
+                showDynamicModal();
+            } else {
+                // Check the contents of data.message before displaying the appropriate modal.
+                if (data.message === "The new password is the same as the original password") {
+                    console.log(data.message);
+                    setUpDynamicModal("same-forgot-password");
+                    showDynamicModal();
+                } else {
+                    console.log(data.message || "Forgot Password unsuccessful!");
+                    setUpDynamicModal("password-change-fail");
+                    showDynamicModal();
+                }
+            }
+        })
+
 }
 
 
 function clearInputs() {
     emailInput.value = "";
-    // newPasswordInput.value = "";
-    // confirmPasswordInput.value = "";
+    newPasswordInput.value = "";
+    confirmPasswordInput.value = "";
 }
 
 function setUpDynamicModal(result) {
@@ -109,7 +116,7 @@ function setUpDynamicModal(result) {
             dynamicModalMessage.textContent = "Forgot Password Successful! Click ok to proceed to login!";
             dynamicModalOkBtn.onclick = () => {
                 window.location.href = "loginpg.html";
-            };  
+            };
             break;
         case "password-change-fail":
             dynamicModalTitle.textContent = "Forgot Password Unsuccessful!";
@@ -117,7 +124,15 @@ function setUpDynamicModal(result) {
             dynamicModalOkBtn.onclick = () => {
                 hideDynamicModal();
                 clearInputs();
-            };  
+            };
+            break;
+        case "same-forgot-password":
+            dynamicModalTitle.textContent = "Forgot Password Unsuccessful!";
+            dynamicModalMessage.textContent = "Forgot Password Unsuccessful! The new password is the same as the original password!";
+            dynamicModalOkBtn.onclick = () => {
+                hideDynamicModal();
+                clearInputs();
+            }
             break;
         default:
             break;
@@ -148,7 +163,7 @@ if (forgotPasswordBtn) {
     forgotPasswordBtn.addEventListener("click", () => checkEmail())
 }
 
-if (submitNewPasswordBtn){
+if (submitNewPasswordBtn) {
     submitNewPasswordBtn.addEventListener("click", () => {
         checkPasswords(verifiedEmail);
     });
