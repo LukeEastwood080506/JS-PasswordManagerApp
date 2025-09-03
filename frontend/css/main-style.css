@@ -595,6 +595,64 @@ hr {
     cursor: pointer;
 }
 
+/* Dynamic Modal Styling */
+.dynamic-mainpg-modal-container {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  min-width: 100%;
+  min-height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.dynamic-mainpg-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #e5e6e1;
+  padding: 20px;
+  border: none;
+  border-radius: 20px;
+  width: 30%;
+}
+
+.ok-button {
+  font-family: "Poppins";
+  margin-top: 20px;
+  border: none;
+  border-radius: 18px;
+  padding: 5px 20px;
+  background-color: rgb(152, 132, 191);
+  color: white;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+  transition: filter 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#dynamic-mainpg-modal-title{
+    padding-bottom: 10px;
+}
+
+#dynamic-mainpg-modal-message{
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#ok-button{
+    margin: 0 auto;
+}
+
 .edit-password-icon {
     rotate: 215deg;
 }

@@ -40,6 +40,7 @@ const editPasswordModal = document.getElementById("edit-password-container");
 const notificationsModal = document.getElementById(
   "notifications-modal-container"
 );
+const dynamicModal = document.getElementById("dynamic-mainpg-modal-container");
 
 const addModalOpenButton = document.getElementById("add-password-button");
 const modalAddPasswordBtn = document.getElementById("modal-add-button");
@@ -48,8 +49,11 @@ const editModalCloseButton = document.getElementById("edit-close-button");
 const notificationsCloseButton = document.getElementById(
   "notifications-close-button"
 );
-
 const notificationsIcon = document.querySelector("#notification-bell img");
+const closeDynamicModalBtn = document.getElementById("dynamic-mainpg-modal-close-button");
+const dynamicModalTitle = document.getElementById("dynamic-mainpg-modal-title");
+const dynamicModalMessage = document.getElementById("dynamic-mainpg-modal-message");
+const dynamicModalOkButton = document.getElementById("ok-button");
 
 const PAGE_MAPPING = {
   "myvault-link": "myvault-page",
@@ -58,7 +62,10 @@ const PAGE_MAPPING = {
 };
 
 function initialiseApp() {
-  fetch("http://127.0.0.1:6969/passwords/all")
+  fetch("http://127.0.0.1:6969/passwords/all", {
+    method: "GET",
+    credentials: "include",
+  })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -76,11 +83,13 @@ function initialiseApp() {
       }
     })
     .catch((err) => {
-      alert("Error fetching passwords: ", err);
       console.error("Error fetching passwords:", err);
     });
   // Fetch deleted passwords for recycle bin.
-  fetch("http://127.0.0.1:6969/deletedPasswords/all")
+  fetch("http://127.0.0.1:6969/deletedPasswords/all", {
+    method: "GET",
+    credentials: "include",
+  })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -106,32 +115,7 @@ function initialiseApp() {
       }
     })
     .catch((err) => {
-      alert("Error fetching deleted passwords: ", err);
       console.error("Error fetching deleted passwords:", err);
-    });
-  // Fetch notifications for notifications modal.
-  // (PROBABLY DONT NEED THIS RUNNING ON APP LAUNCH COULD JUST DO IT WHEN NOTIFICATIONS BELL IS CLICKED)
-  fetch("http://127.0.0.1:6969/notifications/all")
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        data.data.forEach((noti) => {
-          if (noti && noti.title && noti.content) {
-            const existing = notifications.find(
-              (n) => n.title === noti.title && n.content === noti.content
-            );
-            notificationsIcon.src = "../assets/bell-red-circle.png";
-            notifications.push(noti);
-          }
-        });
-        fillNotifications();
-      } else {
-        console.error("Failed to load notifications from backend");
-      }
-    })
-    .catch((err) => {
-      alert("Error fetching notifications: ", err);
-      console.error("Error fetching notifications: ", err);
     });
   loadPage(currentPage, currentPageOption);
 }
@@ -247,6 +231,10 @@ function fillNotifications() {
   );
   existingNotifications.forEach((noti) => noti.remove());
 
+  if(notifications.length !== 0){
+    notificationsIcon.src = "../assets/bell-red-circle.png";
+  }
+
   notifications.forEach((notification) => {
     if (!notification?.title || !notification?.content) {
       console.warn("Invalid notification skipped:", notification);
@@ -272,10 +260,10 @@ function fillNotifications() {
   });
 }
 
-function sliderFunction(){
+function sliderFunction() {
   const slider = document.getElementById("lengthRangeSlider");
   let sliderText = document.getElementById("slider-text");
-  slider.oninput = function(){
+  slider.oninput = function () {
     sliderText.textContent = "Password Length: " + this.value;
     generatePassword(this.value);
   }
@@ -297,7 +285,7 @@ function generatePassword(length = 12) {
   if (document.getElementById("numbers-checkbox").checked) selectedGroups.push(charGroups.numbers);
   if (document.getElementById("punctuation-checkbox").checked) selectedGroups.push(charGroups.punctuation);
   // Fallback if nothing is selected.
-  if(selectedGroups.length === 0) selectedGroups.push(charGroups.letters);
+  if (selectedGroups.length === 0) selectedGroups.push(charGroups.letters);
   // console.log("Selected char groups: " + selectedGroups);
   // Pick one character from each group to start building the password.
   let passwordChars = selectedGroups.map(group => group[Math.floor(Math.random() * group.length)]);
@@ -305,7 +293,7 @@ function generatePassword(length = 12) {
   // Fill remaining length with random characters from combined pool.
   const combinedPool = selectedGroups.join("");
   // console.log("Combined pool: " + combinedPool);
-  for(let i = passwordChars.length; i < length; i++){
+  for (let i = passwordChars.length; i < length; i++) {
     passwordChars.push(combinedPool[Math.floor(Math.random() * combinedPool.length)]);
   }
   // Shuffle the password so the guaranteed characters aren't in fixed positions.
@@ -378,15 +366,19 @@ function addGeneratedPassword(password) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ generatedPassword, vaultService }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // console.log("The generated password has successfully been added to the vault for the service: " + vaultService);
-        alert("The generated password has successfully been added to the vault for the service: " + vaultService);
+        console.log("The generated password has successfully been added to the vault for the service: " + vaultService);
+        setUpDynamicModal("generator-password-success");
+        showDynamicModal();
       } else {
-        alert(data.message || "The generated password could not be added to the vault!");
+        console.log(data.message || "The generated password could not be added to the vault!");
+        setUpDynamicModal("generator-password-fail");
+        showDynamicModal();
       }
     })
     .catch((error) => {
@@ -426,7 +418,9 @@ function handleAccountSubmit(isEditMode) {
     const password = document.getElementById("add-password-input").value.trim();
 
     if (!service || !email || !password) {
-      alert("Please fill in all fields");
+      console.log("Please fill in all fields");
+      setUpDynamicModal("fill-in-add-fields");
+      showDynamicModal();
       return;
     }
 
@@ -445,7 +439,9 @@ function handleAccountSubmit(isEditMode) {
       .value.trim();
 
     if (!service || !email || !password || !currentPassword) {
-      alert("Please fill in all fields");
+      console.log("Please fill in all fields");
+      setUpDynamicModal("fill-in-edit-fields");
+      showDynamicModal();
       return;
     }
 
@@ -468,7 +464,9 @@ function handleAccountSubmit(isEditMode) {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            alert("Credentials for website/app updated successfully!");
+            console.log("Credentials for website/app updated successfully!");
+            setUpDynamicModal("edit-record-success");
+            showDynamicModal();
             // Update local array
             const idx = accounts.findIndex(
               (a) =>
@@ -481,11 +479,13 @@ function handleAccountSubmit(isEditMode) {
             }
             fillAccounts();
           } else {
-            alert(data.message || "Credentials could not be edited");
+            console.log(data.message || "Credentials could not be edited");
+            setUpDynamicModal("edit-record-fail");
+            showDynamicModal();
           }
         })
         .catch((err) => {
-          alert(err.message);
+          console.error(err.message);
         });
     }
   }
@@ -516,11 +516,15 @@ async function togglePassword(
     const password = await fetchPassword(isRecycleBin, account);
     if (password) {
       updatePasswordUI(true, iconElement, passwordElement, password);
+      setUpDynamicModal("show-password-success");
+      showDynamicModal();
     } else {
-      alert("Password cannot be displayed");
+      console.log("Password cannot be displayed");
+      setUpDynamicModal("show-password-fail");
+      showDynamicModal();
     }
   } catch (err) {
-    alert(err.message);
+    console.error(err.message);
   }
 }
 
@@ -584,18 +588,22 @@ function save(service, email, password) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Password record created and added to vault successfully!");
+        console.log("Password record created and added to vault successfully!")
+        setUpDynamicModal("save-password-success");
+        showDynamicModal();
         // POST request needed to /notifications/new
         const title = "Vault - Add Notification";
         const content = "Password record added to vault!";
         addNotification(title, content);
         refreshNotificationsDiv(title, content);
       } else {
-        alert(data.message || "Password Creation Unsuccessful!");
+        console.log(data.message || "Password Creation Unsuccessful!");
+        setUpDynamicModal("save-password-fail");
+        showDynamicModal();
       }
     })
     .catch((error) => {
-      alert(error.message);
+      console.error(error.message);
     });
 }
 
@@ -606,16 +614,16 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
       "Content-Type": "application/json",
     },
     credentials: "include", // Sends cookies with the request.
-    body: JSON.stringify({ 
+    body: JSON.stringify({
       service: deletedService,
       email: deletedEmail,
-      password: deletedPassword  
+      password: deletedPassword
     }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Password record deleted from vault successfully!");
+        console.log("Password record deleted from vault successfully!");
         refreshVaultDiv(deletedService, deletedEmail);
         const title = "Vault - Delete Notification";
         const content = "Password deleted from vault and moved to recycle bin!";
@@ -630,19 +638,23 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
           .then((data) => {
             if (data.success) {
               fillDeletedAccounts();
+              setUpDynamicModal("record-delete-success");
+              showDynamicModal();
             } else {
-              alert(data.message || "Recycle bin addition unsuccessful!");
+              console.log(data.message || "Recycle bin addition unsuccessful!");
+              setUpDynamicModal("record-delete-fail");
+              showDynamicModal();
             }
           })
           .catch((error) => {
-            alert(error.message);
+            console.error(error.message);
           });
       } else {
-        alert(data.message || "Password Deletion Unsuccessful!");
+        console.log(data.message || "Password Deletion Unsuccessful!");
       }
     })
     .catch((error) => {
-      alert(error.message);
+      console.error(error.message);
     });
 }
 
@@ -658,7 +670,9 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Password successfully restored to the vault!");
+        console.log("Password successfully restored to the vault!");
+        setUpDynamicModal("record-restore-success");
+        showDynamicModal();
         const title = "Recycle Bin - Restore Notification";
         const message = "Recycled record has been restored to vault!";
         addNotification(title, message);
@@ -667,15 +681,16 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
           deletedEmail,
           deletedPassword
         });
-        // Need some way to refresh the vault div.
         refreshRecycleBinDiv();
         refreshVaultDiv();
       } else {
-        alert(data.message || "Recycle bin record restoration unsuccessful!");
+        console.log(data.message || "Recycle bin record restoration unsuccessful!");
+        setUpDynamicModal("record-restore-fail");
+        showDynamicModal();
       }
     })
     .catch((error) => {
-      alert(error.message);
+      console.error(error.message);
     })
 }
 
@@ -694,20 +709,22 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
         // alert the user that the records been permenantly deleted.
         // refresh the recycle bin div somehow by filling the deletedAccounts again to remove
         // the recently deleted recycle bin record onscreen.
-        alert(
-          "The password record has been permenantly deleted from the recycle bin!"
-        );
+        console.log("The password record has been permenantly deleted from the recycle bin!");
+        setUpDynamicModal("perma-delete-success");
+        showDynamicModal();
         const title = "Recycle Bin - Delete Notification";
         const content = "Password permenantly deleted from recycle bin!";
         addNotification(title, content);
         refreshNotificationsDiv(title, content);
         refreshRecycleBinDiv(deletedService, deletedEmail);
       } else {
-        alert(data.message || "Recycle Bin Password Deletion Unsuccessful!");
+        console.log(data.message || "Recycle Bin Password Deletion Unsuccessful!");
+        setUpDynamicModal("perma-delete-fail");
+        showDynamicModal();
       }
     })
     .catch((error) => {
-      alert(error.message);
+      console.error(error.message);
     });
 }
 
@@ -749,14 +766,14 @@ function deleteNotification(title, content) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("This notification has been deleted!");
+        console.log("Notification deletion successful!");
         refreshNotificationsDiv(title, content);
       } else {
-        alert(data.message || "Notification deletion unsuccessful!");
+        console.log(data.message || "Notification deletion unsuccessful!");
       }
     })
     .catch((error) => {
-      alert(error.message);
+      console.error(error.message);
     });
 }
 
@@ -804,25 +821,29 @@ function changePage(pageOption) {
 }
 
 function logOut() {
-    // Properly log out by clearing session and cookies.
-    fetch("http://127.0.0.1:6969/users/logout", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include"
+  // Properly log out by clearing session and cookies.
+  fetch("http://127.0.0.1:6969/users/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        console.log("Logout Successful!");
+        setUpDynamicModal("log-out-success");
+        showDynamicModal();
+      } else {
+        console.log("Logout failed: " + (data.message || ""));
+        setUpDynamicModal("log-out-fail");
+        showDynamicModal();
+      }
     })
-        .then((response) => response.json())
-        .then((data) => {
-            if(data.success){
-                window.location.href = "loginpg.html";
-            } else {
-                alert("Logout failed: " + (data.message || ""));
-            }
-        })
-        .catch((err) => {
-            console.error(err.message);
-        })
+    .catch((err) => {
+      console.error(err.message);
+    })
 }
 
 function refreshVaultDiv(service, email) {
@@ -859,6 +880,152 @@ function refreshNotificationsDiv(deletedTitle, deletedContent) {
     }
   }
   fillNotifications();
+}
+
+function setUpDynamicModal(result) {
+  switch (result) {
+    case "generator-password-success":
+      dynamicModalTitle.textContent = "Generator Password Success!";
+      dynamicModalMessage.textContent = "The generated password has successfully been added to the vault!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "generator-password-fail":
+      dynamicModalTitle.textContent = "Generator Password Fail!";
+      dynamicModalMessage.textContent = "The generated password could not be added to the vault! Please retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "fill-in-add-fields":
+      dynamicModalTitle.textContent = "Add Password Record Fail!";
+      dynamicModalMessage.textContent = "Please fill in all fields! Click ok to retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs();
+      };
+      break;
+    case "fill-in-edit-fields":
+      dynamicModalTitle.textContent = "Edit Password Record Fail!";
+      dynamicModalMessage.textContent = "Please fill in all fields! Click ok to retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs();
+      };
+      break;
+    case "edit-record-success":
+      dynamicModalTitle.textContent = "Password Record Edit Success!";
+      dynamicModalMessage.textContent = "Credentials for website/app updated successfully!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "edit-record-fail":
+      dynamicModalTitle.textContent = "Edit Password Record Fail!";
+      dynamicModalMessage.textContent = "Credentials could not be edited";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs();
+      };
+      break;
+    case "show-password-success":
+      dynamicModalTitle.textContent = "Show Password Success!";
+      dynamicModalMessage.textContent = "Password can now be displayed! Click ok to view password!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "show-password-fail":
+      dynamicModalTitle.textContent = "Show Password Fail!";
+      dynamicModalMessage.textContent = "Password cannot be displayed! Please retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "save-password-success":
+      dynamicModalTitle.textContent = "Save Password Record Success!";
+      dynamicModalMessage.textContent = "Password record created and added to vault successfully!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "save-password-fail":
+      dynamicModalTitle.textContent = "Save Password Record Fail!";
+      dynamicModalMessage.textContent = "Password Record Creation Unsuccessful!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs();
+      };
+      break;
+    case "record-delete-success":
+      dynamicModalTitle.textContent = "Password Record Deleted Successfully!";
+      dynamicModalMessage.textContent = "Password record deleted from vault successfully and moved to recycle bin!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "record-delete-fail":
+      dynamicModalTitle.textContent = "Password Record Deletion Unsuccessful!";
+      dynamicModalMessage.textContent = "Password record could not be deleted from the vault and moved to recycle bin! Retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "record-restore-success":
+      dynamicModalTitle.textContent = "Recycle Bin Record Restore Successful!";
+      dynamicModalMessage.textContent = "Recycled record has been restored to the vault!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "record-restore-fail":
+      dynamicModalTitle.textContent = "Recycle Bin Record Restore Unsuccessful!";
+      dynamicModalMessage.textContent = "Recycled record could not be restored to the vault! Retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "perma-delete-success":
+      dynamicModalTitle.textContent = "Recycled Record Permenant Delete Successful!";
+      dynamicModalMessage.textContent = "Password permenantly deleted from recycle bin!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "perma-delete-fail":
+      dynamicModalTitle.textContent = "Recycled Record Permenant Delete Unsuccessful!";
+      dynamicModalMessage.textContent = "Password could not be permenantly deleted from recycle bin! Retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
+    case "log-out-success":
+      dynamicModalTitle.textContent = "Log Out Success!";
+      dynamicModalMessage.textContent = "Log out successful! Click ok to navigate to login page!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        window.location.href = "loginpg.html";
+      };
+      break;
+    case "log-out-fail":
+      dynamicModalTitle.textContent = "Log Out Fail!";
+      dynamicModalMessage.textContent = "Log out unsuccessful! Retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+function showDynamicModal() {
+  dynamicModal.style.display = "flex";
+}
+
+function hideDynamicModal() {
+  dynamicModal.style.display = "none";
 }
 
 /* Add Modal Methods */
@@ -917,6 +1084,32 @@ if (editModalCloseButton) {
 
 if (notificationsIcon) {
   notificationsIcon.addEventListener("click", () => {
+    // Fetch notifications for notifications modal.
+    fetch("http://127.0.0.1:6969/notifications/all", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          notifications.length = 0; // Clear previous notifications.
+          data.data.forEach((noti) => {
+            if (noti && noti.title && noti.content) {
+              const existing = notifications.find(
+                (n) => n.title === noti.title && n.content === noti.content
+              );
+              // notificationsIcon.src = "../assets/bell-red-circle.png";
+              notifications.push(noti);
+            }
+          });
+          fillNotifications();
+        } else {
+          console.error("Failed to load notifications from backend");
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching notifications: ", err);
+      });
     toggleNotificationsModal(); // Show notifications modal.
   });
 }
@@ -925,6 +1118,10 @@ if (notificationsCloseButton) {
   notificationsCloseButton.addEventListener("click", () => {
     notificationsModal.style.display = "none";
   });
+}
+
+if (closeDynamicModalBtn) {
+  closeDynamicModalBtn.addEventListener("click", () => hideDynamicModal());
 }
 
 window.addEventListener("click", (event) => {
@@ -958,7 +1155,6 @@ document.addEventListener("keydown", function (event) {
     return;
   } else {
     if (event.key === "#") {
-      alert("clearing");
       accounts = [];
       save();
     }
@@ -966,11 +1162,27 @@ document.addEventListener("keydown", function (event) {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  initialiseApp();
-  if (addModalOpenButton) {
-    addModalOpenButton.addEventListener("click", () => showAddModal());
-  }
-  generatePassword();
-  initialiseCheckboxListeners();
-  sliderFunction();
+  fetch("http://127.0.0.1:6969/users/check", {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        initialiseApp();
+        if (addModalOpenButton) {
+          addModalOpenButton.addEventListener("click", () => showAddModal());
+        }
+        generatePassword();
+        initialiseCheckboxListeners();
+        sliderFunction();
+       } // else {
+      //   // Not logged in, redirect back to login
+      //   window.location.href = "loginpg.html";
+      // }
+    })
+    .catch((error) => {
+      console.error(error.message);
+      window.location.href = "loginpg.html";
+    });
 });

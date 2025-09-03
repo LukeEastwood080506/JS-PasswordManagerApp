@@ -27,8 +27,9 @@ function routeCheckHandler() {
 }
 
 router.get("/all", (request, response) => {
+  const userId = request.session.userId;
   console.log(`GET request to /passwords${request.url}`);
-  db.all("SELECT service, email, password FROM passwords", [], (err, rows) => {
+  db.all("SELECT * FROM passwords WHERE user_id = ?", [userId], (err, rows) => {
     if (err) {
       return response.status(400).json({
         success: false,

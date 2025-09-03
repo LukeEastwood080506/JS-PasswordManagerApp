@@ -31,10 +31,11 @@ router.get("/delete", routeCheckHandler());
 router.get("/restore", routeCheckHandler());
 
 router.get("/all", (request, response) => {
+  const userId = request.session.userId;
   console.log(`GET request to /deletedPasswords${request.url}`);
   db.all(
-    "SELECT deletedService, deletedEmail, deletedPassword FROM deletedPasswords",
-    [],
+    "SELECT * FROM deletedPasswords WHERE user_id = ?",
+    [userId],
     (err, rows) => {
       if (err) {
         return response.status(400).send({
