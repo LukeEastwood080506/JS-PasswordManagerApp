@@ -28,7 +28,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true, // prevents JS from reading cookies
-      secure: false, // set to true if using HTTPS.
+      secure: true, // set to true if using HTTPS.
+      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24,
     },
   })

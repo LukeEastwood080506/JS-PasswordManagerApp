@@ -82,3 +82,13 @@ if(loginButton){
 if(closeDynamicModalBtn){
   closeDynamicModalBtn.addEventListener("click", () => hideDynamicModal());
 }
+
+window.addEventListener("pageshow", (event) => {
+  // Checks if page is loading from cache.
+  if(event.persisted){
+    // Clear the input form states if the page is restored from cache.
+    document.querySelectorAll("input").forEach(input => input.value = "");
+    // Hide modals
+    hideDynamicModal();
+  }
+});

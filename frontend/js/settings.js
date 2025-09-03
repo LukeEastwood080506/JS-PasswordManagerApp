@@ -1,5 +1,5 @@
 // DOM elements
-// const backBtn = document.getElementById("back-btn");
+const backBtn = document.getElementById("back-btn");
 const displayEmail = document.getElementById("email-display");
 
 const changeEmailModal = document.getElementById("change-email-modal-container");
@@ -334,11 +334,11 @@ if (changeMasterPasswordBtn) {
     });
 }
 
-// if (backBtn) {
-//     backBtn.addEventListener("click", () => {
-//         window.location.href = "mainpg.html";
-//     });
-// }
+if (backBtn) {
+    backBtn.addEventListener("click", () => {
+        window.location.href = "mainpg.html";
+    });
+}
 
 if (openlogOutModalBtn) {
     openlogOutModalBtn.addEventListener("click", () => showModal("log-out-modal"));

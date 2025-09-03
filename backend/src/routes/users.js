@@ -33,6 +33,7 @@ router.get("/emails", routeCheckHandler("emails"));
 router.get("/emails/change", routeCheckHandler("emails/change"));
 router.get("/delete", routeCheckHandler("delete"));
 router.get("/logout", routeCheckHandler("logout"));
+router.get("/check", routeCheckHandler("check"));
 
 router.get("/all", (request, response) => {
   console.log(`GET request to /users${request.url}`);
@@ -57,6 +58,22 @@ router.get("/all", (request, response) => {
       message: row
     });
   });
+});
+
+router.get("/check", (request, response) => {
+  // Check if a session exists and if a userId is associated with the session.
+  console.log("Session: ", request.session);
+  console.log("Session Id: ", request.session.userId);
+  if (request.session && request.session.userId) {
+    return response.status(200).json({
+      success: true,
+      userId: request.session.userId
+    });
+  } else {
+    return response.status(200).json({
+      success: false
+    });
+  }
 });
 
 // POST request for login
@@ -100,11 +117,19 @@ router.post("/login", (request, response) => {
     }
     // Saves userId in session.
     request.session.userId = row.id;
-    // console.log("Session after login:", request.session);
-    return response.status(200).json({
-      success: true,
-      message: "User Log-in Successful!"
-    });
+    request.session.save(err => {
+      if (err) {
+        console.error("Session save error: ", error);
+        return response.status(500).json({
+          success: false,
+          message: "Session Error"
+        });
+      }
+      return response.status(200).json({
+        success: true,
+        message: "User Log-in Successful!"
+      });
+    })
   });
 });
 
@@ -161,21 +186,21 @@ router.post("/emails", (request, response) => {
   console.log("Session object: ", request.session);
   const userId = request.session.userId;
   // console.log("User id: ", userId);
-  if(!userId){
+  if (!userId) {
     return response.status(401).send({
       success: false,
       message: "A userId is required to display an email"
     });
   }
   const selectSql = `SELECT email FROM users WHERE id = ?`;
-  db.get(selectSql, [userId], function(err, row){
-    if(err){
+  db.get(selectSql, [userId], function (err, row) {
+    if (err) {
       return response.status(500).send({
         success: false,
         message: "Database Error: " + err.message
       });
     }
-    if(!row){
+    if (!row) {
       return response.status(401).send({
         success: false,
         message: "Email not found!"
@@ -192,34 +217,41 @@ router.post("/emails/change", (request, response) => {
   console.log(`POST request to /users${request.url}`);
   const { originalEmail, newEmail } = request.body;
   const userId = request.session.userId;
-  // console.log("Original email: ", originalEmail);
-  // console.log("New email: ", newEmail);
+  console.log("Original email: ", originalEmail);
+  console.log("New email: ", newEmail);
   // console.log("userId: ", userId);
-  if(!userId || !originalEmail || !newEmail){
+  if (!userId || !originalEmail || !newEmail) {
     return response.status(401).send({
       success: false,
       message: "A userId, original email and new email is required to change the account email"
     });
   }
+  // Check if the new email is equal to the original email.
+  if (originalEmail === newEmail) {
+    return response.status(401).send({
+      success: false,
+      message: "The email entered cannot be the same as the original!"
+    });
+  }
   // Locate record that has the original email (check if it is equal to the userid)
   const selectSql = `SELECT * FROM users WHERE id = ? AND email = ?`;
-  db.get(selectSql, [userId, originalEmail], function(err, row){
-    if(err){
+  db.get(selectSql, [userId, originalEmail], function (err, row) {
+    if (err) {
       return response.status(500).send({
         success: false,
         message: "Database Error: " + err.message
       });
     }
     // Record not found.
-    if(!row){
+    if (!row) {
       return response.status(401).send({
         success: false,
         message: "User record with the entered email not found!"
       });
     }
     const updateSql = `UPDATE users SET email = ? WHERE id = ?`;
-    db.run(updateSql, [newEmail, userId], function(err){
-      if(err){
+    db.run(updateSql, [newEmail, userId], function (err) {
+      if (err) {
         return response.status(500).send({
           success: false,
           message: "Database Error: " + err.message
@@ -231,28 +263,28 @@ router.post("/emails/change", (request, response) => {
       });
     });
   });
-}); 
+});
 
 router.post("/delete", (request, response) => {
   console.log(`POST request to /users${request.url}`);
   const { password } = request.body;
   const userId = request.session.userId;
   // console.log("userId: ", userId);
-  if(!password || !userId){
+  if (!password || !userId) {
     return response.status(500).send({
       success: false,
       message: "The password to the account and the userId is required for account deletion"
     });
   }
   const selectSql = `SELECT * FROM users WHERE id = ?`;
-  db.get(selectSql, [userId], function(err, row){
-    if(err){
+  db.get(selectSql, [userId], function (err, row) {
+    if (err) {
       return response.status(401).send({
         success: false,
         message: "Database Error: " + err.message
       });
     }
-    if(!row){
+    if (!row) {
       return response.status(500).send({
         success: false,
         message: "A user record was not found for deletion with the inputted password"
@@ -260,7 +292,7 @@ router.post("/delete", (request, response) => {
     }
     // Compare password
     const isMatch = bcrypt.compareSync(password, row.password);
-    if(!isMatch){
+    if (!isMatch) {
       return response.status(401).send({
         success: false,
         message: "Account could not be deleted - incorrect password"
@@ -268,8 +300,8 @@ router.post("/delete", (request, response) => {
     }
     // Delete account
     const deleteSql = `DELETE FROM users WHERE id = ?`;
-    db.run(deleteSql, [userId], function(err){
-      if(err){
+    db.run(deleteSql, [userId], function (err) {
+      if (err) {
         return response.status(401).send({
           success: false,
           message: "Database Error: " + err.message
@@ -286,7 +318,7 @@ router.post("/delete", (request, response) => {
 router.post("/logout", (request, response) => {
   console.log(`POST request to /users${request.url}`);
   request.session.destroy((err) => {
-    if(err){
+    if (err) {
       return response.status(500).send({
         success: false,
         message: "Logout Failed!"
@@ -303,21 +335,21 @@ router.post("/logout", (request, response) => {
 router.post("/forgotpassword", (request, response) => {
   console.log(`POST request to /users${request.url}`);
   const { email } = request.body;
-  if(!email){
+  if (!email) {
     return response.status(401).send({
       success: false,
       message: "An email is required for forgot password!"
     });
   }
   const selectSql = "SELECT * FROM users WHERE email = ?";
-  db.get(selectSql, [email], function(err, row){
-    if(err){
+  db.get(selectSql, [email], function (err, row) {
+    if (err) {
       return response.status(500).send({
         success: false,
         message: "Database Error" + err.message
       });
     }
-    if(!row){
+    if (!row) {
       return response.status(401).send({
         success: false,
         message: "Email does not exist in database!"
@@ -333,7 +365,7 @@ router.post("/forgotpassword", (request, response) => {
 router.post("/forgotpassword/new", (request, response) => {
   console.log(`POST request to /users${request.url}`);
   const { email, confirmedPassword } = request.body;
-  if(!email || !confirmedPassword){
+  if (!email || !confirmedPassword) {
     return response.status(401).send({
       success: false,
       message: "An email and confirmed password is required to change the password"
@@ -341,25 +373,34 @@ router.post("/forgotpassword/new", (request, response) => {
   }
   // Select the user record that contains the email.
   const selectSql = `SELECT * FROM users WHERE email = ?`;
-  db.get(selectSql, [email], function(err, row){
-    if(err){
+  db.get(selectSql, [email], function (err, row) {
+    if (err) {
       return response.status(500).send({
         success: false,
         message: "Database Error: " + err.message
       });
     }
-    if(!row){
+    if (!row) {
       return response.status(401).send({
         success: false,
         message: "A user record under the email was not found!"
       });
     }
     // Record found - update the password - store as hash in database.
+    // Check if confirmedPassword is the same as the original password.
+    const originalHashedPassword = row.password;
+    const isSame = bcrypt.compareSync(confirmedPassword, originalHashedPassword);
+    if (isSame) {
+      return response.status(401).send({
+        success: false,
+        message: "The new password is the same as the original password"
+      });
+    }
     const salt = bcrypt.genSaltSync(13);
     const hashedPassword = bcrypt.hashSync(confirmedPassword, salt);
-    const updateSql = `UPDATE users SET password = ? WHERE email = ?`;    
-    db.run(updateSql, [hashedPassword, email], function(err){
-      if(err){
+    const updateSql = `UPDATE users SET password = ? WHERE email = ?`;
+    db.run(updateSql, [hashedPassword, email], function (err) {
+      if (err) {
         return response.status(500).send({
           success: false,
           message: "Database Error: " + err.message

@@ -25,8 +25,9 @@ function routeCheckHandler() {
 }
 
 router.get("/all", (request, response) => {
+  const userId = request.session.userId;
   console.log(`GET request to /notifications${request.url}`);
-  db.all("SELECT title, content FROM notifications", [], (err, rows) => {
+  db.all("SELECT * FROM notifications WHERE user_id = ?", [userId], (err, rows) => {
     if (err) {
       return response.status(400).json({
         success: false,
@@ -48,7 +49,7 @@ router.get("/delete", routeCheckHandler());
 router.post("/new", (request, response) => {
   console.log(`POST request to /notifications${request.url}`);
   const userId = request.session.userId;
-  if(!userId){
+  if (!userId) {
     return response.status(401).send({
       success: false,
       message: "Unauthorised - Notifications"
