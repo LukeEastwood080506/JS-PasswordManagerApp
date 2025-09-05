@@ -33,7 +33,7 @@ router.get("/emails", routeCheckHandler("emails"));
 router.get("/emails/change", routeCheckHandler("emails/change"));
 router.get("/delete", routeCheckHandler("delete"));
 router.get("/logout", routeCheckHandler("logout"));
-router.get("/check", routeCheckHandler("check"));
+// router.get("/check", routeCheckHandler("check"));
 
 router.get("/all", (request, response) => {
   console.log(`GET request to /users${request.url}`);
