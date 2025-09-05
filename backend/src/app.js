@@ -9,7 +9,7 @@ const host = "127.0.0.1";
 const port = 6969;
 
 app.use(cors({
-  origin: "http://127.0.0.1:3000", // Frontend origin
+  origin: "http://127.0.0.1:8080", // Frontend origin
   credentials: true, // Allows for cookies/sessions.
 }));
 
@@ -28,8 +28,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true, // prevents JS from reading cookies
-      secure: true, // set to true if using HTTPS.
-      sameSite: "none",
+      secure: false, // set to true if using HTTPS.
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 24,
     },
   })

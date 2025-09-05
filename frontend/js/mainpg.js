@@ -231,10 +231,6 @@ function fillNotifications() {
   );
   existingNotifications.forEach((noti) => noti.remove());
 
-  if(notifications.length !== 0){
-    notificationsIcon.src = "../assets/bell-red-circle.png";
-  }
-
   notifications.forEach((notification) => {
     if (!notification?.title || !notification?.content) {
       console.warn("Invalid notification skipped:", notification);
@@ -1098,7 +1094,7 @@ if (notificationsIcon) {
               const existing = notifications.find(
                 (n) => n.title === noti.title && n.content === noti.content
               );
-              // notificationsIcon.src = "../assets/bell-red-circle.png";
+              notificationsIcon.src = "../assets/bell-red-circle.png";
               notifications.push(noti);
             }
           });
@@ -1176,10 +1172,10 @@ document.addEventListener("DOMContentLoaded", function () {
         generatePassword();
         initialiseCheckboxListeners();
         sliderFunction();
-       } // else {
-      //   // Not logged in, redirect back to login
-      //   window.location.href = "loginpg.html";
-      // }
+       } else {
+        // Not logged in, redirect back to login
+        window.location.href = "loginpg.html";
+      }
     })
     .catch((error) => {
       console.error(error.message);
