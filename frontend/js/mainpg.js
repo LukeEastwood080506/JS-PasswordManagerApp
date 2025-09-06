@@ -399,11 +399,12 @@ function restoreGeneratorSettings() {
 }
 
 function recycleBin(deletedService, deletedEmail, deletedPassword) {
+  let pin = localStorage.getItem("pin");
   return fetch("http://127.0.0.1:6969/deletedPasswords/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include", // Sends cookies with the request.
-    body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
+    credentials: "include", // Sends cookies with the request.s
+    body: JSON.stringify({ deletedService, deletedEmail, deletedPassword, pin}),
   }).then((response) => response.json());
 }
 
@@ -533,11 +534,13 @@ async function fetchPassword(isRecycleBin, account) {
       deletedService: account.deletedService,
       deletedEmail: account.deletedEmail,
       deletedPassword: account.deletedPassword,
+      pin: localStorage.getItem("pin")
     }
     : {
       service: account.service,
       email: account.email,
       password: account.password,
+      pin: localStorage.getItem("pin")
     };
   const response = await fetch(url, {
     method: "POST",
@@ -573,13 +576,15 @@ function toggleNotificationsModal() {
 }
 
 function save(service, email, password) {
+  let pin = localStorage.getItem("pin");
+
   fetch("http://127.0.0.1:6969/passwords/new", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include", // Sends cookies with the request.
-    body: JSON.stringify({ service, email, password }),
+    body: JSON.stringify({ service, email, password, pin }),
   })
     .then((response) => response.json())
     .then((data) => {
@@ -613,7 +618,8 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
     body: JSON.stringify({
       service: deletedService,
       email: deletedEmail,
-      password: deletedPassword
+      password: deletedPassword,
+      pin: localStorage.getItem("pin")
     }),
   })
     .then((response) => response.json())
@@ -1172,7 +1178,7 @@ document.addEventListener("DOMContentLoaded", function () {
         generatePassword();
         initialiseCheckboxListeners();
         sliderFunction();
-       } else {
+      } else {
         // Not logged in, redirect back to login
         window.location.href = "loginpg.html";
       }
@@ -1181,4 +1187,32 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error(error.message);
       window.location.href = "loginpg.html";
     });
+
+  // Fetch notifications for notifications modal.
+  fetch("http://127.0.0.1:6969/notifications/all", {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        notifications.length = 0; // Clear previous notifications.
+        data.data.forEach((noti) => {
+          if (noti && noti.title && noti.content) {
+            const existing = notifications.find(
+              (n) => n.title === noti.title && n.content === noti.content
+            );
+            notificationsIcon.src = "../assets/bell-red-circle.png";
+            notifications.push(noti);
+          }
+        });
+        fillNotifications();
+      } else {
+        console.error("Failed to load notifications from backend");
+      }
+    })
+    .catch((err) => {
+      console.error("Error fetching notifications: ", err);
+    });
+
 });

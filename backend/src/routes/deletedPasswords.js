@@ -54,22 +54,32 @@ router.get("/all", (request, response) => {
 // POST request to retrieve a deleted password record and add it to the deletedPasswords table in the database.
 router.post("/add", (request, response) => {
   console.log(`POST request to /deletedPasswords${request.url}`);
-  const { deletedService, deletedEmail, deletedPassword } = request.body;
+  const { deletedService, deletedEmail, deletedPassword, pin } = request.body;
+  const userId = request.session.userId;
   // console.log("Deleted service: ", deletedService);
   // console.log("Deleted email: ", deletedEmail);
-  if (!deletedService || !deletedEmail || !deletedPassword) {
+  if (!deletedService || !deletedEmail || !deletedPassword || !pin) {
     return response.status(400).send({
       success: false,
       message: "A deleted service, email and password is required",
     });
   }
+
+
+  let intPin = parseInt(pin);
+  let newPassword = "";
+
+  Array.from(deletedPassword).forEach(x => {
+    let y = x.charCodeAt(0) * intPin;
+    if (newPassword.length != 0) newPassword += ";"
+    newPassword += `${y}`;
+  });
+
   // The deletedPassword needs to be hashed before being inserted into the database.
-  const salt = bcrypt.genSaltSync(13);
-  const hashedDeletedPassword = bcrypt.hashSync(deletedPassword, salt);
-  const insertSql = `INSERT INTO deletedPasswords (deletedService, deletedEmail, deletedPassword) VALUES (?,?,?)`;
+  const insertSql = `INSERT INTO deletedPasswords (user_id, deletedService, deletedEmail, deletedPassword) VALUES (?, ?,?,?)`;
   db.run(
     insertSql,
-    [deletedService, deletedEmail, hashedDeletedPassword],
+    [userId, deletedService, deletedEmail, newPassword],
     function (err) {
       if (err) {
         return response.status(401).send({
@@ -87,8 +97,8 @@ router.post("/add", (request, response) => {
 
 router.post("/show", (request, response) => {
   console.log(`POST request to /deletedPasswords${request.url}`);
-  const { deletedService, deletedEmail, deletedPassword } = request.body;
-  if (!deletedService || !deletedEmail || !deletedPassword) {
+  const { deletedService, deletedEmail, deletedPassword, pin } = request.body;
+  if (!deletedService || !deletedEmail || !deletedPassword || !pin) {
     return response.status(400).send({
       success: false,
       message:
@@ -109,9 +119,18 @@ router.post("/show", (request, response) => {
         message: "Deleted password not found for display",
       });
     }
+
+    let deletedPassword = "";
+    let intPin = parseInt(pin);
+    console.log(intPin)
+    row.deletedPassword.split(";").forEach((x) => {
+      let y = parseInt(x) / intPin;
+      deletedPassword += String.fromCharCode(y);
+    });
+
     return response.status(200).send({
       success: true,
-      message: row.deletedPassword,
+      message: deletedPassword,
     });
   });
 });
