@@ -22,23 +22,23 @@
       <ul class="nav-links">
         <!--Vault link-->
         <li class="vault-link" id="myvault-link" onclick="changePage(this.id)">
-          <img src="../assets/vault-icon.svg" class = "icon-shadow" alt="vault-icon" />
+          <img src="../assets/vault-icon.svg" class="icon-shadow" alt="vault-icon" />
           <span class="nav-link-title">My Vault</span>
         </li>
         <!--Generator Link-->
         <li class="generator-link" id="generator-link" onclick="changePage(this.id)">
-          <img src="../assets/cog-icon.svg" class = "icon-shadow" alt="generator-icon" />
+          <img src="../assets/cog-icon.svg" class="icon-shadow" alt="generator-icon" />
           <span class="nav-link-title">Generator</span>
         </li>
         <!--Recycle Bin Link-->
         <li class="recycle-bin-link" id="recycle-bin-link" onclick="changePage(this.id)">
-          <img src="../assets/bin-icon.svg" class = "icon-shadow" alt="recycle-bin-icon" />
+          <img src="../assets/bin-icon.svg" class="icon-shadow" alt="recycle-bin-icon" />
           <span class="nav-link-title">Recycle Bin</span>
         </li>
       </ul>
       <!--Log Out Link-->
       <div class="menu-log-out" id="menu-log-out" onclick="logOut()">
-        <img src="../assets/log-out-icon.svg" class = "icon-shadow" alt="log-out-icon" />
+        <img src="../assets/log-out-icon.svg" class="icon-shadow" alt="log-out-icon" />
         <span class="nav-link-title">Log-Out</span>
       </div>
     </nav>
@@ -48,11 +48,11 @@
       <header class="top-bar" id="top-bar">
         <div class="top-bar-actions">
           <button class="notification-bell" id="notification-bell" alt="notification-bell-icon">
-            <img src="../assets/bell-icon.svg" class = "icon-shadow" alt="notifications" />
+            <img src="../assets/bell-icon.svg" class="icon-shadow" alt="notifications" />
           </button>
           <button class="settings-icon" id="settings-icon" alt="settings-icon">
             <a href="settingspg.html">
-              <img src="../assets/cog-icon.svg" class = "icon-shadow" alt="settings-icon" />
+              <img src="../assets/cog-icon.svg" class="icon-shadow" alt="settings-icon" />
             </a>
           </button>
         </div>
@@ -85,31 +85,31 @@
                   <h2>Customise your password</h2>
                   <p>Select from the options below to strengthen the security of your password.</p>
                   <hr>
-                  <div class = "slide-container">
-                    <label for="slider" id = "slider-text">Password Length: 12</label>
-                    <input type = "range" min="1" max="32" value="12" class="slider" id = "lengthRangeSlider">
+                  <div class="slide-container">
+                    <label for="slider-text" id="slider-text">Password Length: 12</label>
+                    <input type="range" min="1" max="32" value="12" class="slider" id="lengthRangeSlider">
                   </div>
                   <div class="checkbox-container">
                     <div class="checkbox-item">
                       <input type="checkbox" id="letters-checkbox" checked disabled>
-                      <label for="letters">Letters</label>
+                      <label for="letters-checkbox">Letters</label>
                     </div>
                     <div class="checkbox-item">
                       <input type="checkbox" id="mixed-case-checkbox" checked>
-                      <label for="mixed-case">Mixed Case</label>
+                      <label for="mixed-case-checkbox">Mixed Case</label>
                     </div>
                     <div class="checkbox-item">
                       <input type="checkbox" id="numbers-checkbox" checked>
-                      <label for="numbers">Numbers</label>
+                      <label for="numbers-checkbox">Numbers</label>
                     </div>
                     <div class="checkbox-item">
                       <input type="checkbox" id="punctuation-checkbox" checked>
-                      <label for="punctuation">Punctuation</label>
+                      <label for="punctuation-checkbox">Punctuation</label>
                     </div>
                   </div>
-                  <button id = "add-to-vault">Add to Vault</button>
+                  <button id="add-to-vault">Add to Vault</button>
                   <hr>
-                  <button id = "restore-settings">Restore Default Settings</button>
+                  <button id="restore-settings">Restore Default Settings</button>
                 </div>
               </div>
             </div>
@@ -172,11 +172,6 @@
           <input type="password" class="edit-password-input" id="edit-password-input" placeholder="Edit password..."
             required />
         </div>
-        <div class="form-input">
-          <label for="edit-current-password-input">Current Password:</label>
-          <input type="password" id="edit-current-password-input"
-            placeholder="Enter current password to confirm edit:" />
-        </div>
         <button type="submit" class="modal-edit-button" id="modal-edit-button">
           <span class="update">✐</span>
           <span>Update Password</span>
@@ -194,15 +189,48 @@
     </div>
   </div>
 
+  <!--Generator Add-to-Vault Modal-->
+  <div class="add-to-vault-modal-container" id="add-to-vault-modal-container" style="display: none">
+    <div class="add-to-vault-modal-content" id="add-to-vault-modal-content">
+      <button class="close" id="add-to-vault-modal-close-button">&times;</button>
+      <h2 id="add-to-vault-modal-title">Add Generated Password To Vault</h2>
+      <form class="add-to-vault-inputs">
+        <div class="form-input">
+          <label for="add-to-vault-service-input">Enter a vault service for the generated password to be assigned to...</label>
+          <input type="text" class="add-to-vault-service-input" id="add-to-vault-service-input"
+            placeholder="Service for generated password..." required />
+        </div>
+        <button type="submit" class="add-generated-password-button" id="add-generated-password-button">
+          <span class="submit">Add Generated Password</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!--Dynamic Modal-->
   <div class="dynamic-mainpg-modal-container" id="dynamic-mainpg-modal-container" style="display: none">
     <div class="dynamic-mainpg-modal-content" id="dynamic-mainpg-modal-content">
-      <button class="close" id="dynamic-mainpg-modal-close-button">&times;</button>
       <h2 id="dynamic-mainpg-modal-title">Lorem Ipsum</h2>
       <p id="dynamic-mainpg-modal-message">Lorem Ipsum</p>
       <button type="submit" class="ok-button" id="ok-button">
         <span class="submit">Ok</span>
       </button>
+    </div>
+  </div>
+
+  <!--Security Pin Modal-->
+  <div class="pin-modal-container" id="pin-modal-container" style="display: none">
+    <div class="pin-modal-content" id="pin-modal-content">
+      <h2 id="pin-modal-title">Please enter a 4-digit security pin</h2>
+      <form class="pin-inputs">
+        <div class="form-input">
+          <label for="pin-input">Pin:</label>
+          <input type="password" class="pin-input" id="pin-input" placeholder="Enter a security pin..." required />
+        </div>
+        <button type="submit" class="add-pin-button" id="add-pin-button">
+          <span class="submit">Add Pin</span>
+        </button>
+      </form>
     </div>
   </div>
 

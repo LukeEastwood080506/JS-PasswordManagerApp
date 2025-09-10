@@ -595,8 +595,10 @@ hr {
     cursor: pointer;
 }
 
-/* Dynamic Modal Styling */
-.dynamic-mainpg-modal-container {
+/* Dynamic Modal, Security Pin Modal, Add-to-Vault Generator Modal Styling */
+.dynamic-mainpg-modal-container,
+.pin-modal-container,
+.add-to-vault-modal-container {
   display: none;
   position: fixed;
   z-index: 2;
@@ -608,7 +610,9 @@ hr {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.dynamic-mainpg-modal-content {
+.dynamic-mainpg-modal-content,
+.pin-modal-content,
+.add-to-vault-modal-content {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -639,7 +643,9 @@ hr {
   gap: 10px;
 }
 
-#dynamic-mainpg-modal-title{
+#dynamic-mainpg-modal-title,
+#pin-modal-title,
+#add-to-vault-modal-title{
     padding-bottom: 10px;
 }
 
