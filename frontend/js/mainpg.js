@@ -41,6 +41,8 @@ const notificationsModal = document.getElementById(
   "notifications-modal-container"
 );
 const dynamicModal = document.getElementById("dynamic-mainpg-modal-container");
+const pinModal = document.getElementById("pin-modal-container");
+const addToVaultModal = document.getElementById("add-to-vault-modal-container");
 
 const addModalOpenButton = document.getElementById("add-password-button");
 const modalAddPasswordBtn = document.getElementById("modal-add-button");
@@ -54,6 +56,11 @@ const closeDynamicModalBtn = document.getElementById("dynamic-mainpg-modal-close
 const dynamicModalTitle = document.getElementById("dynamic-mainpg-modal-title");
 const dynamicModalMessage = document.getElementById("dynamic-mainpg-modal-message");
 const dynamicModalOkButton = document.getElementById("ok-button");
+const addPinButton = document.getElementById("add-pin-button");
+const addToVaultModalOpenButton = document.getElementById("add-to-vault");
+const addToVaultModalCloseButton = document.getElementById("add-to-vault-modal-close-button");
+const addGeneratedPasswordBtn = document.getElementById("add-generated-password-button");
+const generatorRestoreSettingsBtn = document.getElementById("restore-settings");
 
 const PAGE_MAPPING = {
   "myvault-link": "myvault-page",
@@ -69,6 +76,7 @@ function initialiseApp() {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
+        accounts = [];
         data.data.forEach((acc) => {
           if (acc && acc.service && acc.email && acc.password) {
             const existing = accounts.find(
@@ -305,14 +313,6 @@ function generatePassword(length = 12) {
   return password;
 }
 
-document.getElementById("add-to-vault").addEventListener("click", () => {
-  const password = document.getElementById("generated-password").textContent
-  addGeneratedPassword(password);
-});
-document.getElementById("restore-settings").addEventListener("click", () => {
-  restoreGeneratorSettings();
-});
-
 function strengthChecker(password) {
   const mixedCaseCheck = document.getElementById("mixed-case-checkbox").checked;
   const numbersCheck = document.getElementById("numbers-checkbox").checked;
@@ -350,10 +350,9 @@ function initialiseCheckboxListeners() {
 }
 
 function addGeneratedPassword(password) {
+  const pin = localStorage.getItem("passedPin");
   const generatedPassword = password;
-  // console.log("Password passed to addGeneratedPassword method: ", password);
-  // Ask the user the service they want to attach the generated password to, in the vault.
-  const vaultService = prompt("Type a service from the vault for which you want the generated password to be attached to: ");
+  const vaultService = document.getElementById("add-to-vault-service-input").value.trim();
   if (vaultService === null) {
     return;
   }
@@ -363,14 +362,19 @@ function addGeneratedPassword(password) {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify({ generatedPassword, vaultService }),
+    body: JSON.stringify({ generatedPassword, vaultService, pin }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
         console.log("The generated password has successfully been added to the vault for the service: " + vaultService);
+        initialiseApp();
         setUpDynamicModal("generator-password-success");
         showDynamicModal();
+        const title = "Vault - Generated Password Added";
+        const content = "Generated password added to vault!";
+        addNotification(title, content);
+        refreshNotificationsDiv(title, content);
       } else {
         console.log(data.message || "The generated password could not be added to the vault!");
         setUpDynamicModal("generator-password-fail");
@@ -399,12 +403,25 @@ function restoreGeneratorSettings() {
 }
 
 function recycleBin(deletedService, deletedEmail, deletedPassword) {
+  let pin = localStorage.getItem("passedPin");
   return fetch("http://127.0.0.1:6969/deletedPasswords/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include", // Sends cookies with the request.
-    body: JSON.stringify({ deletedService, deletedEmail, deletedPassword }),
-  }).then((response) => response.json());
+    body: JSON.stringify({ deletedService, deletedEmail, deletedPassword, pin }),
+  })
+    .then(async (response) => {
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        console.error("Recycle bin did not return JSON: ", text);
+        return {
+          success: false,
+          message: "Invalid server response"
+        };
+      }
+    });
 }
 
 function handleAccountSubmit(isEditMode) {
@@ -423,18 +440,20 @@ function handleAccountSubmit(isEditMode) {
     const newAccount = new Account(service, email, password);
     accounts.push(newAccount);
     fillAccounts();
-    save(service, email, password);
+    showPinModal();
+
+    document.querySelector(".pin-inputs").addEventListener("submit", (e) => {
+      e.preventDefault();
+      checkPin(service, email, password);
+    });
+
   } else {
     const service = document.getElementById("edit-service-input").value.trim();
     const email = document.getElementById("edit-email-input").value.trim();
     const password = document
       .getElementById("edit-password-input")
       .value.trim();
-    const currentPassword = document
-      .getElementById("edit-current-password-input")
-      .value.trim();
-
-    if (!service || !email || !password || !currentPassword) {
+    if (!service || !email || !password) {
       console.log("Please fill in all fields");
       setUpDynamicModal("fill-in-edit-fields");
       showDynamicModal();
@@ -451,10 +470,11 @@ function handleAccountSubmit(isEditMode) {
         body: JSON.stringify({
           originalService: originalAccount.service,
           originalEmail: originalAccount.email,
-          originalPassword: currentPassword,
+          originalPassword: originalAccount.password,
           newService: service,
           newEmail: email,
           newPassword: password,
+          pin: localStorage.getItem("passedPin")
         }),
       })
         .then((response) => response.json())
@@ -463,17 +483,7 @@ function handleAccountSubmit(isEditMode) {
             console.log("Credentials for website/app updated successfully!");
             setUpDynamicModal("edit-record-success");
             showDynamicModal();
-            // Update local array
-            const idx = accounts.findIndex(
-              (a) =>
-                a &&
-                a.service === originalAccount.service &&
-                a.email === originalAccount.email
-            );
-            if (idx !== -1) {
-              accounts[idx] = new Account(service, email, password);
-            }
-            fillAccounts();
+            initialiseApp();
           } else {
             console.log(data.message || "Credentials could not be edited");
             setUpDynamicModal("edit-record-fail");
@@ -533,11 +543,13 @@ async function fetchPassword(isRecycleBin, account) {
       deletedService: account.deletedService,
       deletedEmail: account.deletedEmail,
       deletedPassword: account.deletedPassword,
+      pin: localStorage.getItem("passedPin")
     }
     : {
       service: account.service,
       email: account.email,
       password: account.password,
+      pin: localStorage.getItem("passedPin")
     };
   const response = await fetch(url, {
     method: "POST",
@@ -572,35 +584,41 @@ function toggleNotificationsModal() {
   }
 }
 
-function save(service, email, password) {
-  fetch("http://127.0.0.1:6969/passwords/new", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include", // Sends cookies with the request.
-    body: JSON.stringify({ service, email, password }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        console.log("Password record created and added to vault successfully!")
-        setUpDynamicModal("save-password-success");
-        showDynamicModal();
-        // POST request needed to /notifications/new
-        const title = "Vault - Add Notification";
-        const content = "Password record added to vault!";
-        addNotification(title, content);
-        refreshNotificationsDiv(title, content);
-      } else {
-        console.log(data.message || "Password Creation Unsuccessful!");
-        setUpDynamicModal("save-password-fail");
-        showDynamicModal();
-      }
+function save(service, email, password, pin) {
+  if (!pin) {
+    return;
+  } else {
+    localStorage.setItem("passedPin", pin);
+    console.log("passedPin to localStorage: ", pin);
+    fetch("http://127.0.0.1:6969/passwords/new", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Sends cookies with the request.
+      body: JSON.stringify({ service, email, password, pin }),
     })
-    .catch((error) => {
-      console.error(error.message);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("Password record created and added to vault successfully!")
+          setUpDynamicModal("save-password-success");
+          showDynamicModal();
+          // POST request needed to /notifications/new
+          const title = "Vault - Add Notification";
+          const content = "Password record added to vault!";
+          addNotification(title, content);
+          refreshNotificationsDiv(title, content);
+        } else {
+          console.log(data.message || "Password Creation Unsuccessful!");
+          setUpDynamicModal("save-password-fail");
+          showDynamicModal();
+        }
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
+  }
 }
 
 function deleteAccount(deletedService, deletedEmail, deletedPassword) {
@@ -613,7 +631,8 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
     body: JSON.stringify({
       service: deletedService,
       email: deletedEmail,
-      password: deletedPassword
+      password: deletedPassword,
+      pin: localStorage.getItem("passedPin")
     }),
   })
     .then((response) => response.json())
@@ -626,9 +645,9 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
         addNotification(title, content);
         refreshNotificationsDiv(title, content);
         deletedAccounts.push({
-          service: deletedService,
-          email: deletedEmail,
-          password: deletedPassword,
+          deletedService,
+          deletedEmail,
+          deletedPassword
         });
         recycleBin(deletedService, deletedEmail, deletedPassword)
           .then((data) => {
@@ -672,13 +691,15 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
         const title = "Recycle Bin - Restore Notification";
         const message = "Recycled record has been restored to vault!";
         addNotification(title, message);
+        // Remove recycle bin record from deletedAccounts.
+        refreshRecycleBinDiv(deletedService, deletedEmail);
+        // Add it back to the vault.
         accounts.push({
-          deletedService,
-          deletedEmail,
-          deletedPassword
+          service: deletedService,
+          email: deletedEmail,
+          password: deletedPassword
         });
-        refreshRecycleBinDiv();
-        refreshVaultDiv();
+        fillAccounts();
       } else {
         console.log(data.message || "Recycle bin record restoration unsuccessful!");
         setUpDynamicModal("record-restore-fail");
@@ -878,7 +899,7 @@ function refreshNotificationsDiv(deletedTitle, deletedContent) {
   fillNotifications();
 }
 
-function setUpDynamicModal(result) {
+function setUpDynamicModal(result, data = {}) {
   switch (result) {
     case "generator-password-success":
       dynamicModalTitle.textContent = "Generator Password Success!";
@@ -899,7 +920,7 @@ function setUpDynamicModal(result) {
       dynamicModalMessage.textContent = "Please fill in all fields! Click ok to retry!";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
-        clearModalInputs();
+        clearModalInputs("add-password-modal");
       };
       break;
     case "fill-in-edit-fields":
@@ -907,7 +928,7 @@ function setUpDynamicModal(result) {
       dynamicModalMessage.textContent = "Please fill in all fields! Click ok to retry!";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
-        clearModalInputs();
+        clearModalInputs("edit-password-modal");
       };
       break;
     case "edit-record-success":
@@ -922,7 +943,7 @@ function setUpDynamicModal(result) {
       dynamicModalMessage.textContent = "Credentials could not be edited";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
-        clearModalInputs();
+        clearModalInputs("edit-password-modal");
       };
       break;
     case "show-password-success":
@@ -944,6 +965,7 @@ function setUpDynamicModal(result) {
       dynamicModalMessage.textContent = "Password record created and added to vault successfully!";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
+
       };
       break;
     case "save-password-fail":
@@ -951,7 +973,7 @@ function setUpDynamicModal(result) {
       dynamicModalMessage.textContent = "Password Record Creation Unsuccessful!";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
-        clearModalInputs();
+        clearModalInputs("add-password-modal");
       };
       break;
     case "record-delete-success":
@@ -1011,6 +1033,41 @@ function setUpDynamicModal(result) {
         hideDynamicModal();
       }
       break;
+    case "fill-in-pin-field":
+      dynamicModalTitle.textContent = "Security Pin Setup Fail!";
+      dynamicModalMessage.textContent = "Security Pin Setup Fail! Retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs("pin-input-modal");
+      }
+      break;
+    case "insufficient-pin":
+      dynamicModalTitle.textContent = "Security Pin Setup Fail!";
+      dynamicModalMessage.textContent = "Please enter a 4-digit security pin!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs("pin-input-modal");
+      }
+      break;
+    case "sufficient-pin":
+      dynamicModalTitle.textContent = "Security Pin Setup Successful!";
+      dynamicModalMessage.textContent = "Security Pin Setup Successfully";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        hidePinModal();
+        // Save after confirmation
+        if (data.service && data.email && data.password && data.pin) {
+          save(data.service, data.email, data.password, data.pin);
+        }
+      }
+      break;
+    case "add-to-vault-fail":
+      dynamicModalTitle.textContent = "Add To Vault Fail!";
+      dynamicModalMessage.textContent = "Add To Vault Fail! Enter a valid service!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+      };
+      break;
     default:
       break;
   }
@@ -1024,9 +1081,43 @@ function hideDynamicModal() {
   dynamicModal.style.display = "none";
 }
 
+function showPinModal() {
+  pinModal.style.display = "flex";
+}
+
+function checkPin(service, email, password) {
+  const pin = document.getElementById("pin-input").value.trim();
+  if (!pin) {
+    setUpDynamicModal("fill-in-pin-field");
+    showDynamicModal();
+    return;
+  }
+  // Check for 4-digit pin.
+  if (pin.length != 4) {
+    setUpDynamicModal("insufficient-pin");
+    showDynamicModal();
+    return;
+  }
+  hidePinModal();
+  setUpDynamicModal("sufficient-pin", { service, email, password, pin });
+  showDynamicModal();
+}
+
+function hidePinModal() {
+  pinModal.style.display = "none";
+}
+
+function showAddToVaultModal() {
+  addToVaultModal.style.display = "flex";
+}
+
+function hideAddToVaultModal() {
+  addToVaultModal.style.display = "none";
+}
+
 /* Add Modal Methods */
 function showAddModal() {
-  clearModalInputs();
+  clearModalInputs("add-password-modal");
   document.getElementById("modal-title").textContent = "Add New Password";
   modalAddPasswordBtn.innerHTML = `<span class="plus">+</span><span>Add</span>`;
   addPasswordModal.style.display = "block";
@@ -1036,16 +1127,39 @@ function hideAddModal() {
   addPasswordModal.style.display = "none";
 }
 
-function clearModalInputs() {
-  // Clears add modal inputs.
-  document.getElementById("add-service-input").value = "";
-  document.getElementById("add-email-input").value = "";
-  document.getElementById("add-password-input").value = "";
-  // Clears edit modal inputs.
-  document.getElementById("edit-service-input").value = "";
-  document.getElementById("edit-email-input").value = "";
-  document.getElementById("edit-password-input").value = "";
-  document.getElementById("edit-current-password-input").value = "";
+function clearModalInputs(modal) {
+  switch (modal) {
+    case "add-password-modal":
+      // Clears add modal inputs.
+      document.getElementById("add-service-input").value = "";
+      document.getElementById("add-email-input").value = "";
+      document.getElementById("add-password-input").value = "";
+      break;
+    case "edit-password-modal":
+      // Clears edit modal inputs.
+      document.getElementById("edit-service-input").value = "";
+      document.getElementById("edit-email-input").value = "";
+      document.getElementById("edit-password-input").value = "";
+      document.getElementById("edit-current-password-input").value = "";
+      break;
+    case "pin-input-modal":
+      // Clears pin modal input.
+      document.getElementById("pin-input").value = "";
+      break;
+    case "add-to-vault-modal":
+      document.getElementById("add-to-vault-service-input").value = "";
+      break;
+    default:
+      // Clears all modal inputs
+      document.getElementById("add-service-input").value = "";
+      document.getElementById("add-email-input").value = "";
+      document.getElementById("add-password-input").value = "";
+      document.getElementById("edit-service-input").value = "";
+      document.getElementById("edit-email-input").value = "";
+      document.getElementById("edit-password-input").value = "";
+      document.getElementById("pin-input").value = "";
+      break;
+  }
 }
 
 /* Edit Modal Methods */
@@ -1057,7 +1171,18 @@ function showEditModal(account) {
   document.getElementById("edit-modal-title").textContent = "Edit Password";
   document.getElementById("edit-service-input").value = account.service;
   document.getElementById("edit-email-input").value = account.email;
-  document.getElementById("edit-password-input").value = account.password;
+  let decryptedPassword = "";
+  const pin = localStorage.getItem("passedPin");
+  if (pin) {
+    let encryptedPassword = account.password;
+    let decryptionPin = parseInt(pin);
+    encryptedPassword.split(";").forEach((x) => {
+      let y = parseInt(x) / decryptionPin;
+      decryptedPassword += String.fromCharCode(y);
+    });
+  }
+  // console.log("Edit password input value: ", decryptedPassword);
+  document.getElementById("edit-password-input").value = decryptedPassword;
   editPasswordModal.style.display = "block";
 }
 
@@ -1120,6 +1245,20 @@ if (closeDynamicModalBtn) {
   closeDynamicModalBtn.addEventListener("click", () => hideDynamicModal());
 }
 
+if (addToVaultModalOpenButton) {
+  addToVaultModalOpenButton.addEventListener("click", () => showAddToVaultModal());
+}
+
+if (addToVaultModalCloseButton) {
+  addToVaultModalCloseButton.addEventListener("click", () => hideAddToVaultModal());
+}
+
+if (generatorRestoreSettingsBtn) {
+  generatorRestoreSettingsBtn.addEventListener("click", () => {
+    restoreGeneratorSettings();
+  });
+}
+
 window.addEventListener("click", (event) => {
   if (event.target === addPasswordModal) {
     hideAddModal();
@@ -1139,6 +1278,20 @@ document.querySelector(".edit-pass-inputs").addEventListener("submit", (e) => {
   e.preventDefault();
   isEditMode = true;
   handleAccountSubmit(isEditMode);
+});
+
+document.querySelector(".add-to-vault-inputs").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const password = document.getElementById("generated-password").textContent;
+  const service = document.getElementById("add-to-vault-service-input").value.trim();
+  if (!service) {
+    setUpDynamicModal("add-to-vault-fail");
+    showDynamicModal();
+    return;
+  }
+  addGeneratedPassword(password);
+  hideAddToVaultModal();
+  clearModalInputs("add-to-vault-modal");
 });
 
 document.addEventListener("keydown", function (event) {
@@ -1172,7 +1325,7 @@ document.addEventListener("DOMContentLoaded", function () {
         generatePassword();
         initialiseCheckboxListeners();
         sliderFunction();
-       } else {
+      } else {
         // Not logged in, redirect back to login
         window.location.href = "loginpg.html";
       }
@@ -1180,5 +1333,32 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch((error) => {
       console.error(error.message);
       window.location.href = "loginpg.html";
+    });
+
+  // Fetch notifications for notifications modal.
+  fetch("http://127.0.0.1:6969/notifications/all", {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        notifications.length = 0; // Clear previous notifications.
+        data.data.forEach((noti) => {
+          if (noti && noti.title && noti.content) {
+            const existing = notifications.find(
+              (n) => n.title === noti.title && n.content === noti.content
+            );
+            notificationsIcon.src = "../assets/bell-red-circle.png";
+            notifications.push(noti);
+          }
+        });
+        fillNotifications();
+      } else {
+        console.error("Failed to load notifications from backend");
+      }
+    })
+    .catch((err) => {
+      console.error("Error fetching notifications: ", err);
     });
 });

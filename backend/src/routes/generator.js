@@ -28,11 +28,11 @@ router.get("/new", routeCheckHandler());
 
 router.post("/new", (request, response) => {
    console.log(`POST request to /generator${request.url}`);
-   const { generatedPassword, vaultService } = request.body;
-   if(!generatedPassword || !vaultService){
+   const { generatedPassword, vaultService, pin } = request.body;
+   if(!generatedPassword || !vaultService || !pin){
     return response.status(400).send({
         success: false,
-        message: "A generated password and a vault service is required for adding the generated password to the vault!"
+        message: "A generated password, a vault service and a pin is required for adding the generated password to the vault!"
     });
    }
    const selectSql = `SELECT * FROM passwords WHERE service = ?`;
@@ -53,10 +53,18 @@ router.post("/new", (request, response) => {
     // Record found - retrieve ID.
     const id = row.id;
     const updateSql = `UPDATE passwords SET password = ? WHERE id = ?`;
-    const salt = bcrypt.genSaltSync(13);
-    const hashedGeneratedPassword = bcrypt.hashSync(generatedPassword, salt);
-    // Hash the generated password before storing it in the vault.
-    db.run(updateSql, [hashedGeneratedPassword, id], function(err){
+    // Encrypt the generated password before storing it in the database.
+    let encryptionPin = parseInt(pin);
+    let encryptedPassword = "";
+    Array.from(generatedPassword).forEach((x) => {
+      let y = x.charCodeAt(0) * encryptionPin;
+      if(encryptedPassword.length != 0){
+        encryptedPassword += ";";
+      }
+      encryptedPassword += `${y}`;
+    });
+    // console.log("Encrypted generated password: ", encryptedPassword);
+    db.run(updateSql, [encryptedPassword, id], function(err){
         if(err){
             return response.status(401).send({
                 success: false,

@@ -54,22 +54,33 @@ router.get("/all", (request, response) => {
 // POST request to retrieve a deleted password record and add it to the deletedPasswords table in the database.
 router.post("/add", (request, response) => {
   console.log(`POST request to /deletedPasswords${request.url}`);
-  const { deletedService, deletedEmail, deletedPassword } = request.body;
-  // console.log("Deleted service: ", deletedService);
-  // console.log("Deleted email: ", deletedEmail);
-  if (!deletedService || !deletedEmail || !deletedPassword) {
+  const { deletedService, deletedEmail, deletedPassword, pin } = request.body;
+  const userId = request.session.userId;
+  if (!userId || !deletedService || !deletedEmail || !deletedPassword || !pin) {
     return response.status(400).send({
       success: false,
-      message: "A deleted service, email and password is required",
+      message: "A userId, a deleted service, email, password and pin is required",
     });
   }
+  // Encryption
+  // Convert pin to integer.
+  let intPin = parseInt(pin);
+  let newPassword = "";
+  // Iterates through the deletedPassword converted array.
+  Array.from(deletedPassword).forEach(x => {
+    // Gets the character code of each character and multiplies it by the pin - encryption.
+    let y = x.charCodeAt(0) * intPin;
+    if (newPassword.length != 0) {
+      newPassword += ";"
+    }
+    // Builds newPassword - semicolon-seperated string of numbers
+    newPassword += `${y}`;
+  });
   // The deletedPassword needs to be hashed before being inserted into the database.
-  const salt = bcrypt.genSaltSync(13);
-  const hashedDeletedPassword = bcrypt.hashSync(deletedPassword, salt);
-  const insertSql = `INSERT INTO deletedPasswords (deletedService, deletedEmail, deletedPassword) VALUES (?,?,?)`;
+  const insertSql = `INSERT INTO deletedPasswords (user_id, deletedService, deletedEmail, deletedPassword) VALUES (?,?,?,?)`;
   db.run(
     insertSql,
-    [deletedService, deletedEmail, hashedDeletedPassword],
+    [userId, deletedService, deletedEmail, newPassword],
     function (err) {
       if (err) {
         return response.status(401).send({
@@ -87,12 +98,12 @@ router.post("/add", (request, response) => {
 
 router.post("/show", (request, response) => {
   console.log(`POST request to /deletedPasswords${request.url}`);
-  const { deletedService, deletedEmail, deletedPassword } = request.body;
-  if (!deletedService || !deletedEmail || !deletedPassword) {
+  const { deletedService, deletedEmail, deletedPassword, pin } = request.body;
+  if (!deletedService || !deletedEmail || !deletedPassword || !pin) {
     return response.status(400).send({
       success: false,
       message:
-        "A deleted service, email and password is required to make the password visible",
+        "A deleted service, email, password and pin is required to make the password visible",
     });
   }
   const selectSql = `SELECT deletedPassword FROM deletedPasswords WHERE deletedService = ? AND deletedEmail = ?`;
@@ -109,9 +120,21 @@ router.post("/show", (request, response) => {
         message: "Deleted password not found for display",
       });
     }
+    // Decrypt the recycle bin password stored in the database for viewing.
+    let deletedPassword = "";
+    let intPin = parseInt(pin);
+    console.log("Int pin: ", intPin); 
+    // Takes the encoded semi-colon seperated string and turns into an array of strings without the semi-colon.
+    // It is then iterated over.
+    row.deletedPassword.split(";").forEach((x) => {
+      // Undos the encryption by getting the character code of each character.
+      let y = parseInt(x) / intPin;
+      // The decrypted deleted password is built by turning the character codes into the original characters.
+      deletedPassword += String.fromCharCode(y);
+    });
     return response.status(200).send({
       success: true,
-      message: row.deletedPassword,
+      message: deletedPassword,
     });
   });
 });
@@ -162,7 +185,8 @@ router.post("/restore", (request, response) => {
   console.log(`POST request to /deletedPasswords${request.url}`);
   // Need the deletedPassword if I am to restore the password record to the vault.
   const { deletedService, deletedEmail, deletedPassword } = request.body;
-  if (!deletedService || !deletedEmail || !deletedPassword) {
+  const userId = request.session.userId;
+  if (!userId || !deletedService || !deletedEmail || !deletedPassword) {
     return response.status(400).send({
       success: false,
       message: "A service, email and password is required for restoration",
@@ -185,10 +209,10 @@ router.post("/restore", (request, response) => {
       });
     }
     // Restore the password record by adding it to the passwords table (the vault)
-    const sqlInsert = `INSERT INTO passwords (service, email, password) VALUES (?,?,?)`;
+    const sqlInsert = `INSERT INTO passwords (user_id, service, email, password) VALUES (?,?,?,?)`;
     db.run(
       sqlInsert,
-      [deletedService, deletedEmail, deletedPassword],
+      [userId, deletedService, deletedEmail, deletedPassword],
       function (err) {
         if (err) {
           return response.status(400).send({
