@@ -16,12 +16,12 @@ function confirmSignUp() {
     setUpDynamicModal("sign-up-fail");
     showDynamicModal();
   } else if (confirmEmailInput.value != emailInput.value) {
-    setUpDynamicModal("sign-up-fail");
+    setUpDynamicModal("non-identical-emails");
     showDynamicModal();
   }
   // check for the input of a strong password.
-  else if (passwordInput.value.length < 12) {
-    setUpDynamicModal("sign-up-fail");
+  else if (passwordInput.value.length <= 12) {
+    setUpDynamicModal("sign-up-password-fail");
     showDynamicModal();
   } else {
     saveUserCredentials(emailInput.value, passwordInput.value);
@@ -81,6 +81,22 @@ function setUpDynamicModal(result) {
     case "sign-up-fail-email":
       dynamicModalTitle.textContent = "Sign Up Unsuccessful!";
       dynamicModalMessage.textContent = "Sign Up Unsuccessful! Email is already registered under an account! Click ok to retry!";
+      dynamicModalOkBtn.onclick = () => {
+        hideDynamicModal();
+        clearInputs();
+      };
+      break;
+    case "sign-up-password-fail":
+      dynamicModalTitle.textContent = "Sign Up Unsuccessful!";
+      dynamicModalMessage.textContent = "Sign Up Unsuccessful! Password must be at least 12 characters!";
+      dynamicModalOkBtn.onclick = () => {
+        hideDynamicModal();
+        clearInputs();
+      }
+      break;
+    case "non-identical-emails":
+      dynamicModalTitle.textContent = "Sign Up Unsuccessful!";
+      dynamicModalMessage.textContent = "Sign Up Unsuccessful! You must enter the same email for the 'confirm email' field!";
       dynamicModalOkBtn.onclick = () => {
         hideDynamicModal();
         clearInputs();

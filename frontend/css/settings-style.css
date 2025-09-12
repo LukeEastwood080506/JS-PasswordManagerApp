@@ -1,5 +1,14 @@
 @import url('common.css');
 
+@keyframes transitionIn{
+  from{
+    opacity: 0.25;
+  }
+  to{
+    opacity: 1;
+  }
+}
+
 * {
     box-sizing: border-box;
 }
@@ -52,6 +61,7 @@ nav img{
 }
 
 .setting-box{
+    animation: transitionIn 2s;
     font-family: "Poppins";
     margin-top: 30px;
     margin-left: auto;

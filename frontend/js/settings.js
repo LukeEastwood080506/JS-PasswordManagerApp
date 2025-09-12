@@ -92,6 +92,7 @@ function changeMasterPassword(originalPassword, newPassword) {
             if(data.success){
                 // Master password changed successfully.
                 setUpDynamicModal("change-master-password-success");
+                hideModal("change-password-modal");
                 showModal("dynamic-modal");
                 return;
             } else {
