@@ -27,7 +27,7 @@ function routeCheckHandler() {
 router.get("/all", (request, response) => {
   const userId = request.session.userId;
   console.log(`GET request to /notifications${request.url}`);
-  db.all("SELECT * FROM notifications WHERE user_id = ?", [userId], (err, rows) => {
+  db.all("SELECT id, title, content FROM notifications WHERE user_id = ?", [userId], (err, rows) => {
     if (err) {
       return response.status(400).json({
         success: false,
@@ -79,44 +79,36 @@ router.post("/new", (request, response) => {
 
 router.post("/delete", (request, response) => {
   console.log(`POST request to /notifications${request.url}`);
-  const { title, content } = request.body;
-  if (!title || !content) {
+  const { id } = request.body;
+  const userId = request.session.userId;
+  if (!id) {
     return response.status(400).send({
       success: false,
       message:
-        "A notification title is required as well as content for deletion",
+        "A notification id is required for deletion",
     });
   }
-  // Find notification record for deletion.
-  const selectSql = `SELECT * FROM notifications WHERE title = ? AND content = ? LIMIT 1`;
-  db.get(selectSql, [title, content], function (err, row) {
+  const deleteSql = `DELETE FROM notifications WHERE id = ? AND user_id = ?`;
+  db.run(deleteSql, [id, userId], function (err) {
     if (err) {
       return response.status(400).send({
         success: false,
-        message: "Database Error: " + err.message,
+        message:
+          "Notification record could not be deleted (Database Error: " +
+          err.message +
+          ")",
       });
     }
-    if (!row) {
+    // Flags whether a row was actually deleted.
+    if (this.changes === 0) {
       return response.status(401).send({
         success: false,
-        message: "No notification record was found for deletion",
+        message: "No notification record was found for deletion"
       });
     }
-    const deleteSql = `DELETE FROM notifications WHERE title = ? AND content = ?`;
-    db.run(deleteSql, [title, content], function (err) {
-      if (err) {
-        return response.status(400).send({
-          success: false,
-          message:
-            "Notification record could not be deleted (Database Error: " +
-            err.message +
-            ")",
-        });
-      }
-      return response.status(200).send({
-        success: true,
-        message: "Notification successfully deleted!",
-      });
+    return response.status(200).send({
+      success: true,
+      message: "Notification successfully deleted!",
     });
   });
 });

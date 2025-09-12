@@ -240,7 +240,7 @@ function fillNotifications() {
   existingNotifications.forEach((noti) => noti.remove());
 
   notifications.forEach((notification) => {
-    if (!notification?.title || !notification?.content) {
+    if (!notification?.id || !notification?.title || !notification?.content) {
       console.warn("Invalid notification skipped:", notification);
       return;
     }
@@ -257,7 +257,7 @@ function fillNotifications() {
     const deleteIcon = clone.querySelector(".delete-notification-icon");
     // Add event listener for delete icon.
     deleteIcon.addEventListener("click", () => {
-      deleteNotification(notification.title, notification.content);
+      deleteNotification(notification.id);
     });
 
     notificationsContainer.appendChild(clone);
@@ -374,7 +374,7 @@ function addGeneratedPassword(password) {
         const title = "Vault - Generated Password Added";
         const content = "Generated password added to vault!";
         addNotification(title, content);
-        refreshNotificationsDiv(title, content);
+        refreshNotificationsDivById(notification.id);
       } else {
         console.log(data.message || "The generated password could not be added to the vault!");
         setUpDynamicModal("generator-password-fail");
@@ -440,12 +440,18 @@ function handleAccountSubmit(isEditMode) {
     const newAccount = new Account(service, email, password);
     accounts.push(newAccount);
     fillAccounts();
-    showPinModal();
-
-    document.querySelector(".pin-inputs").addEventListener("submit", (e) => {
-      e.preventDefault();
-      checkPin(service, email, password);
-    });
+    const pin = localStorage.getItem("passedPin");
+    // Ask for pin.
+    if (!pin) {
+      showPinModal();
+      document.querySelector(".pin-inputs").addEventListener("submit", (e) => {
+        e.preventDefault();
+        checkPin(service, email, password);
+      });
+    // Pin already stored.
+    } else {
+      save(service, email, password, pin);
+    }
 
   } else {
     const service = document.getElementById("edit-service-input").value.trim();
@@ -608,7 +614,7 @@ function save(service, email, password, pin) {
           const title = "Vault - Add Notification";
           const content = "Password record added to vault!";
           addNotification(title, content);
-          refreshNotificationsDiv(title, content);
+          refreshNotificationsDivById(notifications.id);
         } else {
           console.log(data.message || "Password Creation Unsuccessful!");
           setUpDynamicModal("save-password-fail");
@@ -643,7 +649,7 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
         const title = "Vault - Delete Notification";
         const content = "Password deleted from vault and moved to recycle bin!";
         addNotification(title, content);
-        refreshNotificationsDiv(title, content);
+        refreshNotificationsDivById(notification.id);
         deletedAccounts.push({
           deletedService,
           deletedEmail,
@@ -732,7 +738,7 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
         const title = "Recycle Bin - Delete Notification";
         const content = "Password permenantly deleted from recycle bin!";
         addNotification(title, content);
-        refreshNotificationsDiv(title, content);
+        refreshNotificationsDivById(notification.id);
         refreshRecycleBinDiv(deletedService, deletedEmail);
       } else {
         console.log(data.message || "Recycle Bin Password Deletion Unsuccessful!");
@@ -771,20 +777,20 @@ function addNotification(title, content) {
   fillNotifications();
 }
 
-function deleteNotification(title, content) {
+function deleteNotification(id) {
   fetch("http://127.0.0.1:6969/notifications/delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include", // Sends cookies with the request.
-    body: JSON.stringify({ title, content }),
+    body: JSON.stringify({ id }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
         console.log("Notification deletion successful!");
-        refreshNotificationsDiv(title, content);
+        refreshNotificationsDivById(id);
       } else {
         console.log(data.message || "Notification deletion unsuccessful!");
       }
@@ -886,12 +892,9 @@ function refreshRecycleBinDiv(deletedService, deletedEmail) {
   fillDeletedAccounts();
 }
 
-function refreshNotificationsDiv(deletedTitle, deletedContent) {
+function refreshNotificationsDivById(id) {
   for (let i = 0; i < notifications.length; i++) {
-    if (
-      notifications[i].title === deletedTitle &&
-      notifications[i].content === deletedContent
-    ) {
+    if (notifications[i].id === id) {
       notifications.splice(i, 1);
       break;
     }
@@ -1023,6 +1026,7 @@ function setUpDynamicModal(result, data = {}) {
       dynamicModalMessage.textContent = "Log out successful! Click ok to navigate to login page!";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
+        localStorage.removeItem("passedPin");
         window.location.href = "loginpg.html";
       };
       break;
@@ -1047,6 +1051,7 @@ function setUpDynamicModal(result, data = {}) {
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
         clearModalInputs("pin-input-modal");
+        showPinModal();
       }
       break;
     case "sufficient-pin":
@@ -1094,6 +1099,7 @@ function checkPin(service, email, password) {
   }
   // Check for 4-digit pin.
   if (pin.length != 4) {
+    hidePinModal();
     setUpDynamicModal("insufficient-pin");
     showDynamicModal();
     return;
@@ -1215,9 +1221,9 @@ if (notificationsIcon) {
         if (data.success) {
           notifications.length = 0; // Clear previous notifications.
           data.data.forEach((noti) => {
-            if (noti && noti.title && noti.content) {
+            if (noti && noti.id && noti.title && noti.content) {
               const existing = notifications.find(
-                (n) => n.title === noti.title && n.content === noti.content
+                (n) => n.id === noti.id
               );
               notificationsIcon.src = "../assets/bell-red-circle.png";
               notifications.push(noti);
@@ -1345,9 +1351,9 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.success) {
         notifications.length = 0; // Clear previous notifications.
         data.data.forEach((noti) => {
-          if (noti && noti.title && noti.content) {
+          if (noti && noti.id && noti.title && noti.content) {
             const existing = notifications.find(
-              (n) => n.title === noti.title && n.content === noti.content
+              (n) => n.id == noti.id
             );
             notificationsIcon.src = "../assets/bell-red-circle.png";
             notifications.push(noti);

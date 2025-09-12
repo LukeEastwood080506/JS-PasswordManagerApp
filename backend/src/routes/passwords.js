@@ -294,27 +294,6 @@ router.post("/delete", async (request, response) => {
         message: "Error! Password could not be deleted",
       });
     }
-    // Retrieve the hashed password
-    const hashedPassword = row.password;
-    // // Encrypts the password to be deleted and stored in the deletedPasswords table.
-    // let intPin = parseInt(pin);
-    // let newPassword = "";
-    // Array.from(password).forEach((x) => {
-    //   let y = x.charCodeAt(0) * intPin;
-    //   if (newPassword.length != 0) {
-    //     newPassword += ";";
-    //   }
-    //   newPassword += `${y}`;
-    // });
-    // console.log("Password stored in database: ", hashedPassword);
-    // console.log("newPassword: ", newPassword);
-
-    // if (newPassword != hashedPassword) {
-    //   return response.status(401).json({
-    //     success: false,
-    //     message: "Error! Password record has not been matched for deletion",
-    //   });
-    // }
 
     // Wrap db.run in a promise.
     await new Promise((resolve, reject) => {

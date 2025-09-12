@@ -1,5 +1,14 @@
 @import url('common.css');
 
+@keyframes transitionIn{
+    from {
+        opacity: 0.25;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
 html {
     min-height: 100%;
 }
@@ -12,12 +21,12 @@ body {
 .wrapper {
     position: absolute;
     width: 100%;
-    min-height: 100vh;
-    height: 100vh;
+    min-height: auto;
+    height: auto;
     top: 0;
     display: flex;
     justify-content: space-between;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .main-body,
@@ -136,6 +145,7 @@ body {
 }
 
 .main-body {
+    animation: transitionIn 2s;
     background: linear-gradient(0deg, rgba(61, 50, 114, 1) 0%, rgba(152, 128, 194, 1) 100%);
     right: 0;
     width: 83%;

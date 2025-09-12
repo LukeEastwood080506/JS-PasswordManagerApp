@@ -51,7 +51,7 @@ function setUpDynamicModal(result){
       break;
     case "login-fail":
       dynamicModalTitle.textContent = "Login Unsuccessful!";
-      dynamicModalMessage.textContent = "Login Unsuccessful! Click ok to retry!";
+      dynamicModalMessage.textContent = "Login Unsuccessful! Invalid email or password!";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
         clearInputs();

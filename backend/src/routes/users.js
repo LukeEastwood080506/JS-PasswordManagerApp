@@ -217,8 +217,8 @@ router.post("/emails/change", (request, response) => {
   console.log(`POST request to /users${request.url}`);
   const { originalEmail, newEmail } = request.body;
   const userId = request.session.userId;
-  console.log("Original email: ", originalEmail);
-  console.log("New email: ", newEmail);
+  // console.log("Original email: ", originalEmail);
+  // console.log("New email: ", newEmail);
   // console.log("userId: ", userId);
   if (!userId || !originalEmail || !newEmail) {
     return response.status(401).send({
