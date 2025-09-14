@@ -269,7 +269,6 @@ router.post("/delete", (request, response) => {
   console.log(`POST request to /users${request.url}`);
   const { password } = request.body;
   const userId = request.session.userId;
-  // console.log("userId: ", userId);
   if (!password || !userId) {
     return response.status(500).send({
       success: false,
@@ -298,18 +297,17 @@ router.post("/delete", (request, response) => {
         message: "Account could not be deleted - incorrect password"
       });
     }
-    // Delete account
-    const deleteSql = `DELETE FROM users WHERE id = ?`;
-    db.run(deleteSql, [userId], function (err) {
+    // Delete user (cascade deletes all related data)
+    db.run(`DELETE FROM users WHERE id = ?`, [userId], function (err) {
       if (err) {
-        return response.status(401).send({
+        return response.status(500).send({
           success: false,
-          message: "Database Error: " + err.message
+          message: "Database Error deleting user: " + err.message
         });
       }
       return response.status(200).send({
         success: true,
-        message: "Account deleted successfully!"
+        message: "Account and all associated data deleted successfully!"
       });
     });
   });

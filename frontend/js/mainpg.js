@@ -101,6 +101,7 @@ function initialiseApp() {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
+        deletedAccounts = [];
         data.data.forEach((deletedAcc) => {
           if (
             deletedAcc &&
@@ -240,7 +241,7 @@ function fillNotifications() {
   existingNotifications.forEach((noti) => noti.remove());
 
   notifications.forEach((notification) => {
-    if (!notification?.id || !notification?.title || !notification?.content) {
+    if (!notification.id || !notification?.title || !notification?.content) {
       console.warn("Invalid notification skipped:", notification);
       return;
     }
@@ -374,7 +375,7 @@ function addGeneratedPassword(password) {
         const title = "Vault - Generated Password Added";
         const content = "Generated password added to vault!";
         addNotification(title, content);
-        refreshNotificationsDivById(notification.id);
+        refreshNotificationsDiv(title, content);
       } else {
         console.log(data.message || "The generated password could not be added to the vault!");
         setUpDynamicModal("generator-password-fail");
@@ -614,7 +615,7 @@ function save(service, email, password, pin) {
           const title = "Vault - Add Notification";
           const content = "Password record added to vault!";
           addNotification(title, content);
-          refreshNotificationsDivById(notifications.id);
+          refreshNotificationsDiv(title, content);
         } else {
           console.log(data.message || "Password Creation Unsuccessful!");
           setUpDynamicModal("save-password-fail");
@@ -649,7 +650,7 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
         const title = "Vault - Delete Notification";
         const content = "Password deleted from vault and moved to recycle bin!";
         addNotification(title, content);
-        refreshNotificationsDivById(notification.id);
+        refreshNotificationsDiv(title, content);
         deletedAccounts.push({
           deletedService,
           deletedEmail,
@@ -699,13 +700,8 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
         addNotification(title, message);
         // Remove recycle bin record from deletedAccounts.
         refreshRecycleBinDiv(deletedService, deletedEmail);
-        // Add it back to the vault.
-        accounts.push({
-          service: deletedService,
-          email: deletedEmail,
-          password: deletedPassword
-        });
-        fillAccounts();
+        // Re-fetch everything.
+        initialiseApp();
       } else {
         console.log(data.message || "Recycle bin record restoration unsuccessful!");
         setUpDynamicModal("record-restore-fail");
@@ -738,7 +734,7 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
         const title = "Recycle Bin - Delete Notification";
         const content = "Password permenantly deleted from recycle bin!";
         addNotification(title, content);
-        refreshNotificationsDivById(notification.id);
+        refreshNotificationsDiv(title, content);
         refreshRecycleBinDiv(deletedService, deletedEmail);
       } else {
         console.log(data.message || "Recycle Bin Password Deletion Unsuccessful!");
@@ -790,7 +786,7 @@ function deleteNotification(id) {
     .then((data) => {
       if (data.success) {
         console.log("Notification deletion successful!");
-        refreshNotificationsDivById(id);
+        refreshNotificationsDiv(id);
       } else {
         console.log(data.message || "Notification deletion unsuccessful!");
       }
@@ -892,9 +888,9 @@ function refreshRecycleBinDiv(deletedService, deletedEmail) {
   fillDeletedAccounts();
 }
 
-function refreshNotificationsDivById(id) {
+function refreshNotificationsDiv(id) {
   for (let i = 0; i < notifications.length; i++) {
-    if (notifications[i].id === id) {
+    if(notifications[i].id === id){
       notifications.splice(i, 1);
       break;
     }
@@ -1177,18 +1173,8 @@ function showEditModal(account) {
   document.getElementById("edit-modal-title").textContent = "Edit Password";
   document.getElementById("edit-service-input").value = account.service;
   document.getElementById("edit-email-input").value = account.email;
-  let decryptedPassword = "";
-  const pin = localStorage.getItem("passedPin");
-  if (pin) {
-    let encryptedPassword = account.password;
-    let decryptionPin = parseInt(pin);
-    encryptedPassword.split(";").forEach((x) => {
-      let y = parseInt(x) / decryptionPin;
-      decryptedPassword += String.fromCharCode(y);
-    });
-  }
-  // console.log("Edit password input value: ", decryptedPassword);
-  document.getElementById("edit-password-input").value = decryptedPassword;
+  document.getElementById("edit-password-input").value = account.password;
+  // console.log("Password for edit: ", account.password);
   editPasswordModal.style.display = "block";
 }
 
@@ -1221,9 +1207,9 @@ if (notificationsIcon) {
         if (data.success) {
           notifications.length = 0; // Clear previous notifications.
           data.data.forEach((noti) => {
-            if (noti && noti.id && noti.title && noti.content) {
+            if (noti && noti.title && noti.content) {
               const existing = notifications.find(
-                (n) => n.id === noti.id
+                (n) => n.title === noti.title && n.content === noti.content
               );
               notificationsIcon.src = "../assets/bell-red-circle.png";
               notifications.push(noti);

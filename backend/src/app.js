@@ -1,3 +1,5 @@
+require("dotenv").config({ path: "../../.env" }); // Load env vars from project root
+
 // Imports express.
 const express = require("express");
 const session = require("express-session");
@@ -5,8 +7,9 @@ const SQLiteStore = require("connect-sqlite3")(session);
 // Imports CORS which allows resources to be shared across different servers.
 const cors = require("cors");
 const app = express();
-const host = "127.0.0.1";
-const port = 6969;
+const host = process.env.HOST || "127.0.0.1";
+const port = process.env.PORT || 6969;
+const sessionSecret = process.env.SESSION_SECRET || "garkyspasswordmanager";
 
 app.use(cors({
   origin: "http://127.0.0.1:8080", // Frontend origin
@@ -23,7 +26,7 @@ app.use(express.json());
 app.use(
   session({
     store: new SQLiteStore({ db: "sessions.sqlite", dir: "./sessions" }), // sqlite session store.
-    secret: "supersecretkey",
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
