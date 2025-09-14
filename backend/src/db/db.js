@@ -11,6 +11,8 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
   }
   return console.log("Backend Database Operational!");
 });
+// Enables foreign keys in the database.
+db.run("PRAGMA foreign_keys = ON");
 
 // Create users, passwords, deletedPasswords and notifications tables.
 // const createSql = `CREATE table users(

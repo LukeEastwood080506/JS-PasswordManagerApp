@@ -80,35 +80,38 @@ router.post("/new", (request, response) => {
 router.post("/delete", (request, response) => {
   console.log(`POST request to /notifications${request.url}`);
   const { id } = request.body;
-  const userId = request.session.userId;
   if (!id) {
     return response.status(400).send({
       success: false,
-      message:
-        "A notification id is required for deletion",
+      message: "A notification id is required for deletion"
     });
   }
-  const deleteSql = `DELETE FROM notifications WHERE id = ? AND user_id = ?`;
-  db.run(deleteSql, [id, userId], function (err) {
+  // Check if notification exists
+  db.get(`SELECT * FROM notifications WHERE id = ?`, [id], function (err, row) {
     if (err) {
-      return response.status(400).send({
+      return response.status(500).send({
         success: false,
-        message:
-          "Notification record could not be deleted (Database Error: " +
-          err.message +
-          ")",
+        message: "Database Error: " + err.message
       });
     }
-    // Flags whether a row was actually deleted.
-    if (this.changes === 0) {
+    if (!row) {
       return response.status(401).send({
         success: false,
-        message: "No notification record was found for deletion"
+        message: "Notification does not exist for deletion!"
       });
     }
-    return response.status(200).send({
-      success: true,
-      message: "Notification successfully deleted!",
+    // Delete the notification
+    db.run(`DELETE FROM notifications WHERE id = ?`, [id], function (err) {
+      if (err) {
+        return response.status(400).send({
+          success: false,
+          message: "Notification record could not be deleted (Database Error: " + err.message + ")",
+        });
+      }
+      return response.status(200).send({
+        success: true,
+        message: "Notification successfully deleted!",
+      });
     });
   });
 });
