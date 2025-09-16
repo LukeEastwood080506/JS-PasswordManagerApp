@@ -122,7 +122,7 @@ body {
     text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
     padding: 30px 20px;
     position: absolute;
-    bottom: 0;
+    bottom: 78px;
     display: flex;
     align-items: center;
     width: 17%;
@@ -197,6 +197,8 @@ body {
 .main-content-area {
     padding: 20px;
     overflow-x: hidden;
+    height: calc(100vh - 140px);
+    overflow-y: auto;
 }
 
 hr {
@@ -573,8 +575,12 @@ hr {
     border-radius: 20px;
     display: flex;
     align-items: center;
-    width: 80%;
-    height: 10%;
+    width: auto;
+    min-width: 500px;
+    max-width: 90%;
+    height: auto;
+    min-height: 80px;
+    flex-wrap: wrap;
 }
 
 .account p,
@@ -584,6 +590,8 @@ hr {
     font-size: 24px;
     padding-bottom: 10px;
     margin-right: 20px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .account img,
@@ -600,9 +608,26 @@ hr {
 .recycle-bin-options {
     display: flex;
     align-items: center;
-    flex: 1;
+    flex: 0 0 auto;
     justify-content: flex-end;
     cursor: pointer;
+    gap: 10px;
+}
+
+/* Text content area for account tiles */
+.account-content, .recyclebin-content {
+    flex: 1;
+    min-width: 0;
+    margin-right: 15px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.account-display-password, .recycled-password {
+    max-width: 100%;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    margin-top: 5px;
 }
 
 /* Dynamic Modal, Security Pin Modal, Add-to-Vault Generator Modal Styling */
@@ -671,4 +696,84 @@ hr {
 
 .edit-password-icon {
     rotate: 215deg;
+}
+
+.footer{
+    border-top: 3px solid white;
+    color: white;
+    font-family: "Poppins";
+    background-color: #a58fcb;
+    text-align: center;
+    padding: 25px 15px;
+    width: 17%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.footer a{
+    color: white;
+    text-decoration: none;
+}
+
+/* Custom scrollbar styling to match app theme */
+.main-content-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.main-content-area::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.main-content-area::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.main-content-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Desktop Responsiveness */
+@media (min-width: 1200px) {
+    .password-modal-content,
+    .dynamic-mainpg-modal-content,
+    .pin-modal-content,
+    .add-to-vault-modal-content {
+        width: 25%;
+        min-width: 400px;
+    }
+    
+    .notifications-modal-content {
+        width: 450px;
+    }
+    
+    .account, .recyclebin {
+        min-width: 500px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .password-modal-content,
+    .dynamic-mainpg-modal-content,
+    .pin-modal-content,
+    .add-to-vault-modal-content {
+        width: 20%;
+        min-width: 450px;
+    }
+    
+    .notifications-modal-content {
+        width: 500px;
+    }
+    
+    .account, .recyclebin {
+        width: 50%;
+    }
+}
+
+/* Prevent horizontal scroll */
+html, body {
+    overflow-x: hidden;
 }

@@ -128,6 +128,11 @@ nav img{
     z-index: 2;
 }
 
+.footer a{
+    color: white;
+    text-decoration: none;
+}
+
 /* Grouped Modal Container Styles */
 .change-email-modal-container,
 .change-password-modal-container,
@@ -260,6 +265,39 @@ nav img{
 .close:focus {
     color: black;
     text-decoration: none;
+}
+
+/* Desktop Responsiveness */
+@media (min-width: 1200px) {
+    .setting-box {
+        max-width: 800px;
+        padding: 40px 30px;
+    }
+    
+    .change-email-modal-content,
+    .change-password-modal-content,
+    .log-out-modal-content,
+    .delete-account-modal-content,
+    .dynamic-settings-modal-content {
+        width: 25%;
+        min-width: 400px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .setting-box {
+        max-width: 900px;
+        padding: 50px 40px;
+    }
+    
+    .change-email-modal-content,
+    .change-password-modal-content,
+    .log-out-modal-content,
+    .delete-account-modal-content,
+    .dynamic-settings-modal-content {
+        width: 20%;
+        min-width: 450px;
+    }
 }
 
 /* Media Queries for Responsive Design */

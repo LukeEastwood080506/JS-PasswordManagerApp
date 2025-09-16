@@ -2,13 +2,12 @@ const express = require("express");
 const router = express.Router();
 // Import database
 const db = require("../db/db");
-const { route } = require("./users");
 
 
 // Reusable route check handler method.
 function routeCheckHandler() {
+  // Health check handler for /notifications routes
   return (request, response) => {
-    console.log(`GET request to /notifications${request.url}`);
     db.get("SELECT 1", [], (err) => {
       if (err) {
         console.error("Database is not working (", err.message, ")");
@@ -25,8 +24,8 @@ function routeCheckHandler() {
 }
 
 router.get("/all", (request, response) => {
+  // Return all notifications for the logged-in user
   const userId = request.session.userId;
-  console.log(`GET request to /notifications${request.url}`);
   db.all("SELECT id, title, content FROM notifications WHERE user_id = ?", [userId], (err, rows) => {
     if (err) {
       return response.status(400).json({
@@ -47,7 +46,7 @@ router.get("/new", routeCheckHandler());
 router.get("/delete", routeCheckHandler());
 
 router.post("/new", (request, response) => {
-  console.log(`POST request to /notifications${request.url}`);
+  // Add a new notification for the logged-in user
   const userId = request.session.userId;
   if (!userId) {
     return response.status(401).send({
@@ -78,7 +77,7 @@ router.post("/new", (request, response) => {
 });
 
 router.post("/delete", (request, response) => {
-  console.log(`POST request to /notifications${request.url}`);
+  // Delete a notification by id
   const { id } = request.body;
   if (!id) {
     return response.status(400).send({

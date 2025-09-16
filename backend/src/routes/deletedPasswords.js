@@ -6,8 +6,9 @@ const bcrypt = require("bcrypt");
 
 // Reusable route check handler method.
 function routeCheckHandler() {
+  // Health check handler for /deletedPasswords routes
   return (request, response) => {
-    console.log(`GET request to /deletedPasswords${request.url}`);
+    // console.log(`GET request to /deletedPasswords${request.url}`);
     db.get("SELECT 1", [], (err) => {
       if (err) {
         console.error("Database is not working (", err.message, ")");
@@ -31,8 +32,8 @@ router.get("/delete", routeCheckHandler());
 router.get("/restore", routeCheckHandler());
 
 router.get("/all", (request, response) => {
+  // Return all deleted password records for the logged-in user
   const userId = request.session.userId;
-  console.log(`GET request to /deletedPasswords${request.url}`);
   db.all(
     "SELECT * FROM deletedPasswords WHERE user_id = ?",
     [userId],
@@ -53,7 +54,7 @@ router.get("/all", (request, response) => {
 
 // POST request to retrieve a deleted password record and add it to the deletedPasswords table in the database.
 router.post("/add", (request, response) => {
-  console.log(`POST request to /deletedPasswords${request.url}`);
+  // Add a deleted password record to the recycle bin (with encryption)
   const { deletedService, deletedEmail, deletedPassword, pin } = request.body;
   const userId = request.session.userId;
   if (!userId || !deletedService || !deletedEmail || !deletedPassword || !pin) {
@@ -97,7 +98,7 @@ router.post("/add", (request, response) => {
 });
 
 router.post("/show", (request, response) => {
-  console.log(`POST request to /deletedPasswords${request.url}`);
+  // Decrypt and return a deleted password for a given service/email/pin
   const { deletedService, deletedEmail, deletedPassword, pin } = request.body;
   if (!deletedService || !deletedEmail || !deletedPassword || !pin) {
     return response.status(400).send({
@@ -123,7 +124,6 @@ router.post("/show", (request, response) => {
     // Decrypt the recycle bin password stored in the database for viewing.
     let deletedPassword = "";
     let intPin = parseInt(pin);
-    console.log("Int pin: ", intPin); 
     // Takes the encoded semi-colon seperated string and turns into an array of strings without the semi-colon.
     // It is then iterated over.
     row.deletedPassword.split(";").forEach((x) => {
@@ -140,7 +140,7 @@ router.post("/show", (request, response) => {
 });
 
 router.post("/delete", (request, response) => {
-  console.log(`POST request to /deletedPasswords${request.url}`);
+  // Permanently delete a deleted password record from the recycle bin
   const { deletedService, deletedEmail, deletedPassword } = request.body;
   if (!deletedService || !deletedEmail || !deletedPassword) {
     return response.status(400).send({
@@ -182,8 +182,7 @@ router.post("/delete", (request, response) => {
 });
 
 router.post("/restore", (request, response) => {
-  console.log(`POST request to /deletedPasswords${request.url}`);
-  // Need the deletedPassword if I am to restore the password record to the vault.
+  // Restore a deleted password record from the recycle bin to the vault
   const { deletedService, deletedEmail, deletedPassword } = request.body;
   const userId = request.session.userId;
   if (!userId || !deletedService || !deletedEmail || !deletedPassword) {

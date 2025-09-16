@@ -27,7 +27,7 @@ const dynamicModalTitle = document.getElementById("dynamic-settings-modal-title"
 const dynamicModalMessage = document.getElementById("dynamic-settings-modal-message");
 
 function showEmail() {
-    // Retrieve email from currently signed in user.
+    // Retrieve and display the email of the currently signed-in user
     fetch("http://127.0.0.1:6969/users/emails", {
         method: "POST",
         headers: {
@@ -42,7 +42,6 @@ function showEmail() {
                 displayEmail.textContent = "Email: " + data.message;
             } else {
                 displayEmail.textContent = "Email: N/A (Not signed in)";
-                console.log(data.message || "Email display unsuccessful!");
             }
         })
         .catch((err) => {
@@ -51,6 +50,7 @@ function showEmail() {
 }
 
 function changeEmail(originalEmail, newEmail) {
+    // Send request to change the user's email
     fetch("http://127.0.0.1:6969/users/emails/change", {
         method: "POST",
         headers: {
@@ -67,7 +67,6 @@ function changeEmail(originalEmail, newEmail) {
                 showModal("dynamic-modal");
                 return;
             } else {
-                console.log(data.message || "Email edit unsuccessful!");
                 setUpDynamicModal("change-email-fail");
                 hideModal("change-email-modal");
                 showModal("dynamic-modal");
@@ -79,6 +78,7 @@ function changeEmail(originalEmail, newEmail) {
 }   
 
 function changeMasterPassword(originalPassword, newPassword) {
+    // Send request to change the user's master password
     fetch("http://127.0.0.1:6969/passwords/edit/master", {
         method: "POST",
         headers: {
@@ -96,7 +96,6 @@ function changeMasterPassword(originalPassword, newPassword) {
                 showModal("dynamic-modal");
                 return;
             } else {
-                console.log("Master password edit unsuccessful!");
                 setUpDynamicModal("change-master-password-fail");
                 hideModal("change-password-modal");
                 showModal("dynamic-modal");
@@ -123,7 +122,6 @@ function logOut() {
                 showModal("dynamic-modal");
                 return;
             } else {
-                console.log("Logout failed: " + (data.message || ""));
                 setUpDynamicModal("log-out-fail");
                 showModal("dynamic-modal");
             }
@@ -134,6 +132,7 @@ function logOut() {
 }
 
 function deleteAccount(password) {
+    // Send request to delete the user's account
     fetch("http://127.0.0.1:6969/users/delete", {
         method: "POST",
         headers: {
@@ -145,14 +144,11 @@ function deleteAccount(password) {
         .then((response) => response.json())
         .then((data) => {
             if(data.success){
-                // console.log("Delete response:", data);
-                console.log("Account has been successfully deleted! Redirecting to login page...");
                 setUpDynamicModal("delete-account-success");
                 hideModal("delete-account-modal");
                 showModal("dynamic-modal");
                 return;
             } else {
-                console.log(data.message || "Account deletion unsuccessful!");
                 setUpDynamicModal("delete-account-fail");
                 hideModal("delete-account-modal");
                 showModal("dynamic-modal");
@@ -185,6 +181,7 @@ function clearModalInputs(modal) {
 }
 
 function showModal(modal) {
+    // Show the specified modal and clear its inputs
     clearModalInputs(modal);
     switch (modal) {
         case "change-email-modal":
@@ -206,6 +203,7 @@ function showModal(modal) {
 }
 
 function hideModal(modal) {
+    // Hide the specified modal
     switch (modal) {
         case "change-email-modal":
             changeEmailModal.style.display = "none";
@@ -225,6 +223,7 @@ function hideModal(modal) {
     }
 }
 
+// Set up and display the dynamic modal for feedback on settings actions
 function setUpDynamicModal(result){
     switch(result){
         case "change-email-success":
@@ -375,4 +374,4 @@ if (closeDynamicModalBtn){
 
 document.addEventListener("DOMContentLoaded", () => {
     showEmail();
-}); 
+});
