@@ -13,9 +13,12 @@ const dynamicModalMessage = document.getElementById("dynamic-forgot-password-mod
 
 let verifiedEmail = null;
 
+// Check if the entered email is valid and exists in the backend
 function checkEmail() {
+    let emailEnds = ['.com', '.co.uk'];
     const email = emailInput.value;
-    if (!email.includes("@")) {
+    let stringIncludesEnd = emailEnds.some(end => email.includes(end));
+    if (!email.includes("@") || !stringIncludesEnd) {
         setUpDynamicModal("email-fail");
         showDynamicModal();
     }
@@ -30,19 +33,17 @@ function checkEmail() {
         .then((data) => {
             if (data.success) {
                 // Existing email - Can now move on to the forgot password section.
-                // console.log("Valid email! Proceeding to forgot password...");
                 setUpDynamicModal("email-success");
                 showDynamicModal();
             } else {
-                console.log(data.message || "Invalid Email!");
                 setUpDynamicModal("email-fail");
                 showDynamicModal();
             }
         })
 }
 
+// Check if new password and confirmation match, then submit to backend
 function checkPasswords(email) {
-    // console.log("Email passed to checkPasswords method: ", email);
     const newPassword = newPasswordInput.value;
     const confirmedPassword = confirmPasswordInput.value;
     // Flag if both inputs have not been filled.
@@ -65,32 +66,29 @@ function checkPasswords(email) {
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
-                console.log("Forgot Password successful!");
                 setUpDynamicModal("password-change-success");
                 showDynamicModal();
             } else {
                 // Check the contents of data.message before displaying the appropriate modal.
                 if (data.message === "The new password is the same as the original password") {
-                    console.log(data.message);
                     setUpDynamicModal("same-forgot-password");
                     showDynamicModal();
                 } else {
-                    console.log(data.message || "Forgot Password unsuccessful!");
                     setUpDynamicModal("password-change-fail");
                     showDynamicModal();
                 }
             }
         })
-
 }
 
-
+// Clear all input fields
 function clearInputs() {
     emailInput.value = "";
     newPasswordInput.value = "";
     confirmPasswordInput.value = "";
 }
 
+// Set up and display the dynamic modal for feedback
 function setUpDynamicModal(result) {
     switch (result) {
         case "email-success":
@@ -98,7 +96,7 @@ function setUpDynamicModal(result) {
             dynamicModalMessage.textContent = "Valid Email! Click ok to proceed to forgot password!";
             dynamicModalOkBtn.onclick = () => {
                 hideDynamicModal();
-                verifiedEmail = emailInput.value; // Stored the verified email.
+                verifiedEmail = emailInput.value; // Store the verified email for password reset
                 clearInputs();
                 showForgotPasswordInputFields();
             }
@@ -139,6 +137,7 @@ function setUpDynamicModal(result) {
     }
 }
 
+// Show password input fields after email is verified
 function showForgotPasswordInputFields() {
     emailInput.style.display = "none";
     forgotPasswordBtn.style.display = "none";
@@ -155,6 +154,7 @@ function hideDynamicModal() {
     dynamicModal.style.display = "none";
 }
 
+// Event listeners for modal and form actions
 if (closeDynamicModalBtn) {
     closeDynamicModalBtn.addEventListener("click", () => hideDynamicModal());
 }

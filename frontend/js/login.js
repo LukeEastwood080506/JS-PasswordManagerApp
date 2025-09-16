@@ -10,10 +10,19 @@ const dynamicModalMessage = document.getElementById("dynamic-login-modal-message
 const dynamicModalOkButton = document.getElementById("ok-button");
 
 function submitLogin() {
+  // Validate and submit login form
   detailsCheck(emailInput.value, passwordInput.value);
 }
 
 function detailsCheck(email, password) {
+  let emailEnds = ['.com', '.co.uk'];
+  let stringIncludesEnd = emailEnds.some(end => email.includes(end));
+  if(!email.includes("@") || !stringIncludesEnd){
+    setUpDynamicModal("login-fail");
+    showDynamicModal();
+    return;
+  }
+  // Send login request to backend
   fetch("http://127.0.0.1:6969/users/login",{
     method: "POST",
     headers: {
@@ -25,12 +34,10 @@ function detailsCheck(email, password) {
   .then((response) => response.json())
   .then((data) =>{
     if(data.success){
-      console.log("Login successful!");
       setUpDynamicModal("login-success");
       showDynamicModal();
     }
     else{
-      console.log(data.message || "Login Unsuccessful!");
       setUpDynamicModal("login-fail");
       showDynamicModal();
     }
@@ -40,6 +47,7 @@ function detailsCheck(email, password) {
   });
 }
 
+// Set up and display the dynamic modal for login feedback
 function setUpDynamicModal(result){
   switch(result){
     case "login-success":
@@ -75,6 +83,7 @@ function clearInputs(){
   passwordInput.value = "";
 }
 
+// Event listeners for login and modal actions
 if(loginButton){
   loginButton.addEventListener("click", submitLogin);
 }
@@ -82,6 +91,19 @@ if(loginButton){
 if(closeDynamicModalBtn){
   closeDynamicModalBtn.addEventListener("click", () => hideDynamicModal());
 }
+
+// Add Enter key support for all input fields
+emailInput.addEventListener("keyup", function(event){
+  if(event.key === "Enter"){
+    submitLogin();
+  }
+});
+
+passwordInput.addEventListener("keyup", function(event){
+  if(event.key === "Enter"){
+    submitLogin();
+  }
+});
 
 window.addEventListener("pageshow", (event) => {
   // Checks if page is loading from cache.

@@ -40,7 +40,6 @@ app.use(
 
 // Test route
 app.get("/", (request, response) => {
-  console.log("GET request to ", request.url);
   response.json({
     message: "Password Manager Backend Operational!",
   });

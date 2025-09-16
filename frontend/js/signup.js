@@ -11,8 +11,11 @@ const dynamicModalTitle = document.getElementById("dynamic-signup-modal-title");
 const dynamicModalMessage = document.getElementById("dynamic-signup-modal-message");
 
 function confirmSignUp() {
-  // check if the email input contains an @ sign - to verify its a valid email address.
-  if (!emailInput.value.includes("@")) {
+  // Validate email and password fields before attempting signup
+  let emailEnds = ['.com', '.co.uk'];
+  const email = emailInput.value;
+  let stringIncludesEnd = emailEnds.some(end => email.includes(end));
+  if (!emailInput.value.includes("@") || !stringIncludesEnd) {
     setUpDynamicModal("sign-up-fail");
     showDynamicModal();
   } else if (confirmEmailInput.value != emailInput.value) {
@@ -42,11 +45,10 @@ function saveUserCredentials(email, password) {
     // Handles the data returned by the backend
     .then((data) => {
       if (data.success) {
-        console.log("Sign-Up Successful!");
         setUpDynamicModal("sign-up-success");
         showDynamicModal();
       } else {
-        console.log(data.message || "Sign Up Unsuccessful!");
+        // Show specific error if email is already registered
         if(data.message === "Email is registered under an account!"){
           setUpDynamicModal("sign-up-fail-email");
           showDynamicModal();
@@ -121,6 +123,7 @@ function clearInputs() {
   passwordInput.value = "";
 }
 
+// Add Enter key support for all input fields
 emailInput.addEventListener("keyup", function (event) {
   if (event.key === "Enter") {
     confirmSignUp();

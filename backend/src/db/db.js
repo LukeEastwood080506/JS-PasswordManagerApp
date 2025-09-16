@@ -1,15 +1,12 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 
-
 // Connect to database
 const dbPath = path.join(__dirname, "pm_db.db");
-// console.log("DB Path: " + dbPath);
 const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     return console.error(err.message);
   }
-  return console.log("Backend Database Operational!");
 });
 // Enables foreign keys in the database.
 db.run("PRAGMA foreign_keys = ON");
@@ -138,16 +135,6 @@ db.all("SELECT * FROM users", [], (err, userRows) => {
         if (err) {
           return console.error(err.message);
         }
-        return console.log(
-          "Users:",
-          userRows,
-          "\nPasswords:",
-          passwordRows,
-          "\ndeletedPasswords:",
-          deletedPasswordRows,
-          "\nNotifications:",
-          notificationRows
-        );
       });
     });
   });

@@ -5,10 +5,10 @@ const db = require("../db/db");
 const bcrypt = require('bcrypt');
 
 
-// Reusable route check handler method.
+// Reusable route check handler method for health checks
 function routeCheckHandler(routeName) {
   return (request, response) => {
-    console.log(`GET request to /users${request.url}`);
+    // console.log(`GET request to /users${request.url}`);
     db.get("SELECT 1", [], (err) => {
       if (err) {
         console.error("Database is not working (", err.message, ")");
@@ -36,11 +36,10 @@ router.get("/logout", routeCheckHandler("logout"));
 // router.get("/check", routeCheckHandler("check"));
 
 router.get("/all", (request, response) => {
-  console.log(`GET request to /users${request.url}`);
+  // Return all user records (for admin/debugging)
   const selectSql = `SELECT * FROM users`;
   db.get(selectSql, [], (err, row) => {
     if (err) {
-      console.log(err);
       return response.status(400).json({
         success: false,
         message: "Database Error"
@@ -62,8 +61,6 @@ router.get("/all", (request, response) => {
 
 router.get("/check", (request, response) => {
   // Check if a session exists and if a userId is associated with the session.
-  console.log("Session: ", request.session);
-  console.log("Session Id: ", request.session.userId);
   if (request.session && request.session.userId) {
     return response.status(200).json({
       success: true,
@@ -78,7 +75,6 @@ router.get("/check", (request, response) => {
 
 // POST request for login
 router.post("/login", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
   const { email, password } = request.body;
   // Check if an email and password exist in the request body.
   if (!email || !password) {
@@ -87,9 +83,7 @@ router.post("/login", (request, response) => {
       message: "An email and password must be entered for sign-in",
     });
   }
-  // Check if the email and password exist in the database.
-  // The user-inputted password needs to be hashed for comparison
-  // with hashed passwords, which need to be retrieved from the database.
+  // Look up user by email and compare hashed password
   const selectSql = `SELECT * FROM users WHERE email = ?`;
   db.get(selectSql, [email], (err, row) => {
     if (err) {
@@ -135,7 +129,6 @@ router.post("/login", (request, response) => {
 
 // POST request for sign-up
 router.post("/signup", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
   const { email, password } = request.body;
   // Check if an email and password exist in the request body.
   if (!email || !password) {
@@ -182,10 +175,8 @@ router.post("/signup", (request, response) => {
 });
 
 router.post("/emails", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
-  console.log("Session object: ", request.session);
+  // Return the email for the currently logged-in user
   const userId = request.session.userId;
-  // console.log("User id: ", userId);
   if (!userId) {
     return response.status(401).send({
       success: false,
@@ -214,12 +205,9 @@ router.post("/emails", (request, response) => {
 });
 
 router.post("/emails/change", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
+  // Change the email for the currently logged-in user
   const { originalEmail, newEmail } = request.body;
   const userId = request.session.userId;
-  // console.log("Original email: ", originalEmail);
-  // console.log("New email: ", newEmail);
-  // console.log("userId: ", userId);
   if (!userId || !originalEmail || !newEmail) {
     return response.status(401).send({
       success: false,
@@ -266,7 +254,7 @@ router.post("/emails/change", (request, response) => {
 });
 
 router.post("/delete", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
+  // Delete the user account and all associated data (cascade)
   const { password } = request.body;
   const userId = request.session.userId;
   if (!password || !userId) {
@@ -314,7 +302,7 @@ router.post("/delete", (request, response) => {
 });
 
 router.post("/logout", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
+  // Destroy the session and log out the user
   request.session.destroy((err) => {
     if (err) {
       return response.status(500).send({
@@ -331,7 +319,7 @@ router.post("/logout", (request, response) => {
 });
 
 router.post("/forgotpassword", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
+  // Check if the email exists for password reset
   const { email } = request.body;
   if (!email) {
     return response.status(401).send({
@@ -361,7 +349,7 @@ router.post("/forgotpassword", (request, response) => {
 });
 
 router.post("/forgotpassword/new", (request, response) => {
-  console.log(`POST request to /users${request.url}`);
+  // Update the user's password after verifying email and new password
   const { email, confirmedPassword } = request.body;
   if (!email || !confirmedPassword) {
     return response.status(401).send({

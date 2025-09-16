@@ -236,23 +236,43 @@ input {
     text-decoration: none;
 }
 
-/* Responsive adjustments */
-@media screen and (max-width: 768px) {
-  #forgot-password-link {
-    padding-left: 5%;
-  }
-
-  .split-left img {
-    padding-top: 20px;
-    width: 200px;
-    height: 200px;
-    margin-bottom: 20px;
-    /* Add space below the image on mobile */
-  }
+/* Desktop Responsiveness */
+@media (min-width: 1200px) {
+    .split-left {
+        width: 35%;
+    }
+    
+    .split-right {
+        width: 65%;
+    }
+    
+    .login-container {
+        max-width: 800px;
+        padding: 50px;
+    }
+    
+    .dynamic-login-modal-content {
+        width: 25%;
+        min-width: 400px;
+    }
 }
 
-@media screen and (max-width: 480px) {
-  .login-container {
-    padding: 25px 15px;
-  }
+@media (min-width: 1600px) {
+    .split-left {
+        width: 30%;
+    }
+    
+    .split-right {
+        width: 70%;
+    }
+    
+    .login-container {
+        max-width: 900px;
+        padding: 60px;
+    }
+    
+    .dynamic-login-modal-content {
+        width: 20%;
+        min-width: 450px;
+    }
 }

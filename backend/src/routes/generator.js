@@ -5,8 +5,8 @@ const bcrypt = require("bcrypt");
 
 // Reusable route check handler method.
 function routeCheckHandler() {
+  // Health check handler for /generator routes
   return (request, response) => {
-    console.log(`GET request to /generator${request.url}`);
     db.get("SELECT 1", [], (err) => {
       if (err) {
         console.error("Database is not working (", err.message, ")");
@@ -27,7 +27,7 @@ router.get("/", routeCheckHandler());
 router.get("/new", routeCheckHandler());
 
 router.post("/new", (request, response) => {
-   console.log(`POST request to /generator${request.url}`);
+   // Add a generated password to an existing vault record (with encryption)
    const { generatedPassword, vaultService, pin } = request.body;
    if(!generatedPassword || !vaultService || !pin){
     return response.status(400).send({
@@ -63,7 +63,6 @@ router.post("/new", (request, response) => {
       }
       encryptedPassword += `${y}`;
     });
-    // console.log("Encrypted generated password: ", encryptedPassword);
     db.run(updateSql, [encryptedPassword, id], function(err){
         if(err){
             return response.status(401).send({

@@ -69,6 +69,7 @@ const PAGE_MAPPING = {
 };
 
 function initialiseApp() {
+  // Fetch all password records for the vault
   fetch("http://127.0.0.1:6969/passwords/all", {
     method: "GET",
     credentials: "include",
@@ -77,6 +78,7 @@ function initialiseApp() {
     .then((data) => {
       if (data.success) {
         accounts = [];
+        // Populate accounts array with valid records
         data.data.forEach((acc) => {
           if (acc && acc.service && acc.email && acc.password) {
             const existing = accounts.find(
@@ -102,6 +104,7 @@ function initialiseApp() {
     .then((data) => {
       if (data.success) {
         deletedAccounts = [];
+        // Populate deletedAccounts array with valid records
         data.data.forEach((deletedAcc) => {
           if (
             deletedAcc &&
@@ -117,7 +120,7 @@ function initialiseApp() {
             deletedAccounts.push(deletedAcc);
           }
         });
-        // Call function to fill deleted accounts on the recycle bin page.
+        // Fill deleted accounts on the recycle bin page.
         fillDeletedAccounts();
       } else {
         console.error("Failed to load deleted passwords from backend");
@@ -144,7 +147,7 @@ function fillAccounts() {
       console.warn("Invalid account skipped:", account);
       return;
     }
-
+    // Clone template and fill in account data for each record
     const clone = template.cloneNode(true);
     clone.classList.remove("template");
     clone.style.display = "flex";
@@ -156,20 +159,18 @@ function fillAccounts() {
     const viewIcon = clone.querySelector(".view-password-icon");
     const passwordElement = clone.querySelector(".account-display-password");
 
+    // Add event listeners for view, edit, and delete actions
     viewIcon.addEventListener("click", async () => {
       await togglePassword(false, viewIcon, passwordElement, account);
     });
-
     clone.querySelector(".edit-password-icon").addEventListener("click", () => {
       showEditModal(account);
     });
-
     clone
       .querySelector(".delete-password-icon")
       .addEventListener("click", () => {
         deleteAccount(account.service, account.email, account.password);
       });
-
     accountsContainer.appendChild(clone);
   });
 }
@@ -194,7 +195,7 @@ function fillDeletedAccounts() {
       console.warn("Invalid account skipped:", dacc);
       return;
     }
-
+    // Clone template and fill in deleted account data for each record
     const clone = template.cloneNode(true);
     clone.classList.remove("template");
     clone.style.display = "flex";
@@ -211,19 +212,16 @@ function fillDeletedAccounts() {
     const restoreIcon = clone.querySelector(".restore-password-icon");
     const permaDeleteIcon = clone.querySelector(".permenant-delete-icon");
 
+    // Add event listeners for view, restore, and permanent delete actions
     viewIcon.addEventListener("click", async () => {
       await togglePassword(true, viewIcon, passwordElement, dacc);
     });
-
     restoreIcon.addEventListener("click", () => {
       restorePassword(dacc.deletedService, dacc.deletedEmail, dacc.deletedPassword);
     });
-
     permaDeleteIcon.addEventListener("click", () => {
-      // Function that permenantly deletes the record in the recycle bin.
       permaDelete(dacc.deletedService, dacc.deletedEmail, dacc.deletedPassword);
     });
-
     deletedAccountsContainer.appendChild(clone);
   });
 }
@@ -245,7 +243,7 @@ function fillNotifications() {
       console.warn("Invalid notification skipped:", notification);
       return;
     }
-
+    // Clone template and fill in notification data for each record
     const clone = template.cloneNode(true);
     clone.classList.remove("template");
     clone.style.display = "flex";
@@ -256,7 +254,7 @@ function fillNotifications() {
       notification.content;
 
     const deleteIcon = clone.querySelector(".delete-notification-icon");
-    // Add event listener for delete icon.
+    // Add event listener for delete icon
     deleteIcon.addEventListener("click", () => {
       deleteNotification(notification.id);
     });
@@ -291,19 +289,15 @@ function generatePassword(length = 12) {
   if (document.getElementById("punctuation-checkbox").checked) selectedGroups.push(charGroups.punctuation);
   // Fallback if nothing is selected.
   if (selectedGroups.length === 0) selectedGroups.push(charGroups.letters);
-  // console.log("Selected char groups: " + selectedGroups);
   // Pick one character from each group to start building the password.
   let passwordChars = selectedGroups.map(group => group[Math.floor(Math.random() * group.length)]);
-  // console.log("Chars (one from each group): " + passwordChars);
   // Fill remaining length with random characters from combined pool.
   const combinedPool = selectedGroups.join("");
-  // console.log("Combined pool: " + combinedPool);
   for (let i = passwordChars.length; i < length; i++) {
     passwordChars.push(combinedPool[Math.floor(Math.random() * combinedPool.length)]);
   }
   // Shuffle the password so the guaranteed characters aren't in fixed positions.
   passwordChars = passwordChars.sort(() => Math.random() - 0.5);
-  // console.log("Password chars: " + passwordChars);
 
   // Display password
   const password = passwordChars.join("");
@@ -368,7 +362,6 @@ function addGeneratedPassword(password) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        console.log("The generated password has successfully been added to the vault for the service: " + vaultService);
         initialiseApp();
         setUpDynamicModal("generator-password-success");
         showDynamicModal();
@@ -377,14 +370,12 @@ function addGeneratedPassword(password) {
         addNotification(title, content);
         refreshNotificationsDiv(title, content);
       } else {
-        console.log(data.message || "The generated password could not be added to the vault!");
         setUpDynamicModal("generator-password-fail");
         showDynamicModal();
       }
     })
     .catch((error) => {
       console.error(error.message);
-      console.log(error.message);
     })
 }
 
@@ -404,6 +395,7 @@ function restoreGeneratorSettings() {
 }
 
 function recycleBin(deletedService, deletedEmail, deletedPassword) {
+  // Move a deleted password to the recycle bin (backend)
   let pin = localStorage.getItem("passedPin");
   return fetch("http://127.0.0.1:6969/deletedPasswords/add", {
     method: "POST",
@@ -427,46 +419,56 @@ function recycleBin(deletedService, deletedEmail, deletedPassword) {
 
 function handleAccountSubmit(isEditMode) {
   if (!isEditMode) {
+    // Handle add password form submission
     const service = document.getElementById("add-service-input").value.trim();
     const email = document.getElementById("add-email-input").value.trim();
     const password = document.getElementById("add-password-input").value.trim();
-
     if (!service || !email || !password) {
-      console.log("Please fill in all fields");
       setUpDynamicModal("fill-in-add-fields");
       showDynamicModal();
       return;
     }
-
+    let emailEnds = ['.com', '.co.uk'];
+    let stringIncludesEnd = emailEnds.some(end => email.includes(end));
+    if (!stringIncludesEnd) {
+      setUpDynamicModal("add-fields-invalid-email");
+      showDynamicModal();
+      return;
+    }
     const newAccount = new Account(service, email, password);
     accounts.push(newAccount);
     fillAccounts();
     const pin = localStorage.getItem("passedPin");
-    // Ask for pin.
+    // Ask for pin if not already stored
     if (!pin) {
       showPinModal();
       document.querySelector(".pin-inputs").addEventListener("submit", (e) => {
         e.preventDefault();
         checkPin(service, email, password);
       });
-    // Pin already stored.
     } else {
       save(service, email, password, pin);
     }
-
   } else {
+    // Handle edit password form submission
     const service = document.getElementById("edit-service-input").value.trim();
     const email = document.getElementById("edit-email-input").value.trim();
     const password = document
       .getElementById("edit-password-input")
       .value.trim();
     if (!service || !email || !password) {
-      console.log("Please fill in all fields");
       setUpDynamicModal("fill-in-edit-fields");
       showDynamicModal();
       return;
     }
-
+    let emailEnds = ['.com', '.co.uk'];
+    let stringIncludesEnd = emailEnds.some(end => email.includes(end));
+    console.log(stringIncludesEnd);
+    if (!stringIncludesEnd) {
+      setUpDynamicModal("edit-fields-invalid-email");
+      showDynamicModal();
+      return;
+    }
     if (originalAccount) {
       fetch("http://127.0.0.1:6969/passwords/edit", {
         method: "POST",
@@ -487,12 +489,10 @@ function handleAccountSubmit(isEditMode) {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            console.log("Credentials for website/app updated successfully!");
             setUpDynamicModal("edit-record-success");
             showDynamicModal();
             initialiseApp();
           } else {
-            console.log(data.message || "Credentials could not be edited");
             setUpDynamicModal("edit-record-fail");
             showDynamicModal();
           }
@@ -515,16 +515,12 @@ async function togglePassword(
   passwordElement,
   account
 ) {
-  // Sets a data attribute.
+  // Toggle password visibility for a record (vault or recycle bin)
   const isVisible = passwordElement.dataset.visible === "true";
-
-  // Toggle hide on password record tile.
   if (isVisible) {
     updatePasswordUI(false, iconElement, passwordElement, "password");
     return;
   }
-
-  // Show password on password record tile.
   try {
     const password = await fetchPassword(isRecycleBin, account);
     if (password) {
@@ -532,7 +528,6 @@ async function togglePassword(
       setUpDynamicModal("show-password-success");
       showDynamicModal();
     } else {
-      console.log("Password cannot be displayed");
       setUpDynamicModal("show-password-fail");
       showDynamicModal();
     }
@@ -542,22 +537,27 @@ async function togglePassword(
 }
 
 async function fetchPassword(isRecycleBin, account) {
-  const url = isRecycleBin
-    ? "http://localhost:6969/deletedPasswords/show"
-    : "http://localhost:6969/passwords/show";
-  const body = isRecycleBin
-    ? {
+  let url;
+  let body;
+  
+  if (isRecycleBin) {
+    url = "http://localhost:6969/deletedPasswords/show";
+    body = {
       deletedService: account.deletedService,
       deletedEmail: account.deletedEmail,
       deletedPassword: account.deletedPassword,
       pin: localStorage.getItem("passedPin")
-    }
-    : {
+    };
+  } else {
+    url = "http://localhost:6969/passwords/show";
+    body = {
       service: account.service,
       email: account.email,
       password: account.password,
       pin: localStorage.getItem("passedPin")
     };
+  }
+  
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -567,16 +567,39 @@ async function fetchPassword(isRecycleBin, account) {
     body: JSON.stringify(body),
   });
   const data = await response.json();
-  return data.success ? data.message : null;
+  
+  // Handle the case where decryption returns null character or empty string
+  if (data.success && data.message && data.message !== "\u0000" && data.message.trim() !== "") {
+    return data.message;
+  } else if (data.success && (data.message === "\u0000" || data.message.trim() === "")) {
+    // If decryption failed (null character), return the original password as it might be plain text
+    if (isRecycleBin) {
+      return account.deletedPassword;
+    } else {
+      return account.password;
+    }
+  }
+  
+  return null;
 }
 
 function updatePasswordUI(show, iconElement, passwordElement, text) {
   passwordElement.textContent = text;
-  passwordElement.style.display = show ? "block" : "none";
-  passwordElement.dataset.visible = show ? "true" : "false";
-  iconElement.src = show
-    ? "../assets/eye-icon.svg"
-    : "../assets/eye-crossed-icon.svg";
+  if (show) {
+    passwordElement.style.display = "block";
+  } else {
+    passwordElement.style.display = "none";
+  }
+  if (show) {
+    passwordElement.dataset.visible = "true";
+  } else {
+    passwordElement.dataset.visible = "false";
+  }
+  if (show) {
+    iconElement.src = "../assets/eye-icon.svg";
+  } else {
+    iconElement.src = "../assets/eye-crossed-icon.svg";
+  }
 }
 
 function toggleNotificationsModal() {
@@ -596,7 +619,6 @@ function save(service, email, password, pin) {
     return;
   } else {
     localStorage.setItem("passedPin", pin);
-    console.log("passedPin to localStorage: ", pin);
     fetch("http://127.0.0.1:6969/passwords/new", {
       method: "POST",
       headers: {
@@ -608,7 +630,6 @@ function save(service, email, password, pin) {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          console.log("Password record created and added to vault successfully!")
           setUpDynamicModal("save-password-success");
           showDynamicModal();
           // POST request needed to /notifications/new
@@ -617,7 +638,6 @@ function save(service, email, password, pin) {
           addNotification(title, content);
           refreshNotificationsDiv(title, content);
         } else {
-          console.log(data.message || "Password Creation Unsuccessful!");
           setUpDynamicModal("save-password-fail");
           showDynamicModal();
         }
@@ -629,6 +649,7 @@ function save(service, email, password, pin) {
 }
 
 function deleteAccount(deletedService, deletedEmail, deletedPassword) {
+  const pin = localStorage.getItem("passedPin");
   fetch("http://127.0.0.1:6969/passwords/delete", {
     method: "POST",
     headers: {
@@ -639,31 +660,31 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
       service: deletedService,
       email: deletedEmail,
       password: deletedPassword,
-      pin: localStorage.getItem("passedPin")
+      pin: pin
     }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        console.log("Password record deleted from vault successfully!");
         refreshVaultDiv(deletedService, deletedEmail);
         const title = "Vault - Delete Notification";
         const content = "Password deleted from vault and moved to recycle bin!";
         addNotification(title, content);
         refreshNotificationsDiv(title, content);
+        // Decrypt password before sending to recycleBin
+        const plainPassword = decryptPassword(deletedPassword, pin);
         deletedAccounts.push({
           deletedService,
           deletedEmail,
-          deletedPassword
+          deletedPassword: plainPassword
         });
-        recycleBin(deletedService, deletedEmail, deletedPassword)
+        recycleBin(deletedService, deletedEmail, plainPassword)
           .then((data) => {
             if (data.success) {
               fillDeletedAccounts();
               setUpDynamicModal("record-delete-success");
               showDynamicModal();
             } else {
-              console.log(data.message || "Recycle bin addition unsuccessful!");
               setUpDynamicModal("record-delete-fail");
               showDynamicModal();
             }
@@ -671,8 +692,6 @@ function deleteAccount(deletedService, deletedEmail, deletedPassword) {
           .catch((error) => {
             console.error(error.message);
           });
-      } else {
-        console.log(data.message || "Password Deletion Unsuccessful!");
       }
     })
     .catch((error) => {
@@ -692,7 +711,6 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        console.log("Password successfully restored to the vault!");
         setUpDynamicModal("record-restore-success");
         showDynamicModal();
         const title = "Recycle Bin - Restore Notification";
@@ -703,7 +721,7 @@ function restorePassword(deletedService, deletedEmail, deletedPassword) {
         // Re-fetch everything.
         initialiseApp();
       } else {
-        console.log(data.message || "Recycle bin record restoration unsuccessful!");
+
         setUpDynamicModal("record-restore-fail");
         showDynamicModal();
       }
@@ -725,10 +743,6 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // alert the user that the records been permenantly deleted.
-        // refresh the recycle bin div somehow by filling the deletedAccounts again to remove
-        // the recently deleted recycle bin record onscreen.
-        console.log("The password record has been permenantly deleted from the recycle bin!");
         setUpDynamicModal("perma-delete-success");
         showDynamicModal();
         const title = "Recycle Bin - Delete Notification";
@@ -737,7 +751,6 @@ function permaDelete(deletedService, deletedEmail, deletedPassword) {
         refreshNotificationsDiv(title, content);
         refreshRecycleBinDiv(deletedService, deletedEmail);
       } else {
-        console.log(data.message || "Recycle Bin Password Deletion Unsuccessful!");
         setUpDynamicModal("perma-delete-fail");
         showDynamicModal();
       }
@@ -758,13 +771,6 @@ function addNotification(title, content) {
   })
     .then((response) => response.json())
     .then((data) => {
-      if (data.success) {
-        console.log("New message added to notifications");
-      } else {
-        console.log(
-          data.message || "New message could not be added to notifications"
-        );
-      }
     })
     .catch((error) => {
       console.error(error.message);
@@ -785,10 +791,7 @@ function deleteNotification(id) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        console.log("Notification deletion successful!");
         refreshNotificationsDiv(id);
-      } else {
-        console.log(data.message || "Notification deletion unsuccessful!");
       }
     })
     .catch((error) => {
@@ -827,7 +830,11 @@ function changePage(pageOption) {
   // The current page option is set to the page option parameter passed in.
   currentPageOption = pageOption;
   // The current page becomes the page that is found in the page mapping object at the index of the page option.
-  currentPage = PAGE_MAPPING[pageOption] || currentPage;
+  if (PAGE_MAPPING[pageOption]) {
+    currentPage = PAGE_MAPPING[pageOption];
+  } else {
+    currentPage = currentPage;
+  }
   loadPage(currentPage, currentPageOption);
 
   if (pageOption === "recycle-bin-link") {
@@ -851,11 +858,9 @@ function logOut() {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        console.log("Logout Successful!");
         setUpDynamicModal("log-out-success");
         showDynamicModal();
       } else {
-        console.log("Logout failed: " + (data.message || ""));
         setUpDynamicModal("log-out-fail");
         showDynamicModal();
       }
@@ -866,6 +871,7 @@ function logOut() {
 }
 
 function refreshVaultDiv(service, email) {
+  // Remove a password record from the vault array and update UI
   for (let i = 0; i < accounts.length; i++) {
     if (accounts[i].service === service && accounts[i].email === email) {
       accounts.splice(i, 1);
@@ -876,6 +882,7 @@ function refreshVaultDiv(service, email) {
 }
 
 function refreshRecycleBinDiv(deletedService, deletedEmail) {
+  // Remove a deleted password record from the recycle bin array and update UI
   for (let i = 0; i < deletedAccounts.length; i++) {
     if (
       deletedAccounts[i].deletedService === deletedService &&
@@ -889,8 +896,9 @@ function refreshRecycleBinDiv(deletedService, deletedEmail) {
 }
 
 function refreshNotificationsDiv(id) {
+  // Remove a notification by id and update UI
   for (let i = 0; i < notifications.length; i++) {
-    if(notifications[i].id === id){
+    if (notifications[i].id === id) {
       notifications.splice(i, 1);
       break;
     }
@@ -922,9 +930,25 @@ function setUpDynamicModal(result, data = {}) {
         clearModalInputs("add-password-modal");
       };
       break;
+    case "add-fields-invalid-email":
+      dynamicModalTitle.textContent = "Add Password Record Fail!";
+      dynamicModalMessage.textContent = "Please enter a valid email! Click ok to retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs("add-password-modal");
+      };
+      break;
     case "fill-in-edit-fields":
       dynamicModalTitle.textContent = "Edit Password Record Fail!";
       dynamicModalMessage.textContent = "Please fill in all fields! Click ok to retry!";
+      dynamicModalOkButton.onclick = () => {
+        hideDynamicModal();
+        clearModalInputs("edit-password-modal");
+      };
+      break;
+    case "edit-fields-invalid-email":
+      dynamicModalTitle.textContent = "Edit Password Record Fail!";
+      dynamicModalMessage.textContent = "Please enter a valid email! Click ok to retry!";
       dynamicModalOkButton.onclick = () => {
         hideDynamicModal();
         clearModalInputs("edit-password-modal");
@@ -1142,7 +1166,6 @@ function clearModalInputs(modal) {
       document.getElementById("edit-service-input").value = "";
       document.getElementById("edit-email-input").value = "";
       document.getElementById("edit-password-input").value = "";
-      document.getElementById("edit-current-password-input").value = "";
       break;
     case "pin-input-modal":
       // Clears pin modal input.
@@ -1174,12 +1197,27 @@ function showEditModal(account) {
   document.getElementById("edit-service-input").value = account.service;
   document.getElementById("edit-email-input").value = account.email;
   document.getElementById("edit-password-input").value = account.password;
-  // console.log("Password for edit: ", account.password);
   editPasswordModal.style.display = "block";
 }
 
 function hideEditModal() {
   editPasswordModal.style.display = "none";
+}
+
+function decryptPassword(encryptedPassword, pin) {
+  // Only decrypt if password contains semicolons - encrypted
+  if (encryptedPassword.includes(";")) {
+    let plainPassword = "";
+    let intPin = parseInt(pin);
+    encryptedPassword.split(";").forEach((x) => {
+      let y = parseInt(x) / intPin;
+      plainPassword += String.fromCharCode(y);
+    });
+    return plainPassword;
+  } else {
+    // Already plain text
+    return encryptedPassword;
+  }
 }
 
 /* Event Listeners */
@@ -1354,3 +1392,4 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error fetching notifications: ", err);
     });
 });
+

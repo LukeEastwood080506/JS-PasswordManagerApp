@@ -10,8 +10,9 @@ const e = require("express");
 
 // Reusable route check handler method.
 function routeCheckHandler() {
+  // Health check handler for /passwords routes
   return (request, response) => {
-    console.log(`GET request to /passwords${request.url}`);
+    // console.log(`GET request to /passwords${request.url}`);
     db.get("SELECT 1", [], (err) => {
       if (err) {
         console.error("Database is not working (", err.message, ")");
@@ -28,8 +29,8 @@ function routeCheckHandler() {
 }
 
 router.get("/all", (request, response) => {
+  // Return all password records for the logged-in user
   const userId = request.session.userId;
-  console.log(`GET request to /passwords${request.url}`);
   db.all("SELECT * FROM passwords WHERE user_id = ?", [userId], (err, rows) => {
     if (err) {
       return response.status(400).json({
@@ -53,7 +54,7 @@ router.get("/edit/master", routeCheckHandler());
 router.get("/delete", routeCheckHandler());
 
 router.post("/show", (request, response) => {
-  console.log(`POST request to /passwords${request.url}`);
+  // Decrypt and return a password for a given service/email/pin
   const { service, email, password, pin } = request.body;
   if (!service || !email || !password || !pin) {
     return response.status(400).send({
@@ -94,7 +95,7 @@ router.post("/show", (request, response) => {
 });
 
 router.post("/new", requireLogin, (request, response) => {
-  console.log(`POST request to /passwords${request.url}`);
+  // Add a new password record for the logged-in user (with encryption)
   const { service, email, password, pin } = request.body;
   const userId = request.session.userId;
   if (!userId || !service || !email || !password || !pin) {
@@ -134,7 +135,7 @@ router.post("/new", requireLogin, (request, response) => {
 });
 
 router.post("/edit", (request, response) => {
-  console.log(`POST request to /passwords${request.url}`);
+  // Edit an existing password record (with encryption)
   const {
     originalService,
     originalEmail,
@@ -209,12 +210,9 @@ router.post("/edit", (request, response) => {
 });
 
 router.post("/edit/master", (request, response) => {
-  console.log(`POST request to /passwords${request.url}`);
+  // Change the master password for the logged-in user
   const { originalPassword, newPassword } = request.body;
   const userId = request.session.userId;
-  // console.log("Original password: ", originalPassword);
-  // console.log("New password: ", newPassword);
-  // console.log("userId: ", userId);
   if (!userId || !originalPassword || !newPassword) {
     return response.status(400).send({
       success: false,
@@ -265,7 +263,7 @@ router.post("/edit/master", (request, response) => {
 });
 
 router.post("/delete", async (request, response) => {
-  console.log(`DELETE request to /passwords${request.url}`);
+  // Delete a password record for a given service/email/pin
   const { service, email, password, pin } = request.body;
   // Check if the service, email, password exist for deletion.
   if (!service || !email || !password || !pin) {
